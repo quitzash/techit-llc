@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tichit LLC — Powering Next-Generation Digital Ecosystems</title>
-  <meta name="description" content="Tichit LLC is the holding enterprise backing leading regional platforms in e-commerce, business optimization, and enterprise gateways." />
+  <title>Techit LLC — Powering Next-Generation Digital Ecosystems</title>
+  <meta name="description" content="Techit LLC is the holding enterprise backing leading regional platforms in e-commerce, business optimization, and enterprise gateways." />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -99,57 +99,20 @@
     /* Hide nav before scroll */
     .nav-hidden { transform: translateY(-100%) translateY(-1rem); opacity: 0; }
 
-    /* ---- 3D card tilt ---- */
+    /* ---- Platform cards: fully static (no entrance / tilt / border animations) ---- */
     .tilt-card {
-      transform-style: preserve-3d;
-      transition: transform 0.4s cubic-bezier(0.03, 0.98, 0.52, 0.99),
-                  box-shadow 0.4s ease;
+      transition: box-shadow 0.4s ease;
     }
     .tilt-card:hover {
       box-shadow:
         0 25px 60px -12px rgba(0,0,0,0.5),
         0 0 40px -10px var(--glow-color, rgba(255,255,255,0.05));
     }
-    .tilt-card .tilt-inner {
-      transform: translateZ(30px);
-      transform-style: preserve-3d;
-    }
 
     /* ---- Glow color vars per platform ---- */
     .glow-wfrlee-card { --glow-color: rgba(16,185,129,0.3); }
     .glow-onegate-card { --glow-color: rgba(34,211,238,0.3); }
     .glow-sabaah-card { --glow-color: rgba(245,158,11,0.3); }
-
-    /* ---- Platform card hover border pulse ---- */
-    .card-border-glow {
-      position: relative;
-    }
-    .card-border-glow::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      border-radius: inherit;
-      padding: 1px;
-      background: linear-gradient(135deg, transparent 30%, var(--border-glow, rgba(255,255,255,0.1)) 50%, transparent 70%);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      pointer-events: none;
-    }
-    .card-border-glow:hover::before {
-      opacity: 1;
-      animation: borderRotate 3s linear infinite;
-    }
-    @keyframes borderRotate {
-      0% { background: linear-gradient(0deg, transparent 30%, var(--border-glow, rgba(255,255,255,0.15)) 50%, transparent 70%); }
-      25% { background: linear-gradient(90deg, transparent 30%, var(--border-glow, rgba(255,255,255,0.15)) 50%, transparent 70%); }
-      50% { background: linear-gradient(180deg, transparent 30%, var(--border-glow, rgba(255,255,255,0.15)) 50%, transparent 70%); }
-      75% { background: linear-gradient(270deg, transparent 30%, var(--border-glow, rgba(255,255,255,0.15)) 50%, transparent 70%); }
-      100% { background: linear-gradient(360deg, transparent 30%, var(--border-glow, rgba(255,255,255,0.15)) 50%, transparent 70%); }
-    }
 
     /* ---- Pillar card hover ---- */
     .pillar-card {
@@ -158,7 +121,7 @@
                   border-color 0.45s ease;
     }
     .pillar-card:hover {
-      transform: translateY(-8px) rotateX(2deg) scale(1.02);
+      transform: translateY(-8px) rotateX(2deg);
       box-shadow: 0 20px 50px -15px rgba(0,0,0,0.4);
     }
 
@@ -217,18 +180,70 @@
       box-shadow: 0 18px 40px -18px rgba(0,0,0,0.55);
     }
 
-    /* ---- Step item hover ---- */
+    /* ---- Step item hover (each numbered row grows as its own section) ---- */
     .step-item {
-      transition: transform 0.3s ease, background 0.3s ease;
+      position: relative;
+      border-radius: 0.9rem;
+      z-index: 1;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                  background 0.35s ease,
+                  box-shadow 0.35s ease;
+    }
+    .step-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid transparent;
+      opacity: 0;
+      transition: border-color 0.35s ease, opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .step-item > span {
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.45s ease;
     }
     .step-item:hover {
-      transform: translateX(6px);
-      background: rgba(255,255,255,0.03);
+      transform: scale(1.06);
+      background: rgba(255,255,255,0.08);
+      box-shadow: 0 18px 36px -18px var(--glow-color, rgba(0,0,0,0.5));
+      z-index: 5;
+    }
+    .step-item:hover > span,
+    .step-item:hover > p {
+      position: relative;
+      z-index: 2;
+    }
+    .step-item:hover::before {
+      border-color: var(--glow-color, rgba(255,255,255,0.2));
+      opacity: 1;
+    }
+    .step-item:hover > span {
+      transform: scale(1.22);
+      box-shadow: 0 12px 28px -14px var(--glow-color, rgba(255,255,255,0.4)),
+                  inset 0 0 0 1px var(--glow-color, rgba(255,255,255,0.25));
+    }
+    .step-item > p {
+      transition: transform 0.4s ease, color 0.35s ease;
+    }
+    .step-item:hover > p {
+      transform: scale(1.02);
+      color: rgba(255,255,255,0.96);
+    }
+    .step-item:hover > p strong {
+      color: #fff;
     }
 
     /* ---- Check item stagger (revealed via GSAP) ---- */
     .check-item {
       transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* ---- Contact card border: gradient mix of amber, emerald, cyan (border only) ---- */
+    #contact-form {
+      border: 1px solid transparent;
+      background:
+        linear-gradient(#0f1421, #0f1421) padding-box,
+        linear-gradient(115deg, #f59e0b, #10b981, #22d3ee) border-box;
     }
 
     /* ---- Full-page 3D scroll progress bar ---- */
@@ -242,6 +257,15 @@
       transform-origin: 0 50%;
       z-index: 60;
     }
+
+    body.lang-ar,
+      body.lang-ar .font-display {
+        font-family: 'Tajawal', 'Plus Jakarta Sans', Inter, sans-serif;
+      }
+      body.lang-ar .tracking-widest,
+      body.lang-ar .tracking-[0.25em] {
+        letter-spacing: 0;
+      }
 
     /* ---- Reduced motion overrides ---- */
     @media (prefers-reduced-motion: reduce) {
@@ -274,17 +298,22 @@
         <a href="#top" class="flex items-center gap-2.5">
           <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/70 via-emerald-400/50 to-cyan-400/70 font-display font-extrabold text-base text-white">T</span>
           <span class="font-display font-bold text-lg tracking-tight text-white">
-            Tichit<span class="text-white/50 font-medium"> LLC</span>
+            Techit<span class="text-white/50 font-medium"> LLC</span>
           </span>
         </a>
 
         <!-- Quick scroll anchors -->
         <div class="hidden md:flex items-center gap-8 text-sm text-white/70">
-          <a href="#about" class="anchor magnetic-link hover:text-white transition-colors">About</a>
-          <a href="#platforms" class="anchor magnetic-link hover:text-white transition-colors">Platforms</a>
-          <a href="#pillars" class="anchor magnetic-link hover:text-white transition-colors">Pillars</a>
-          <a href="#contact" class="anchor magnetic-link hover:text-white transition-colors">Contact</a>
+          <a href="#about" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-about">About</a>
+          <a href="#platforms" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-platforms">Platforms</a>
+          <a href="#pillars" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-pillars">Pillars</a>
+          <a href="#contact" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-contact">Contact</a>
         </div>
+
+        <button id="lang-toggle" type="button" aria-label="Switch language"
+                class="glass rounded-xl px-3.5 py-2 text-sm font-bold text-white/85 hover:bg-white/15 hover:text-white transition-colors cursor-pointer select-none">
+          عربي
+        </button>
       </div>
     </nav>
   </header>
@@ -302,23 +331,23 @@
       <div class="max-w-4xl">
         <span data-reveal class="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium tracking-wide text-white/70 mb-8">
           <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          Holding Enterprise · Regional Digital Platforms
+          <span data-i18n="hero-badge">Holding Enterprise · Regional Digital Platforms</span>
         </span>
 
-        <h1 data-reveal class="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white">
+        <h1 data-reveal data-i18n-html="hero-title" class="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white">
           Powering <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">Next-Generation</span><br class="hidden sm:block" />
           Digital Ecosystems.
         </h1>
 
-        <p data-reveal class="mt-7 max-w-2xl text-lg sm:text-xl text-white/60 leading-relaxed">
-          Tichit LLC is the holding enterprise backing leading regional platforms in
+        <p data-reveal data-i18n="hero-paragraph" class="mt-7 max-w-2xl text-lg sm:text-xl text-white/60 leading-relaxed">
+          Techit LLC is the holding enterprise backing leading regional platforms in
           e-commerce, business optimization, and enterprise gateways.
         </p>
 
         <div data-reveal class="mt-10">
           <a href="#platforms"
              class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-base transition-all shadow-lg shadow-white/10">
-            Explore the Ecosystem
+            <span data-i18n="hero-cta">Explore the Ecosystem</span>
             <i data-lucide="arrow-down" class="w-4 h-4"></i>
           </a>
         </div>
@@ -336,22 +365,22 @@
     <div data-depth="0.18" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(500px circle at 8% 82%, rgba(245,158,11,0.06), transparent 65%);"></div>
     <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-14 lg:gap-24 items-center">
       <div>
-        <span data-3d-reveal data-3d-ry="-12deg" data-3d-rx="2deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block">Company Overview</span>
-        <h2 data-3d-reveal data-3d-ry="-8deg" data-3d-rx="3deg" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
+        <span data-3d-reveal data-3d-ry="-12deg" data-3d-rx="2deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="about-kicker">Company Overview</span>
+        <h2 data-3d-reveal data-3d-ry="-8deg" data-3d-rx="3deg" data-i18n-html="about-title" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
           One holding,<br />many platforms,<br /><span class="text-white/50">unified purpose.</span>
         </h2>
       </div>
 
       <div class="space-y-6 text-white/65 leading-relaxed text-lg">
-        <p data-3d-reveal data-3d-ry="8deg" data-3d-rx="-2deg">
-          Tichit LLC is a technology incubation and holding enterprise committed to
+        <p data-3d-reveal data-3d-ry="8deg" data-3d-rx="-2deg" data-i18n="about-p1">
+          Techit LLC is a technology incubation and holding enterprise committed to
           operational reliability and sustained platform growth. We conceive, back, and
           scale specialized digital products that move real value across the region.
         </p>
-        <p data-3d-reveal data-3d-ry="8deg" data-3d-rx="-2deg">
+        <p data-3d-reveal data-3d-ry="8deg" data-3d-rx="-2deg" data-i18n="about-p2">
           From on-the-go coffee ordering to hourly hotel booking and secure enterprise
           gateways, each subsidiary operates with its own focus — while sharing
-          the infrastructure, governance, and long-term vision of the Tichit umbrella.
+          the infrastructure, governance, and long-term vision of the Techit umbrella.
         </p>
       </div>
     </div>
@@ -368,25 +397,25 @@
           <div class="flex items-center gap-4">
             <img src="https://wfrlee.com/logo192.png" alt="Wfrlee logo" width="64" height="64" loading="lazy" class="w-16 h-16 rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/40 p-2.5 object-contain logo-hover" onerror="this.style.display='none'" />
             <div>
-              <h3 class="font-display font-extrabold text-3xl sm:text-4xl text-white">Wfrlee</h3>
+              <h3 data-i18n="wfrlee-name" class="font-display font-extrabold text-3xl sm:text-4xl text-white">Wfrlee.com</h3>
               <span class="text-emerald-400 text-sm font-semibold">wfrlee.com</span>
             </div>
           </div>
-          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug">
+          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug" data-i18n="wfrlee-tagline">
             Hotels, booked by the hour.
           </p>
-          <p class="mt-4 text-white/60 text-lg leading-relaxed">
+          <p class="mt-4 text-white/60 text-lg leading-relaxed" data-i18n="wfrlee-desc">
             Book short stays with flexible hourly rates. Pay only for the time you
             use — no need to pay for a full night.
           </p>
           <ul class="mt-8 space-y-3 text-white/70">
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i>Flexible hourly-rate booking</li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i>Pay-as-you-stay pricing</li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i>Instant short-stay scheduling</li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span data-i18n="wfrlee-c1">Flexible hourly-rate booking</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span data-i18n="wfrlee-c2">Pay-as-you-stay pricing</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span data-i18n="wfrlee-c3">Instant short-stay scheduling</span></li>
           </ul>
           <a href="https://wfrlee.com" target="_blank" rel="noopener"
              class="group mt-9 inline-flex items-center gap-2 text-emerald-400 font-semibold text-sm magnetic-link">
-            <span class="group-hover:tracking-wider transition-all">Visit wfrlee.com</span>
+            <span class="group-hover:tracking-wider transition-all" data-i18n="wfrlee-visit">Visit wfrlee.com</span>
             <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
           </a>
         </div>
@@ -395,29 +424,29 @@
           <div class="tilt-inner">
             <div class="flex items-center gap-3 text-emerald-400">
               <i data-lucide="clock" class="w-5 h-5"></i>
-              <span class="text-xs font-semibold uppercase tracking-widest">Hourly Hotel Booking</span>
+              <span class="text-xs font-semibold uppercase tracking-widest" data-i18n="wfrlee-label">Hourly Hotel Booking</span>
             </div>
-            <p class="mt-6 text-white/60 leading-relaxed">
+            <p class="mt-6 text-white/60 leading-relaxed" data-i18n="wfrlee-idea">
               The idea: you rarely need a whole night. Wfrlee lets you book a hotel room
               for the exact hours you need and pay only for those hours — not the full day.
             </p>
             <div class="mt-8 space-y-0 divide-y divide-white/5">
               <div class="flex items-center gap-4 py-4 step-item">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-sm font-bold ring-1 ring-emerald-500/25">1</span>
-                <p class="text-sm text-white/70"><span class="text-white font-semibold">Search</span> — find a hotel and choose your hours (1–24h).</p>
+                <p class="text-sm text-white/70" data-i18n-html="wfrlee-step1"><span class="text-white font-semibold">Search</span> — find a hotel and choose your hours (3–24h).</p>
               </div>
               <div class="flex items-center gap-4 py-4 step-item">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-sm font-bold ring-1 ring-emerald-500/25">2</span>
-                <p class="text-sm text-white/70"><span class="text-white font-semibold">Book hourly</span> — pay per hour, no full-night charge.</p>
+                <p class="text-sm text-white/70" data-i18n-html="wfrlee-step2"><span class="text-white font-semibold">Book hourly</span> — pay per hour, no full-night charge.</p>
               </div>
               <div class="flex items-center gap-4 py-4 step-item">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-sm font-bold ring-1 ring-emerald-500/25">3</span>
-                <p class="text-sm text-white/70"><span class="text-white font-semibold">Stay &amp; go</span> — check in instantly, check out on your time.</p>
+                <p class="text-sm text-white/70" data-i18n-html="wfrlee-step3"><span class="text-white font-semibold">Stay &amp; go</span> — check in instantly, check out on your time.</p>
               </div>
             </div>
             <p class="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/25 px-4 py-1.5 text-sm text-emerald-300 font-medium">
               <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              Currently available in Saudi Arabia
+              <span data-i18n="wfrlee-badge">Currently available in Saudi Arabia</span>
             </p>
           </div>
         </div>
@@ -436,21 +465,21 @@
               <span class="text-cyan-400 text-sm font-semibold">oneegate.com</span>
             </div>
           </div>
-          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug">
+          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug" data-i18n="oneegate-tagline">
             One gateway for the enterprise.
           </p>
-          <p class="mt-4 text-white/60 text-lg leading-relaxed">
+          <p class="mt-4 text-white/60 text-lg leading-relaxed" data-i18n="oneegate-desc">
             Managing enterprise-level central gateways, institutional access systems,
             and secure infrastructure tools.
           </p>
           <ul class="mt-8 space-y-3 text-white/70">
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i>Central enterprise gateways</li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i>Institutional access systems</li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i>Secure infrastructure tools</li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i><span data-i18n="oneegate-c1">Central enterprise gateways</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i><span data-i18n="oneegate-c2">Institutional access systems</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i><span data-i18n="oneegate-c3">Secure infrastructure tools</span></li>
           </ul>
           <a href="https://oneegate.com" target="_blank" rel="noopener"
              class="group mt-9 inline-flex items-center gap-2 text-cyan-400 font-semibold text-sm magnetic-link">
-            <span class="group-hover:tracking-wider transition-all">Visit oneegate.com</span>
+            <span class="group-hover:tracking-wider transition-all" data-i18n="oneegate-visit">Visit oneegate.com</span>
             <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
           </a>
         </div>
@@ -459,9 +488,9 @@
           <div class="tilt-inner">
             <div class="flex items-center gap-3 text-cyan-400">
               <i data-lucide="shield" class="w-5 h-5"></i>
-              <span class="text-xs font-semibold uppercase tracking-widest">Enterprise Gateway</span>
+              <span class="text-xs font-semibold uppercase tracking-widest" data-i18n="oneegate-label">Enterprise Gateway</span>
             </div>
-            <p class="mt-6 text-white/60 leading-relaxed">
+            <p class="mt-6 text-white/60 leading-relaxed" data-i18n="oneegate-idea">
               The idea: institutions shouldn't juggle a dozen logins and systems.
               OneEGate is a single, secure front door for enterprise access,
               teams, and infrastructure.
@@ -469,15 +498,15 @@
             <div class="mt-8 space-y-0 divide-y divide-white/5">
               <div class="flex items-center gap-4 py-4 step-item">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 text-sm font-bold ring-1 ring-cyan-500/25">1</span>
-                <p class="text-sm text-white/70"><span class="text-white font-semibold">Centralize</span> — one secure gateway for all institutional systems.</p>
+                <p class="text-sm text-white/70" data-i18n-html="oneegate-step1"><span class="text-white font-semibold">Centralize</span> — one secure gateway for all institutional systems.</p>
               </div>
               <div class="flex items-center gap-4 py-4 step-item">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 text-sm font-bold ring-1 ring-cyan-500/25">2</span>
-                <p class="text-sm text-white/70"><span class="text-white font-semibold">Control access</span> — define who reaches what, policy-driven.</p>
+                <p class="text-sm text-white/70" data-i18n-html="oneegate-step2"><span class="text-white font-semibold">Control access</span> — define who reaches what, policy-driven.</p>
               </div>
               <div class="flex items-center gap-4 py-4 step-item">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 text-sm font-bold ring-1 ring-cyan-500/25">3</span>
-                <p class="text-sm text-white/70"><span class="text-white font-semibold">Operate securely</span> — infrastructure protected at the core.</p>
+                <p class="text-sm text-white/70" data-i18n-html="oneegate-step3"><span class="text-white font-semibold">Operate securely</span> — infrastructure protected at the core.</p>
               </div>
             </div>
           </div>
@@ -497,21 +526,21 @@
               <span class="text-amber-400 text-sm font-semibold">sabaah.net</span>
             </div>
           </div>
-          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug">
+          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug" data-i18n="sabaah-tagline">
             Coffee, ordered on the go.
           </p>
-          <p class="mt-4 text-white/60 text-lg leading-relaxed">
+          <p class="mt-4 text-white/60 text-lg leading-relaxed" data-i18n="sabaah-desc">
             Order your coffee from anywhere — browse nearby cafés, skip the queue,
             and have your brew ready the moment you arrive.
           </p>
           <ul class="mt-8 space-y-3 text-white/70">
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>Order ahead from nearby cafés</li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>Skip the queue with fast pickup</li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>Streamlined mobile ordering pipeline</li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i><span data-i18n="sabaah-c1">Order ahead from nearby cafés</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i><span data-i18n="sabaah-c2">Skip the queue with fast pickup</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i><span data-i18n="sabaah-c3">Streamlined mobile ordering pipeline</span></li>
           </ul>
           <a href="https://sabaah.net" target="_blank" rel="noopener"
              class="group mt-9 inline-flex items-center gap-2 text-amber-400 font-semibold text-sm magnetic-link">
-            <span class="group-hover:tracking-wider transition-all">Visit sabaah.net</span>
+            <span class="group-hover:tracking-wider transition-all" data-i18n="sabaah-visit">Visit sabaah.net</span>
             <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
           </a>
         </div>
@@ -520,24 +549,24 @@
           <div class="tilt-inner">
             <div class="flex items-center gap-3 text-amber-400">
               <i data-lucide="coffee" class="w-5 h-5"></i>
-              <span class="text-xs font-semibold uppercase tracking-widest">On-the-Go Coffee</span>
+              <span class="text-xs font-semibold uppercase tracking-widest" data-i18n="sabaah-label">On-the-Go Coffee</span>
             </div>
-            <p class="mt-6 text-white/60 leading-relaxed">
+            <p class="mt-6 text-white/60 leading-relaxed" data-i18n="sabaah-idea">
               The idea: instead of queuing at a café, order before you're even there.
               Sabaah connects you to nearby cafés and has your drink ready on arrival.
             </p>
             <div class="mt-8 space-y-0 divide-y divide-white/5">
               <div class="flex items-center gap-4 py-4 step-item">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 text-sm font-bold ring-1 ring-amber-500/25">1</span>
-                <p class="text-sm text-white/70"><span class="text-white font-semibold">Discover</span> — browse cafés near you and pick a drink.</p>
+                <p class="text-sm text-white/70" data-i18n-html="sabaah-step1"><span class="text-white font-semibold">Discover</span> — browse cafés near you and pick a drink.</p>
               </div>
               <div class="flex items-center gap-4 py-4 step-item">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 text-sm font-bold ring-1 ring-amber-500/25">2</span>
-                <p class="text-sm text-white/70"><span class="text-white font-semibold">Order ahead</span> — pay in app and the café starts your brew.</p>
+                <p class="text-sm text-white/70" data-i18n-html="sabaah-step2"><span class="text-white font-semibold">Order ahead</span> — pay in app and the café starts your brew.</p>
               </div>
               <div class="flex items-center gap-4 py-4 step-item">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 text-sm font-bold ring-1 ring-amber-500/25">3</span>
-                <p class="text-sm text-white/70"><span class="text-white font-semibold">Skip the queue</span> — walk in and grab your ready cup.</p>
+                <p class="text-sm text-white/70" data-i18n-html="sabaah-step3"><span class="text-white font-semibold">Skip the queue</span> — walk in and grab your ready cup.</p>
               </div>
             </div>
           </div>
@@ -551,8 +580,8 @@
     <div data-depth="0.3" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(560px circle at 24% 18%, rgba(16,185,129,0.07), transparent 65%);"></div>
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
       <div class="max-w-2xl">
-        <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="3deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block">Core Pillars</span>
-        <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="4deg" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
+        <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="3deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="pillars-kicker">Core Pillars</span>
+        <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="4deg" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-i18n="pillars-title">
           What we stand on.
         </h2>
       </div>
@@ -562,8 +591,8 @@
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/20 logo-hover">
             <i data-lucide="layers" class="w-6 h-6"></i>
           </div>
-          <h3 class="mt-6 font-display font-bold text-xl text-white">Scalability</h3>
-          <p class="mt-3 text-white/60 leading-relaxed">
+          <h3 class="mt-6 font-display font-bold text-xl text-white" data-i18n="pillars-1-title">Scalability</h3>
+          <p class="mt-3 text-white/60 leading-relaxed" data-i18n="pillars-1-desc">
             Architectures engineered to grow from first user to full regional
             scale without breaking stride.
           </p>
@@ -573,8 +602,8 @@
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20 logo-hover">
             <i data-lucide="workflow" class="w-6 h-6"></i>
           </div>
-          <h3 class="mt-6 font-display font-bold text-xl text-white">Unified Integration</h3>
-          <p class="mt-3 text-white/60 leading-relaxed">
+          <h3 class="mt-6 font-display font-bold text-xl text-white" data-i18n="pillars-2-title">Unified Integration</h3>
+          <p class="mt-3 text-white/60 leading-relaxed" data-i18n="pillars-2-desc">
             Platforms that connect cleanly — shared data, shared standards, and one
             cohesive ecosystem experience.
           </p>
@@ -584,8 +613,8 @@
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/20 logo-hover">
             <i data-lucide="lock" class="w-6 h-6"></i>
           </div>
-          <h3 class="mt-6 font-display font-bold text-xl text-white">Enterprise Security</h3>
-          <p class="mt-3 text-white/60 leading-relaxed">
+          <h3 class="mt-6 font-display font-bold text-xl text-white" data-i18n="pillars-3-title">Enterprise Security</h3>
+          <p class="mt-3 text-white/60 leading-relaxed" data-i18n="pillars-3-desc">
             Institutional-grade protection embedded at the core of every gateway
             and access system we operate.
           </p>
@@ -600,22 +629,22 @@
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
       <div class="grid lg:grid-cols-2 gap-14 lg:gap-20 items-start">
         <div>
-          <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="2deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block">Contact Us</span>
-          <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="3deg" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
+          <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="2deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="contact-kicker">Contact Us</span>
+          <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="3deg" data-i18n-html="contact-title" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
             Let's build <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">together.</span>
           </h2>
-          <p data-3d-reveal data-3d-ry="-4deg" data-3d-rx="2deg" class="mt-5 text-white/60 text-lg leading-relaxed max-w-md">
+          <p data-3d-reveal data-3d-ry="-4deg" data-3d-rx="2deg" class="mt-5 text-white/60 text-lg leading-relaxed max-w-md" data-i18n="contact-desc">
             Whether you're a partner, a business exploring our platforms, or a team
-            looking to grow under the Tichit umbrella — we'd love to hear from you.
+            looking to grow under the Techit umbrella — we'd love to hear from you.
           </p>
 
-          <a data-3d-reveal data-3d-ry="-8deg" data-3d-rx="2deg" href="mailto:info@tichit-llc.com" class="group mt-9 inline-flex items-center gap-3 glass rounded-2xl px-5 py-4 hover:bg-white/10 transition-colors magnetic-link">
+          <a data-3d-reveal data-3d-ry="-8deg" data-3d-rx="2deg" href="mailto:info@techit-llc.com" class="group mt-9 inline-flex items-center gap-3 glass rounded-2xl px-5 py-4 hover:bg-white/10 transition-colors magnetic-link">
             <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-white">
               <i data-lucide="mail" class="w-5 h-5"></i>
             </span>
             <span>
-              <span class="block text-xs text-white/40 uppercase tracking-wide">Email</span>
-              <span class="block text-white/90 font-medium">info@tichit-llc.com</span>
+              <span class="block text-xs text-white/40 uppercase tracking-wide" data-i18n="contact-email-label">Email</span>
+              <span class="block text-white/90 font-medium">info@techit-llc.com</span>
             </span>
           </a>
         </div>
@@ -623,24 +652,24 @@
         <form data-3d-reveal data-3d-ry="10deg" data-3d-rx="-3deg" class="glass rounded-[2rem] p-8 lg:p-10 space-y-5 bg-[rgba(17,23,38,0.6)]" id="contact-form">
           <div class="grid sm:grid-cols-2 gap-5">
             <label class="block">
-              <span class="text-sm text-white/60">Name</span>
-              <input type="text" name="name" required placeholder="Your name"
+              <span class="text-sm text-white/60" data-i18n="form-name">Name</span>
+              <input type="text" name="name" required placeholder="Your name" data-i18n-ph="form-name-ph"
                      class="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 outline-none focus:border-amber-400/60 focus:bg-white/10 transition-colors" />
             </label>
             <label class="block">
-              <span class="text-sm text-white/60">Email</span>
-              <input type="email" name="email" required placeholder="you@company.com"
+              <span class="text-sm text-white/60" data-i18n="form-email">Email</span>
+              <input type="email" name="email" required placeholder="you@company.com" data-i18n-ph="form-email-ph"
                      class="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 outline-none focus:border-amber-400/60 focus:bg-white/10 transition-colors" />
             </label>
           </div>
           <label class="block">
-            <span class="text-sm text-white/60">Message</span>
-            <textarea name="message" rows="4" required placeholder="How can we help?"
+            <span class="text-sm text-white/60" data-i18n="form-message">Message</span>
+            <textarea name="message" rows="4" required placeholder="How can we help?" data-i18n-ph="form-message-ph"
                       class="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 outline-none focus:border-amber-400/60 focus:bg-white/10 transition-colors resize-none"></textarea>
           </label>
           <button type="submit"
                   class="cta-glow w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 font-semibold text-base text-base transition-all">
-            Send Message
+            <span data-i18n="form-submit">Send Message</span>
             <i data-lucide="send" class="w-4 h-4"></i>
           </button>
           <p id="form-status" class="hidden text-center text-sm text-emerald-400"></p>
@@ -656,25 +685,25 @@
         <div class="max-w-xs">
           <a href="#top" class="flex items-center gap-2.5">
             <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/70 via-emerald-400/50 to-cyan-400/70 font-display font-extrabold text-base text-white">T</span>
-            <span class="font-display font-bold text-lg text-white">Tichit LLC</span>
+            <span class="font-display font-bold text-lg text-white">Techit LLC</span>
           </a>
-          <p class="mt-4 text-sm text-white/50 leading-relaxed">
+          <p class="mt-4 text-sm text-white/50 leading-relaxed" data-i18n="footer-tagline">
             Holding the platforms powering regional digital ecosystems.
           </p>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-10">
           <div>
-            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4">Company</h4>
+            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4" data-i18n="footer-company">Company</h4>
             <ul class="space-y-3 text-white/60 text-sm">
-              <li><a href="#about" class="anchor hover:text-white transition-colors">About</a></li>
-              <li><a href="#platforms" class="anchor hover:text-white transition-colors">Platforms</a></li>
-              <li><a href="#pillars" class="anchor hover:text-white transition-colors">Pillars</a></li>
-              <li><a href="#contact" class="anchor hover:text-white transition-colors">Contact</a></li>
+              <li><a href="#about" class="anchor hover:text-white transition-colors" data-i18n="nav-about">About</a></li>
+              <li><a href="#platforms" class="anchor hover:text-white transition-colors" data-i18n="nav-platforms">Platforms</a></li>
+              <li><a href="#pillars" class="anchor hover:text-white transition-colors" data-i18n="nav-pillars">Pillars</a></li>
+              <li><a href="#contact" class="anchor hover:text-white transition-colors" data-i18n="nav-contact">Contact</a></li>
             </ul>
           </div>
           <div>
-            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4">Platforms</h4>
+            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4" data-i18n="footer-platforms">Platforms</h4>
             <ul class="space-y-3 text-white/60 text-sm">
               <li><a href="https://sabaah.net" target="_blank" rel="noopener" class="anchor magnetic-link hover:text-amber-400 transition-colors">Sabaah</a></li>
               <li><a href="https://wfrlee.com" target="_blank" rel="noopener" class="anchor magnetic-link hover:text-emerald-400 transition-colors">Wfrlee</a></li>
@@ -682,17 +711,17 @@
             </ul>
           </div>
           <div>
-            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4">Contact</h4>
+            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4" data-i18n="footer-contact">Contact</h4>
             <ul class="space-y-3 text-white/60 text-sm">
-              <li><a href="mailto:info@tichit-llc.com" class="anchor magnetic-link hover:text-white transition-colors">info@tichit-llc.com</a></li>
+              <li><a href="mailto:info@techit-llc.com" class="anchor magnetic-link hover:text-white transition-colors">info@techit-llc.com</a></li>
             </ul>
           </div>
         </div>
       </div>
 
       <div class="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/40">
-        <p>© <span id="year"></span> Tichit LLC. All rights reserved.</p>
-        <p>tichit-llc.com</p>
+        <p id="footer-rights" data-i18n-html="footer-rights">© <span id="year"></span> Techit LLC. All rights reserved.</p>
+        <p>techit-llc.com</p>
       </div>
     </div>
   </footer>
@@ -714,13 +743,209 @@
         const message = contactForm.querySelector('[name="message"]').value.trim();
         status.classList.remove('hidden');
         status.textContent = 'Thanks ' + name + ' — your message is ready. Opening your mail app…';
-        window.location.href = 'mailto:info@tichit-llc.com?subject=' +
-          encodeURIComponent('Contact from tichit-llc.com') +
+        window.location.href = 'mailto:info@techit-llc.com?subject=' +
+          encodeURIComponent('Contact from techit-llc.com') +
           '&body=' + encodeURIComponent(message);
         contactForm.reset();
         setTimeout(() => status.classList.add('hidden'), 6000);
       });
     }
+
+    // ---- Arabic / English translation toggle ----
+    const I18N = {
+      en: {
+        "meta-title": "Techit LLC — Powering Next-Generation Digital Ecosystems",
+        "meta-desc": "Techit LLC is the holding enterprise backing leading regional platforms in e-commerce, business optimization, and enterprise gateways.",
+        "nav-about": "About",
+        "nav-platforms": "Platforms",
+        "nav-pillars": "Pillars",
+        "nav-contact": "Contact",
+        "hero-badge": "Holding Enterprise · Regional Digital Platforms",
+        "hero-title": `Powering <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">Next-Generation</span><br class="hidden sm:block" />Digital Ecosystems.`,
+        "hero-paragraph": "Techit LLC is the holding enterprise backing leading regional platforms in e-commerce, business optimization, and enterprise gateways.",
+        "hero-cta": "Explore the Ecosystem",
+        "about-kicker": "Company Overview",
+        "about-title": `One holding,<br />many platforms,<br /><span class="text-white/50">unified purpose.</span>`,
+        "about-p1": "Techit LLC is a technology incubation and holding enterprise committed to operational reliability and sustained platform growth. We conceive, back, and scale specialized digital products that move real value across the region.",
+        "about-p2": "From on-the-go coffee ordering to hourly hotel booking and secure enterprise gateways, each subsidiary operates with its own focus — while sharing the infrastructure, governance, and long-term vision of the Techit umbrella.",
+        "wfrlee-name": "Wfrlee.com",
+        "wfrlee-tagline": "Hotels, booked by the hours.",
+        "wfrlee-desc": "Book short stays with flexible hourly rates. Pay only for the time you use — no need to pay for a full night.",
+        "wfrlee-c1": "Flexible hourly-rate booking",
+        "wfrlee-c2": "Pay-as-you-stay pricing",
+        "wfrlee-c3": "Instant short-stay scheduling",
+        "wfrlee-visit": "Visit wfrlee.com",
+        "wfrlee-label": "Hourly Hotel Booking",
+        "wfrlee-idea": "The idea: you rarely need a whole night. Wfrlee lets you book a hotel room for the exact hours you need and pay only for those hours — not the full day.",
+        "wfrlee-step1": `<span class="text-white font-semibold">Search</span> — find a hotel and choose your hours (3–24h).`,
+        "wfrlee-step2": `<span class="text-white font-semibold">Book hourly</span> — pay per hour, no full-night charge.`,
+        "wfrlee-step3": `<span class="text-white font-semibold">Stay &amp; go</span> — check in instantly, check out on your time.`,
+        "wfrlee-badge": "Currently available in Saudi Arabia",
+        "oneegate-tagline": "One gateway for the enterprise.",
+        "oneegate-desc": "Managing enterprise-level central gateways, institutional access systems, and secure infrastructure tools.",
+        "oneegate-c1": "Central enterprise gateways",
+        "oneegate-c2": "Institutional access systems",
+        "oneegate-c3": "Secure infrastructure tools",
+        "oneegate-visit": "Visit oneegate.com",
+        "oneegate-label": "Enterprise Gateway",
+        "oneegate-idea": "The idea: institutions shouldn't juggle a dozen logins and systems. OneEGate is a single, secure front door for enterprise access, teams, and infrastructure.",
+        "oneegate-step1": `<span class="text-white font-semibold">Centralize</span> — one secure gateway for all institutional systems.`,
+        "oneegate-step2": `<span class="text-white font-semibold">Control access</span> — define who reaches what, policy-driven.`,
+        "oneegate-step3": `<span class="text-white font-semibold">Operate securely</span> — infrastructure protected at the core.`,
+        "sabaah-tagline": "Coffee, ordered on the go.",
+        "sabaah-desc": "Order your coffee from anywhere — browse nearby cafés, skip the queue, and have your brew ready the moment you arrive.",
+        "sabaah-c1": "Order ahead from nearby cafés",
+        "sabaah-c2": "Skip the queue with fast pickup",
+        "sabaah-c3": "Streamlined mobile ordering pipeline",
+        "sabaah-visit": "Visit sabaah.net",
+        "sabaah-label": "On-the-Go Coffee",
+        "sabaah-idea": "The idea: instead of queuing at a café, order before you're even there. Sabaah connects you to nearby cafés and has your drink ready on arrival.",
+        "sabaah-step1": `<span class="text-white font-semibold">Discover</span> — browse cafés near you and pick a drink.`,
+        "sabaah-step2": `<span class="text-white font-semibold">Order ahead</span> — pay in app and the café starts your brew.`,
+        "sabaah-step3": `<span class="text-white font-semibold">Skip the queue</span> — walk in and grab your ready cup.`,
+        "pillars-kicker": "Core Pillars",
+        "pillars-title": "What we stand on.",
+        "pillars-1-title": "Scalability",
+        "pillars-1-desc": "Architectures engineered to grow from first user to full regional scale without breaking stride.",
+        "pillars-2-title": "Unified Integration",
+        "pillars-2-desc": "Platforms that connect cleanly — shared data, shared standards, and one cohesive ecosystem experience.",
+        "pillars-3-title": "Enterprise Security",
+        "pillars-3-desc": "Institutional-grade protection embedded at the core of every gateway and access system we operate.",
+        "contact-kicker": "Contact Us",
+        "contact-title": `Let's build <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">together.</span>`,
+        "contact-desc": "Whether you're a partner, a business exploring our platforms, or a team looking to grow under the Techit umbrella — we'd love to hear from you.",
+        "contact-email-label": "Email",
+        "form-name": "Name",
+        "form-email": "Email",
+        "form-message": "Message",
+        "form-submit": "Send Message",
+        "form-name-ph": "Your name",
+        "form-email-ph": "you@company.com",
+        "form-message-ph": "How can we help?",
+        "footer-tagline": "Holding the platforms powering regional digital ecosystems.",
+        "footer-company": "Company",
+        "footer-platforms": "Platforms",
+        "footer-contact": "Contact",
+        "footer-rights": `© <span id="year"></span> Techit LLC. All rights reserved.`,
+      },
+
+      ar: {
+        "meta-title": "تيكيت LLC — نقود النظم الرقمية للجيل القادم",
+        "meta-desc": "تيكيت هي الشركة القابضة الداعمة لأبرز المنصات الإقليمية في التجارة الإلكترونية وتحسين الأعمال وبوابات المؤسسات.",
+        "nav-about": "عن الشركة",
+        "nav-platforms": "المنصات",
+        "nav-pillars": "الركائز",
+        "nav-contact": "تواصل معنا",
+        "hero-badge": "شركة قابضة · منصات رقمية إقليمية",
+        "hero-title": `نقود <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">الجيل القادم</span><br class="hidden sm:block" /> من النظم الرقمية.`,
+        "hero-paragraph": "تيكيت هي الشركة القابضة التي تقف خلف أبرز المنصات الإقليمية في التجارة الإلكترونية وتحسين الأعمال وبوابات المؤسسات.",
+        "hero-cta": "استكشف المنظومة",
+        "about-kicker": "نبذة عامة",
+        "about-title": `شركة واحدة،<br />منصات متعددة،<br /><span class="text-white/50">هدف موحّد.</span>`,
+        "about-p1": "تيكيت هي مؤسسة احتضان تقني وشركة قابضة ملتزمة بالموثوقية التشغيلية والنمو المستدام للمنصات. نبتكر ونموّل ونوسّع منتجات رقمية متخصصة تنقل قيمة حقيقية في المنطقة.",
+        "about-p2": "من طلب القهوة أثناء التنقّل إلى حجز الفنادق بالساعة وبوابات المؤسسات الآمنة، تعمل كل شركة تابعة بتركيزها الخاص — مع مشاركة البنية التحتية والحوكمة والرؤية طويلة الأجل لمظلة تيكيت.",
+        "wfrlee-name": "Wfrlee.com",
+        "wfrlee-tagline": "فنادق تُحجز بالساعة.",
+        "wfrlee-desc": "احجز إقامات قصيرة بأسعار مرنة بالساعة. ادفع فقط مقابل الوقت الذي تستخدمه — دون الحاجة لدفع قيمة ليلة كاملة.",
+        "wfrlee-c1": "حجز مرن بأسعار الساعة",
+        "wfrlee-c2": "تسعير الدفع حسب الإقامة",
+        "wfrlee-c3": "جدولة فورية للإقامات القصيرة",
+        "wfrlee-visit": "زيارة wfrlee.com",
+        "wfrlee-label": "حجز الفنادق بالساعة",
+        "wfrlee-idea": "الفكرة: نادرًا ما تحتاج ليلة كاملة. يتيح لك وفرلي حجز غرفة فندقية للساعات التي تحتاجها بالضبط والدفع فقط لتلك الساعات — لا ليوم كامل.",
+        "wfrlee-step1": `<span class="text-white font-semibold">ابحث</span> — اعثر على فندق واختر ساعاتك (3–24 ساعة).`,
+        "wfrlee-step2": `<span class="text-white font-semibold">احجز بالساعة</span> — ادفع لكل ساعة دون رسوم الليلة الكاملة.`,
+        "wfrlee-step3": `<span class="text-white font-semibold">تقم وانطلق</span> — تسجيل دخول فوري ومغادرة في وقتك.`,
+        "wfrlee-badge": "متاح حاليًا في المملكة العربية السعودية",
+        "oneegate-tagline": "بوابة واحدة للمؤسسة.",
+        "oneegate-desc": "إدارة بوابات مركزية على مستوى المؤسسات، وأنظمة وصول مؤسسية، وأدوات بنية تحتية آمنة.",
+        "oneegate-c1": "بوابات مركزيّة للمؤسسات",
+        "oneegate-c2": "أنظمة وصول مؤسسية",
+        "oneegate-c3": "أدوات بنية تحتية آمنة",
+        "oneegate-visit": "زيارة oneegate.com",
+        "oneegate-label": "بوابة المؤسسات",
+        "oneegate-idea": "الفكرة: لا ينبغي أن تتخبّط المؤسسات بين عشرات الأنظمة وتسجيلات الدخول. ون إيغيت هي بوابة واحدة آمنة للوصول المؤسسي والفرق والبنية التحتية.",
+        "oneegate-step1": `<span class="text-white font-semibold">وحّد</span> — بوابة آمنة واحدة لجميع الأنظمة المؤسسية.`,
+        "oneegate-step2": `<span class="text-white font-semibold">تحكّم في الوصول</span> — حدّد من يصل إلى ماذا وفق السياسات.`,
+        "oneegate-step3": `<span class="text-white font-semibold">شغّل بأمان</span> — بنية تحتية محمية من الجوهر.`,
+        "sabaah-tagline": "قهوة تُطلب أثناء التنقّل.",
+        "sabaah-desc": "اطلب قهوتك من أي مكان — تصفّح المقاهي القريبة، وتجاوز الطوابير، واجد مشروبك جاهزًا فور وصولك.",
+        "sabaah-c1": "اطلب مسبقًا من المقاهي القريبة",
+        "sabaah-c2": "تجاوز الطابور مع استلام سريع",
+        "sabaah-c3": "مسار طلب جوال مبسّط",
+        "sabaah-visit": "زيارة sabaah.net",
+        "sabaah-label": "قهوة أثناء التنقّل",
+        "sabaah-idea": "الفكرة: بدلًا من الانتظار في المقهى، اطلب قبل وصولك. يوصلك صباح بالمقاهي القريبة ويجهّز مشروبك عند وصولك.",
+        "sabaah-step1": `<span class="text-white font-semibold">اكتشف</span> — تصفّح المقاهي القريبة واختر مشروبك.`,
+        "sabaah-step2": `<span class="text-white font-semibold">اطلب مسبقًا</span> — ادفع من التطبيق ليبدأ المقهى بتحضير مشروبك.`,
+        "sabaah-step3": `<span class="text-white font-semibold">تجاوز الطابور</span> — ادخل وخذ كوبك الجاهز.`,
+        "pillars-kicker": "الركائز الأساسية",
+        "pillars-title": "ما الذي نرتكز عليه.",
+        "pillars-1-title": "قابلية التوسّع",
+        "pillars-1-desc": "أبنية هندسية مصممة لتنمو من المستخدم الأول إلى النطاق الإقليمي الكامل دون كسر الخطوة.",
+        "pillars-2-title": "تكامل موحّد",
+        "pillars-2-desc": "منصات تتصل بسلاسة — بيانات مشتركة ومعايير موحدة وتجربة منظومة متكاملة واحدة.",
+        "pillars-3-title": "أمن المؤسسات",
+        "pillars-3-desc": "حماية بمستوى المؤسسات مدمجة في صميم كل بوابة ونظام وصول نديره.",
+        "contact-kicker": "تواصل معنا",
+        "contact-title": `لنبنِ <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">معًا.</span>`,
+        "contact-desc": "سواء كنت شريكًا، أو نشاطًا تجاريًا يستكشف منصاتنا، أو فريقًا يتطلع للنمو تحت مظلة تيكيت — يسعدنا أن نسمع منك.",
+        "contact-email-label": "البريد الإلكتروني",
+        "form-name": "الاسم",
+        "form-email": "البريد الإلكتروني",
+        "form-message": "الرسالة",
+        "form-submit": "إرسال الرسالة",
+        "form-name-ph": "اسمك",
+        "form-email-ph": "بريدك@p.com",
+        "form-message-ph": "كيف يمكننا مساعدتك؟",
+        "footer-tagline": "نحمل المنصات التي تقوّي النظم الرقمية الإقليمية.",
+        "footer-company": "الشركة",
+        "footer-platforms": "المنصات",
+        "footer-contact": "التواصل",
+        "footer-rights": `© <span id="year"></span> تيكيت. جميع الحقوق محفوظة.`,
+      },
+    };
+
+    let currentLang = 'en';
+    try { currentLang = localStorage.getItem('techit-lang') || 'en'; } catch (e) {}
+
+    function applyLang(lang) {
+      const dict = I18N[lang] || I18N.en;
+      const isAr = lang === 'ar';
+      document.documentElement.lang = isAr ? 'ar' : 'en';
+      document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+      document.body.classList.toggle('lang-ar', isAr);
+      document.title = dict['meta-title'];
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', dict['meta-desc']);
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.innerHTML = dict[key];
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        if (dict[key]) el.innerHTML = dict[key];
+      });
+      document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        const key = el.getAttribute('data-i18n-ph');
+        if (dict[key]) el.placeholder = dict[key];
+      });
+      const btn = document.getElementById('lang-toggle');
+      if (btn) btn.textContent = isAr ? 'EN' : 'عربي';
+      const yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+      if (window.ScrollTrigger) ScrollTrigger.refresh();
+    }
+
+    const langToggle = document.getElementById('lang-toggle');
+    if (langToggle) {
+      langToggle.addEventListener('click', () => {
+        currentLang = currentLang === 'ar' ? 'en' : 'ar';
+        try { localStorage.setItem('techit-lang', currentLang); } catch (e) {}
+        applyLang(currentLang);
+      });
+    }
+    applyLang(currentLang);
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -790,91 +1015,110 @@
 
       // Hero stays static — the main text never moves or animates.
 
-      // Section content fades in gently
+      // ============================================================
+      //  SCROLL-DRIVEN 3D REVEALS (perspective flips + rise)
+      // ============================================================
+      const noTransition = el => {
+        const prev = el.style.transition;
+        el.style.transition = 'none';
+        return () => { el.style.transition = prev || ''; };
+      };
+
+      // Content panels tilt in from their stored angle (data-3d-rx / data-3d-ry)
       document.querySelectorAll('[data-3d-reveal]').forEach(el => {
+        const restore = noTransition(el);
+        const rx = parseFloat(el.dataset['3dRx'] || '16');
+        const ry = parseFloat(el.dataset['3dRy'] || '0');
         gsap.fromTo(el,
-          { opacity: 0 },
+          { opacity: 0, transformPerspective: 1100, rotateX: rx, rotateY: ry, y: 44 },
           {
-            opacity: 1,
-            duration: 1,
-            ease: 'power2.out',
+            opacity: 1, rotateX: 0, rotateY: 0, y: 0,
+            duration: 1.1,
+            ease: 'power3.out',
+            onComplete: restore,
             scrollTrigger: { trigger: el, start: 'top 88%', once: true }
           }
         );
       });
 
-      // Platform cards fade + rise gently (no flip / tarot spin)
-      const platformCards = document.querySelectorAll('.tilt-card');
-      platformCards.forEach((card) => {
-        gsap.fromTo(card,
-          { opacity: 0, y: 26 },
+      // Platform header logos — 3D flip open on scroll
+      document.querySelectorAll('#platforms img.logo-hover').forEach(img => {
+        const restore = noTransition(img);
+        gsap.fromTo(img,
+          { opacity: 0, transformPerspective: 600, rotateY: 90, scale: 0.9 },
           {
-            opacity: 1, y: 0,
-            duration: 1,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: card, start: 'top 90%', once: true }
+            opacity: 1, rotateY: 0, scale: 1,
+            duration: 0.9,
+            ease: 'back.out(1.6)',
+            onComplete: restore,
+            scrollTrigger: { trigger: img, start: 'top 90%', once: true }
           }
         );
       });
 
-      // Numbered step rows fade in after their card settles
+      // Platform intro columns — content lifts in with a 3D stagger
+      document.querySelectorAll('#platforms [data-reveal]:not(.tilt-card)').forEach(col => {
+        gsap.fromTo(col.children,
+          { opacity: 0, transformPerspective: 1000, rotateX: 22, y: 30 },
+          {
+            opacity: 1, rotateX: 0, y: 0,
+            stagger: 0.09,
+            duration: 0.9,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: col, start: 'top 88%', once: true }
+          }
+        );
+      });
+
+      // Numbered step rows fade in (no tilt — numbers stay flat)
       document.querySelectorAll('.step-item').forEach(item => {
+        const restore = noTransition(item);
         const card = item.closest('.tilt-card');
         gsap.fromTo(item,
           { opacity: 0 },
           {
             opacity: 1,
-            duration: 0.8,
+            duration: 0.7,
             ease: 'power2.out',
-            delay: 0.15,
+            delay: 0.35,
+            onComplete: () => {
+              restore();
+              gsap.set(item, { clearProps: 'transform,opacity' });
+            },
             scrollTrigger: { trigger: card, start: 'top 60%', once: true }
           }
         );
       });
 
-      // Pillar cards fade with a light stagger
+      // Pillar cards — 3D flip stagger
       document.querySelectorAll('[data-stagger-parent]').forEach(parent => {
         const kids = parent.querySelectorAll('[data-3d-reveal-child]');
         gsap.fromTo(kids,
-          { opacity: 0 },
+          { opacity: 0, transformPerspective: 900, rotateX: 38, y: 26 },
           {
-            opacity: 1,
-            stagger: 0.12,
-            duration: 0.9,
-            ease: 'power2.out',
+            opacity: 1, rotateX: 0, y: 0,
+            stagger: 0.13,
+            duration: 0.95,
+            ease: 'power3.out',
             scrollTrigger: { trigger: parent, start: 'top 88%', once: true }
           }
         );
       });
 
-      // Feature lists fade in
+      // Feature lists — 3D rise stagger
       document.querySelectorAll('ul:has(.check-item)').forEach(ul => {
         const items = ul.querySelectorAll('.check-item');
         gsap.fromTo(items,
-          { opacity: 0 },
+          { opacity: 0, transformPerspective: 900, rotateX: 26, y: 16 },
           {
-            opacity: 1,
+            opacity: 1, rotateX: 0, y: 0,
             stagger: 0.1,
             duration: 0.8,
             ease: 'power2.out',
-            scrollTrigger: { trigger: ul, start: 'top 88%', once: true }
+            scrollTrigger: { trigger: ul, start: 'top 90%', once: true }
           }
         );
       });
-
-      // Contact form fades in
-      const contactFormEl = document.querySelector('#contact-form');
-      if (contactFormEl) {
-        gsap.fromTo(contactFormEl,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            duration: 1,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: contactFormEl, start: 'top 88%', once: true }
-          }
-        );
-      }
 
       // Gentle parallax on background glow layers for 3D depth
       gsap.utils.toArray('[data-depth]').forEach(el => {
@@ -943,7 +1187,7 @@
           const rx = (0.5 - y) * 7;
           const ry = (x - 0.5) * 9;
           card.style.transform =
-            `perspective(1200px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+            `perspective(1200px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
           if (inner) inner.style.transform = 'translateZ(40px)';
         });
         card.addEventListener('mouseleave', () => {
