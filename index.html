@@ -9,7 +9,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Tajawal:wght@400;500;700;800&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -29,8 +29,9 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-            display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+            sans: ['Space Grotesk', 'Tajawal', 'Inter', 'system-ui', 'sans-serif'],
+            display: ['Space Grotesk', 'Tajawal', 'Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
           },
           colors: {
             base: '#0b0f19',
@@ -53,10 +54,19 @@
     body {
       background: #0b0f19;
       color: #e7ecf5;
-      font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-family: 'Space Grotesk', 'Tajawal', 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+      letter-spacing: -0.01em;
       overflow-x: clip;
     }
     ::selection { background: rgba(245,158,11,0.35); color: #fff; }
+
+    /* ---- Mono label voice (matches the Nexus reference) ---- */
+    .text-xs.uppercase,
+    .text-[10px].uppercase,
+    .text-[9px].uppercase {
+      font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
+      letter-spacing: 0.18em;
+    }
 
     @media (prefers-reduced-motion: reduce) {
       [data-reveal] { transform: none !important; opacity: 1 !important; }
@@ -99,14 +109,24 @@
     /* Hide nav before scroll */
     .nav-hidden { transform: translateY(-100%) translateY(-1rem); opacity: 0; }
 
-    /* ---- Platform cards: fully static (no entrance / tilt / border animations) ---- */
+    /* ---- Platform cards: enhanced with dual-layer glow ---- */
     .tilt-card {
-      transition: box-shadow 0.4s ease;
+      transition: box-shadow 0.5s ease, border-color 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
     }
     .tilt-card:hover {
       box-shadow:
         0 25px 60px -12px rgba(0,0,0,0.5),
-        0 0 40px -10px var(--glow-color, rgba(255,255,255,0.05));
+        0 0 30px -10px var(--glow-color, rgba(255,255,255,0.06)),
+        0 0 80px -20px var(--glow-color, rgba(255,255,255,0.03));
+    }
+    .tilt-card:hover {
+      border-color: var(--glow-color, rgba(255,255,255,0.15));
+    }
+
+    /* ---- Scan-line on tilt-cards ---- */
+    .tilt-card.scan-overlay::after {
+      color: var(--glow-color, rgba(255,255,255,0.5));
     }
 
     /* ---- Glow color vars per platform ---- */
@@ -116,13 +136,15 @@
 
     /* ---- Pillar card hover ---- */
     .pillar-card {
-      transition: transform 0.45s cubic-bezier(0.03, 0.98, 0.52, 0.99),
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
                   box-shadow 0.45s ease,
                   border-color 0.45s ease;
     }
     .pillar-card:hover {
       transform: translateY(-8px) rotateX(2deg);
-      box-shadow: 0 20px 50px -15px rgba(0,0,0,0.4);
+      box-shadow: 0 20px 50px -15px rgba(0,0,0,0.4),
+                  0 0 30px -10px var(--glow-color, rgba(255,255,255,0.04)),
+                  0 0 60px -20px var(--glow-color, rgba(255,255,255,0.02));
     }
 
     /* ---- CTA button hover glow ---- */
@@ -246,6 +268,89 @@
         linear-gradient(115deg, #f59e0b, #10b981, #22d3ee) border-box;
     }
 
+    /* ---- Noise texture overlay (film-grain polish) ---- */
+    .noise-bg::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0.018;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ---- Subtle grid background ---- */
+    .grid-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+
+    /* ---- Scan-line sweep animation ---- */
+    .scan-overlay {
+      position: relative;
+      overflow: hidden;
+    }
+    .scan-overlay::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, currentColor, transparent);
+      opacity: 0.25;
+      animation: scan-line 4s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scan-line {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(100%); }
+    }
+
+    /* ---- Pulse glow utility ---- */
+    .pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* ---- Shimmer utility ---- */
+    .shimmer {
+      background-size: 200% 100%;
+      animation: shimmer 2.5s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* ---- Shimmering gradient text ---- */
+    .text-shimmer {
+      background-image: linear-gradient(110deg, #f59e0b 0%, #10b981 45%, #22d3ee 65%, #f59e0b 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shimmer 6s ease-in-out infinite;
+    }
+
+    /* ---- Glow pulse utility (box-shadow) ---- */
+    .glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 10px var(--glow-color, rgba(255,255,255,0.05)); }
+      50% { box-shadow: 0 0 30px var(--glow-color, rgba(255,255,255,0.12)), 0 0 80px var(--glow-color, rgba(255,255,255,0.04)); }
+    }
+
+    /* ---- Self-drawing SVG lines ---- */
+    .draw-svg {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+    }
+
     /* ---- Full-page 3D scroll progress bar ---- */
     #scroll-progress {
       position: fixed;
@@ -271,7 +376,9 @@
     @media (prefers-reduced-motion: reduce) {
       .tilt-card, .pillar-card, .cta-glow, .magnetic-link,
       .float-orb, .float-orb-delay, .float-orb-slow,
-      .logo-hover, .step-item {
+      .logo-hover, .step-item,
+      .pulse-glow, .shimmer, .text-shimmer, .glow-pulse,
+      .scan-overlay::after, .draw-svg {
         animation: none !important;
         transition: none !important;
         transform: none !important;
@@ -281,11 +388,12 @@
         transform: none !important;
       }
       #scroll-progress { display: none; }
+      .draw-svg { stroke-dashoffset: 0 !important; }
     }
   </style>
 </head>
 
-<body class="antialiased" id="top">
+<body class="antialiased noise-bg" id="top">
 
   <!-- Full-page 3D scroll progress bar -->
   <div id="scroll-progress"></div>
@@ -319,7 +427,7 @@
   </header>
 
   <!-- ================= HERO ================= -->
-  <section id="hero" class="relative min-h-screen flex items-center overflow-hidden glow-hero">
+  <section id="hero" class="relative min-h-screen flex items-center overflow-hidden glow-hero grid-bg">
     <!-- Floating orbs -->
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
       <div class="float-orb absolute top-[15%] left-[10%] h-64 w-64 rounded-full bg-amber-500/[0.04] blur-3xl"></div>
@@ -327,29 +435,42 @@
       <div class="float-orb float-orb-slow absolute bottom-[10%] left-[30%] h-72 w-72 rounded-full bg-emerald-500/[0.04] blur-3xl"></div>
     </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-28 pb-20 w-full">
-      <div class="max-w-4xl">
-        <span data-reveal class="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium tracking-wide text-white/70 mb-8">
-          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span data-i18n="hero-badge">Holding Enterprise · Regional Digital Platforms</span>
-        </span>
+<div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-28 pb-20 w-full">
+      <div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-14 lg:gap-8 items-center">
+        <div>
+          <span data-reveal class="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium tracking-wide text-white/70 mb-8 glow-pulse" style="--glow-color: rgba(16,185,129,0.15);">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span data-i18n="hero-badge">Holding Enterprise · Regional Digital Platforms</span>
+          </span>
 
-        <h1 data-reveal data-i18n-html="hero-title" class="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white">
-          Powering <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">Next-Generation</span><br class="hidden sm:block" />
-          Digital Ecosystems.
-        </h1>
+          <h1 data-reveal data-i18n-html="hero-title" class="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white">
+            Powering <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">Next-Generation</span><br class="hidden sm:block" />
+            Digital Ecosystems.
+          </h1>
 
-        <p data-reveal data-i18n="hero-paragraph" class="mt-7 max-w-2xl text-lg sm:text-xl text-white/60 leading-relaxed">
-          Techit LLC is the holding enterprise backing leading regional platforms in
-          e-commerce, business optimization, and enterprise gateways.
-        </p>
+          <p data-reveal data-i18n="hero-paragraph" class="mt-7 max-w-xl text-lg sm:text-xl text-white/60 leading-relaxed">
+            Techit LLC is the holding enterprise backing leading regional platforms in
+            e-commerce, business optimization, and enterprise gateways.
+          </p>
 
-        <div data-reveal class="mt-10">
-          <a href="#platforms"
-             class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-base transition-all shadow-lg shadow-white/10">
-            <span data-i18n="hero-cta">Explore the Ecosystem</span>
-            <i data-lucide="arrow-down" class="w-4 h-4"></i>
-          </a>
+          <div data-reveal class="mt-10 flex flex-wrap items-center gap-5">
+            <a href="#platforms"
+               class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-base transition-all shadow-lg shadow-white/10">
+              <span data-i18n="hero-cta">Explore the Ecosystem</span>
+              <i data-lucide="arrow-down" class="w-4 h-4"></i>
+            </a>
+            <a href="#about"
+               class="group inline-flex items-center gap-2.5 rounded-2xl glass px-7 py-3.5 font-semibold text-base text-white/80 hover:bg-white/10 hover:text-white transition-all">
+              Why Techit
+              <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Planet hologram -->
+        <div id="hologram-wrap" class="relative order-first lg:order-none flex items-center justify-center py-10 lg:py-0" data-reveal>
+          <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(420px circle at 50% 50%, rgba(16,185,129,0.10), transparent 70%);"></div>
+          <canvas id="hologram" class="relative w-full max-w-[520px] h-auto" aria-hidden="true"></canvas>
         </div>
       </div>
     </div>
@@ -360,7 +481,7 @@
   </section>
 
   <!-- ================= ABOUT ================= -->
-  <section id="about" class="relative py-24 lg:py-32 overflow-hidden">
+  <section id="about" class="relative py-24 lg:py-32 overflow-hidden grid-bg">
     <div data-depth="0.3" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(560px circle at 88% 18%, rgba(34,211,238,0.07), transparent 65%);"></div>
     <div data-depth="0.18" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(500px circle at 8% 82%, rgba(245,158,11,0.06), transparent 65%);"></div>
     <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-14 lg:gap-24 items-center">
@@ -369,6 +490,22 @@
         <h2 data-3d-reveal data-3d-ry="-8deg" data-3d-rx="3deg" data-i18n-html="about-title" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
           One holding,<br />many platforms,<br /><span class="text-white/50">unified purpose.</span>
         </h2>
+
+        <!-- Animated stat counters -->
+        <div class="mt-10 grid grid-cols-3 gap-4 max-w-md">
+          <div data-3d-reveal data-3d-ry="-6deg" data-3d-rx="2deg" class="glass rounded-2xl p-4 text-center">
+            <span class="font-display font-extrabold text-3xl text-white"><span data-count-to="3">0</span></span>
+            <p class="mt-1 text-xs text-white/50 uppercase tracking-wide">Platforms</p>
+          </div>
+          <div data-3d-reveal data-3d-ry="-6deg" data-3d-rx="2deg" class="glass rounded-2xl p-4 text-center">
+            <span class="font-display font-extrabold text-3xl text-white"><span data-count-to="1">0</span></span>
+            <p class="mt-1 text-xs text-white/50 uppercase tracking-wide">Holding Co.</p>
+          </div>
+          <div data-3d-reveal data-3d-ry="-6deg" data-3d-rx="2deg" class="glass rounded-2xl p-4 text-center">
+            <span class="font-display font-extrabold text-3xl"><span data-count-to="100">0</span>%</span>
+            <p class="mt-1 text-xs text-white/50 uppercase tracking-wide">In-house</p>
+          </div>
+        </div>
       </div>
 
       <div class="space-y-6 text-white/65 leading-relaxed text-lg">
@@ -420,7 +557,7 @@
           </a>
         </div>
 
-        <div data-reveal class="tilt-card glow-wfrlee-card card-border-glow glass rounded-3xl p-10 border-t-2 border-emerald-400/50 lg:order-1" style="--border-glow: rgba(16,185,129,0.4);">
+        <div data-reveal class="tilt-card glow-wfrlee-card card-border-glow glass rounded-3xl p-10 border-t-2 border-emerald-400/50 lg:order-1 scan-overlay" style="--border-glow: rgba(16,185,129,0.4);">
           <div class="tilt-inner">
             <div class="flex items-center gap-3 text-emerald-400">
               <i data-lucide="clock" class="w-5 h-5"></i>
@@ -484,7 +621,7 @@
           </a>
         </div>
 
-        <div data-reveal class="tilt-card glow-onegate-card card-border-glow glass rounded-3xl p-10 border-t-2 border-cyan-400/50" style="--border-glow: rgba(34,211,238,0.4);">
+        <div data-reveal class="tilt-card glow-onegate-card card-border-glow glass rounded-3xl p-10 border-t-2 border-cyan-400/50 scan-overlay" style="--border-glow: rgba(34,211,238,0.4);">
           <div class="tilt-inner">
             <div class="flex items-center gap-3 text-cyan-400">
               <i data-lucide="shield" class="w-5 h-5"></i>
@@ -545,7 +682,7 @@
           </a>
         </div>
 
-        <div data-reveal class="tilt-card glow-sabaah-card card-border-glow glass rounded-3xl p-10 border-t-2 border-amber-400/50" style="--border-glow: rgba(245,158,11,0.4);">
+        <div data-reveal class="tilt-card glow-sabaah-card card-border-glow glass rounded-3xl p-10 border-t-2 border-amber-400/50 scan-overlay" style="--border-glow: rgba(245,158,11,0.4);">
           <div class="tilt-inner">
             <div class="flex items-center gap-3 text-amber-400">
               <i data-lucide="coffee" class="w-5 h-5"></i>
@@ -576,9 +713,23 @@
   </section>
 
   <!-- ================= PILLARS ================= -->
-  <section id="pillars" class="relative py-24 lg:py-32 overflow-hidden">
+  <section id="pillars" class="relative py-24 lg:py-32 overflow-hidden grid-bg">
     <div data-depth="0.3" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(560px circle at 24% 18%, rgba(16,185,129,0.07), transparent 65%);"></div>
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+
+    <!-- Decorative self-drawing SVG -->
+    <svg class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-[0.04]" viewBox="0 0 1200 600" fill="none" aria-hidden="true">
+      <path data-draw class="draw-svg" d="M0,300 Q300,100 600,300 T1200,300" stroke="url(#svg-grad)" stroke-width="1" fill="none" />
+      <path data-draw class="draw-svg" d="M0,320 Q300,520 600,320 T1200,320" stroke="url(#svg-grad)" stroke-width="0.5" fill="none" />
+      <defs>
+        <linearGradient id="svg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#f59e0b" />
+          <stop offset="50%" stop-color="#10b981" />
+          <stop offset="100%" stop-color="#22d3ee" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
       <div class="max-w-2xl">
         <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="3deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="pillars-kicker">Core Pillars</span>
         <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="4deg" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-i18n="pillars-title">
@@ -631,7 +782,7 @@
         <div>
           <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="2deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="contact-kicker">Contact Us</span>
           <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="3deg" data-i18n-html="contact-title" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
-            Let's build <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">together.</span>
+Let's build <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">together.</span>
           </h2>
           <p data-3d-reveal data-3d-ry="-4deg" data-3d-rx="2deg" class="mt-5 text-white/60 text-lg leading-relaxed max-w-md" data-i18n="contact-desc">
             Whether you're a partner, a business exploring our platforms, or a team
@@ -761,7 +912,7 @@
         "nav-pillars": "Pillars",
         "nav-contact": "Contact",
         "hero-badge": "Holding Enterprise · Regional Digital Platforms",
-        "hero-title": `Powering <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">Next-Generation</span><br class="hidden sm:block" />Digital Ecosystems.`,
+        "hero-title": `Powering <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">Next-Generation</span><br class="hidden sm:block" />Digital Ecosystems.`,
         "hero-paragraph": "Techit LLC is the holding enterprise backing leading regional platforms in e-commerce, business optimization, and enterprise gateways.",
         "hero-cta": "Explore the Ecosystem",
         "about-kicker": "Company Overview",
@@ -812,7 +963,7 @@
         "pillars-3-title": "Enterprise Security",
         "pillars-3-desc": "Institutional-grade protection embedded at the core of every gateway and access system we operate.",
         "contact-kicker": "Contact Us",
-        "contact-title": `Let's build <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">together.</span>`,
+        "contact-title": `Let's build <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">together.</span>`,
         "contact-desc": "Whether you're a partner, a business exploring our platforms, or a team looking to grow under the Techit umbrella — we'd love to hear from you.",
         "contact-email-label": "Email",
         "form-name": "Name",
@@ -837,7 +988,7 @@
         "nav-pillars": "الركائز",
         "nav-contact": "تواصل معنا",
         "hero-badge": "شركة قابضة · منصات رقمية إقليمية",
-        "hero-title": `نقود <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">الجيل القادم</span><br class="hidden sm:block" /> من النظم الرقمية.`,
+        "hero-title": `نقود <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">الجيل القادم</span><br class="hidden sm:block" /> من النظم الرقمية.`,
         "hero-paragraph": "تيكيت هي الشركة القابضة التي تقف خلف أبرز المنصات الإقليمية في التجارة الإلكترونية وتحسين الأعمال وبوابات المؤسسات.",
         "hero-cta": "استكشف المنظومة",
         "about-kicker": "نبذة عامة",
@@ -888,7 +1039,7 @@
         "pillars-3-title": "أمن المؤسسات",
         "pillars-3-desc": "حماية بمستوى المؤسسات مدمجة في صميم كل بوابة ونظام وصول نديره.",
         "contact-kicker": "تواصل معنا",
-        "contact-title": `لنبنِ <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">معًا.</span>`,
+        "contact-title": `لنبنِ <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">معًا.</span>`,
         "contact-desc": "سواء كنت شريكًا، أو نشاطًا تجاريًا يستكشف منصاتنا، أو فريقًا يتطلع للنمو تحت مظلة تيكيت — يسعدنا أن نسمع منك.",
         "contact-email-label": "البريد الإلكتروني",
         "form-name": "الاسم",
@@ -991,7 +1142,7 @@
       gsap.registerPlugin(ScrollTrigger);
 
       // Soft fade-in: single trigger per element, fires once, freed immediately.
-      // (Hero text stays static; tilt-cards get their own fade below.)
+      // (Hero uses its own staggered entrance; tilt-cards get their own fade below.)
       gsap.utils.toArray('[data-reveal]').forEach(el => {
         if (el.closest('#hero')) return;
         if (el.classList.contains('tilt-card')) return;
@@ -1005,6 +1156,30 @@
           }
         );
       });
+
+      // ---------------------------------------------------------
+      //  HERO ENTRANCE — staggered reveal with spring feel
+      // ---------------------------------------------------------
+      const heroReveal = (selector, y, delay) => {
+        gsap.fromTo(selector,
+          { y, opacity: 0, transformPerspective: 800, rotateX: 4 },
+          { y: 0, opacity: 1, rotateX: 0, duration: 1, ease: 'power3.out', delay }
+        );
+      };
+      heroReveal('#hero span[data-reveal]', 20, 0.1);
+      heroReveal('#hero h1[data-reveal]', 40, 0.3);
+      heroReveal('#hero p[data-reveal]', 30, 0.55);
+      heroReveal('#hero .mt-10', 35, 0.8);
+      gsap.fromTo('#hologram-wrap',
+        { y: 30, opacity: 0, transformPerspective: 800, rotateX: 4 },
+        { y: 0, opacity: 1, rotateX: 0, duration: 1, ease: 'power3.out', delay: 0.9, clearProps: 'transform' }
+      );
+
+      // Scroll-cue fades in after hero loads
+      gsap.fromTo('.scroll-cue',
+        { opacity: 0, y: -10 },
+        { opacity: 1, y: 0, duration: 0.8, delay: 1.5, ease: 'power2.out' }
+      );
     }
 
     // ============================================================
@@ -1013,7 +1188,7 @@
     if (!prefersReduced && window.gsap) {
       gsap.registerPlugin(ScrollTrigger);
 
-      // Hero stays static — the main text never moves or animates.
+      // Hero entrance handled above; this block handles scroll-driven reveals
 
       // ============================================================
       //  SCROLL-DRIVEN 3D REVEALS (perspective flips + rise)
@@ -1144,6 +1319,46 @@
           scrollTrigger: { start: 0, end: 'max', scrub: 0.3 }
         }
       );
+
+      // ---------------------------------------------------------
+      //  SELF-DRAWING SVG LINES
+      // ---------------------------------------------------------
+      document.querySelectorAll('.draw-svg').forEach(path => {
+        const len = path.getTotalLength ? path.getTotalLength() : 1000;
+        path.style.strokeDasharray = len;
+        path.style.strokeDashoffset = len;
+        gsap.to(path, {
+          strokeDashoffset: 0,
+          duration: 2.5,
+          ease: 'power2.inOut',
+          scrollTrigger: { trigger: path.closest('section'), start: 'top 80%', once: true }
+        });
+      });
+
+      // ---------------------------------------------------------
+      //  ANIMATED COUNTER NUMBERS
+      // ---------------------------------------------------------
+      document.querySelectorAll('[data-count-to]').forEach(el => {
+        const target = parseFloat(el.dataset.countTo);
+        const isFloat = target % 1 !== 0;
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 90%',
+          once: true,
+          onEnter: () => {
+            const start = performance.now();
+            const duration = 2000;
+            function tick(now) {
+              const p = Math.min((now - start) / duration, 1);
+              const eased = 1 - Math.pow(1 - p, 4);
+              const val = eased * target;
+              el.textContent = isFloat ? val.toFixed(1) : Math.floor(val);
+              if (p < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+          }
+        });
+      });
     }
 
     // ============================================================
@@ -1197,6 +1412,221 @@
         });
       });
     }
+  </script>
+
+  <script>
+    // ============================================================
+    //  PLANET HOLOGRAM — canvas 3D globe (no WebGL needed)
+    //  wireframe graticule + particle cloud + radar ring + orbits
+    // ============================================================
+    (function hologramGlobe() {
+      const canvas = document.getElementById('hologram');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // ---- Fibonacci-sphere particle cloud (as in the Nexus reference) ----
+      const FIB = 600;
+      const golden = Math.PI * (3 - Math.sqrt(5));
+      const particles = [];
+      for (let i = 0; i < FIB; i++) {
+        const y = 1 - (i / (FIB - 1)) * 2;
+        const r = Math.sqrt(Math.max(0, 1 - y * y));
+        const t = golden * i;
+        const spread = 1 + (i % 3) / 3 * 0.26;
+        particles.push([Math.cos(t) * r * spread, y * spread, Math.sin(t) * r * spread]);
+      }
+
+      // ---- Wireframe graticule (parallels + meridians) ----
+      const LON = 22, LAT = 12;
+      const parallels = [];
+      for (let iv = 1; iv < LAT; iv++) {
+        const phi = (iv / LAT) * Math.PI - Math.PI / 2;
+        const line = [];
+        for (let iu = 0; iu <= LON; iu++) {
+          const th = (iu / LON) * Math.PI * 2;
+          line.push([Math.cos(phi) * Math.cos(th), Math.sin(phi), Math.cos(phi) * Math.sin(th)]);
+        }
+        parallels.push(line);
+      }
+      const meridians = [];
+      for (let iu = 0; iu < LON; iu++) {
+        const th = (iu / LON) * Math.PI * 2;
+        const line = [];
+        for (let v = 0; v <= LAT; v++) {
+          const phi = (v / LAT) * Math.PI - Math.PI / 2;
+          line.push([Math.cos(phi) * Math.cos(th), Math.sin(phi), Math.cos(phi) * Math.sin(th)]);
+        }
+        meridians.push(line);
+      }
+
+      const palette = ['#34d399', '#10b981', '#6ee7b7', '#22d3ee', '#5eead4', '#0d9488'];
+
+      let size = 0, dpr = 1;
+      function resize() {
+        const parent = canvas.parentElement;
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        size = Math.max(240, Math.min(parent.clientWidth, 560));
+        canvas.width = Math.round(size * dpr);
+        canvas.height = Math.round(size * dpr);
+        canvas.style.width = size + 'px';
+        canvas.style.height = size + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ---- mouse parallax ----
+      let mx = 0, my = 0;
+      const wrap = document.getElementById('hologram-wrap');
+      if (wrap) {
+        wrap.addEventListener('pointermove', e => {
+          const r = wrap.getBoundingClientRect();
+          mx = e.clientX / r.width - 0.5;
+          my = e.clientY / r.height - 0.5;
+        });
+        wrap.addEventListener('pointerleave', () => { mx = 0; my = 0; });
+      }
+
+      function frame(now) {
+        const w = size, h = size;
+        ctx.clearRect(0, 0, w, h);
+        const cx = w / 2, cy = h / 2;
+        const R = w * 0.37;
+
+        const rotY = (reduced ? 0 : now * 0.00016) + mx * 0.7;
+        const rotX = (reduced ? -0.3 : Math.sin(now * 0.00022) * 0.10) - my * 0.55;
+        const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+        const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+
+        const P = 2.2;
+        const transform = (px, py, pz) => {
+          let x = px * cosY + pz * sinY;
+          let z = -px * sinY + pz * cosY;
+          let y = py * cosX - z * sinX;
+          z = py * sinX + z * cosX;
+          const s = P / (P - z);
+          return { x: cx + x * R * s, y: cy + y * R * s, z, s };
+        };
+
+        // ---- atmospheric glow ----
+        const glow = ctx.createRadialGradient(cx, cy, R * 0.15, cx, cy, R * 1.3);
+        glow.addColorStop(0, 'rgba(16,185,129,0.13)');
+        glow.addColorStop(0.55, 'rgba(16,185,129,0.05)');
+        glow.addColorStop(1, 'rgba(16,185,129,0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R * 1.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // ---- wireframe graticule (depth-shaded, smooth alpha) ----
+        const drawLine = pts => {
+          for (let k = 0; k < pts.length - 1; k++) {
+            const a = transform(pts[k][0], pts[k][1], pts[k][2]);
+            const b = transform(pts[k + 1][0], pts[k + 1][1], pts[k + 1][2]);
+            const depthA = (a.z + b.z) / 2;
+            const front = (depthA + 1) / 2;
+            ctx.strokeStyle = 'rgba(16,185,129,' + (0.14 + front * 0.5).toFixed(3) + ')';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        };
+        parallels.forEach(drawLine);
+        meridians.forEach(drawLine);
+
+        // ---- particle cloud (continuous alpha — no front/back pop) ----
+        const projPts = [];
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          projPts.push(Object.assign(transform(p[0], p[1], p[2]), { c: palette[i % palette.length] }));
+        }
+        projPts.sort((a, b) => a.z - b.z);
+        for (const q of projPts) {
+          const depthA = (q.z + 1) / 2;
+          ctx.globalAlpha = 0.16 + depthA * 0.55;
+          ctx.fillStyle = q.c;
+          ctx.beginPath();
+          ctx.arc(q.x, q.y, Math.max(0.3, (0.4 + depthA * 1.4) * q.s), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        // ---- radar sweep ring (great circle sweeping tilt, smooth alpha) ----
+        const tilt = (reduced ? 0.4 : Math.sin(now * 0.00032)) * 0.9;
+        const tC = Math.cos(tilt), tS = Math.sin(tilt);
+        let prev = null;
+        for (let k = 0; k <= 140; k++) {
+          const a = (k / 140) * Math.PI * 2;
+          const px = Math.cos(a), pz = Math.sin(a);
+          const y2 = -pz * tS, z2 = pz * tC;
+          const cur = transform(px, y2, z2);
+          if (prev) {
+            const front = ((prev.z + cur.z) / 2 + 1) / 2;
+            ctx.strokeStyle = 'rgba(34,211,238,' + (0.06 + front * 0.5).toFixed(3) + ')';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(prev.x, prev.y);
+            ctx.lineTo(cur.x, cur.y);
+            ctx.stroke();
+          }
+          prev = cur;
+        }
+
+        // ---- tilted orbit rings + satellites ----
+        const orbPoint = (scale, tiltDeg, angle) => {
+          const t = tiltDeg * Math.PI / 180;
+          const oC = Math.cos(t), oS = Math.sin(t);
+          const q = transform(Math.cos(angle) * scale, -Math.sin(angle) * scale * oS, Math.sin(angle) * scale * oC);
+          return { x: q.x, y: q.y, z: q.z };
+        };
+        const drawRing = (scale, tiltDeg, rotSpeed, phase, color, lw) => {
+          const rot = (reduced ? phase : now * rotSpeed + phase);
+          ctx.beginPath();
+          for (let k = 0; k <= 100; k++) {
+            const a = (k / 100) * Math.PI * 2;
+            const q = orbPoint(scale, tiltDeg, a + rot);
+            if (k === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+          }
+          ctx.closePath();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = lw;
+          ctx.stroke();
+          const d = orbPoint(scale, tiltDeg, rot + Math.PI / 2);
+          return d;
+        };
+        const d1 = drawRing(1.24, 26, 0.00025, 0.5, 'rgba(16,185,129,0.35)', 1.1);
+        const d2 = drawRing(1.42, -16, -0.0002, 1.1, 'rgba(34,211,238,0.25)', 1);
+
+        // satellite dots (with glow)
+        [[d1, '#10b981', 'rgba(16,185,129,0.35)'], [d2, '#22d3ee', 'rgba(34,211,238,0.3)']].forEach(([d, fill, halo]) => {
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, 9, 0, Math.PI * 2);
+          ctx.fillStyle = halo;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, 2.6, 0, Math.PI * 2);
+          ctx.fillStyle = fill;
+          ctx.fill();
+        });
+
+        // ---- rim light (subtle stylized edge highlight) ----
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, R, R, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        if (!reduced) requestAnimationFrame(frame);
+      }
+
+      if (reduced) frame(performance.now());
+      else requestAnimationFrame(frame);
+    })();
   </script>
 </body>
 </html>
