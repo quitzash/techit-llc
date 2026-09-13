@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>" dir="<%= lang === 'ar' ? 'rtl' : 'ltr' %>">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <meta name="description" content="<%= description %>" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Tajawal:wght@400;500;700;800&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind (compiled locally by `npm run build:css`) -->
+  <link rel="stylesheet" href="/css/tailwind.css" />
+
+  <!-- Custom styles (glass, glows, animations, reduced-motion overrides) -->
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <!-- GSAP + ScrollTrigger (served locally, no CDN) -->
+  <script src="/vendor/gsap/gsap.min.js"></script>
+  <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
+
+  <!-- Lenis smooth scroll -->
+  <script src="/vendor/lenis/lenis.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="/vendor/lucide/umd/lucide.min.js"></script>
+</head>
+
+<body class="antialiased noise-bg" id="top">
+
+  <!-- Full-page 3D scroll progress bar -->
+  <div id="scroll-progress"></div>
+
+  <!-- Fixed Glass Navigation -->
+  <header id="navbar" class="fixed inset-x-0 top-0 z-50 transition-all duration-500">
+    <nav class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="glass mt-4 rounded-2xl px-5 py-3 flex items-center justify-between bg-[rgba(17,23,38,0.85)]">
+        <!-- Branding -->
+        <a href="#top" class="flex items-center gap-2.5">
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/70 via-emerald-400/50 to-cyan-400/70 font-display font-extrabold text-base text-white">T</span>
+          <span class="font-display font-bold text-lg tracking-tight text-white">
+            Techit<span class="text-white/50 font-medium"> LLC</span>
+          </span>
+        </a>
+
+        <!-- Quick scroll anchors -->
+        <div class="hidden md:flex items-center gap-8 text-sm text-white/70">
+          <a href="#about" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-about">About</a>
+          <a href="#platforms" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-platforms">Platforms</a>
+          <a href="#pillars" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-pillars">Pillars</a>
+          <a href="#contact" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-contact">Contact</a>
+        </div>
+
+        <button id="lang-toggle" type="button" aria-label="Switch language"
+                class="glass rounded-xl px-3.5 py-2 text-sm font-bold text-white/85 hover:bg-white/15 hover:text-white transition-colors cursor-pointer select-none">
+          عربي
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section id="hero" class="relative min-h-screen flex items-center overflow-hidden glow-hero grid-bg">
+    <!-- Floating orbs -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+      <div class="float-orb absolute top-[15%] left-[10%] h-64 w-64 rounded-full bg-amber-500/[0.04] blur-3xl"></div>
+      <div class="float-orb float-orb-delay absolute top-[40%] right-[8%] h-80 w-80 rounded-full bg-cyan-500/[0.04] blur-3xl"></div>
+      <div class="float-orb float-orb-slow absolute bottom-[10%] left-[30%] h-72 w-72 rounded-full bg-emerald-500/[0.04] blur-3xl"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-28 pb-20 w-full">
+      <div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-14 lg:gap-8 items-center">
+        <div>
+          <span data-reveal class="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium tracking-wide text-white/70 mb-8 glow-pulse" style="--glow-color: rgba(16,185,129,0.15);">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span data-i18n="hero-badge">Holding Enterprise · Regional Digital Platforms</span>
+          </span>
+
+          <h1 data-reveal data-i18n-html="hero-title" class="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white">
+            Powering <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">Next-Generation</span><br class="hidden sm:block" />
+            Digital Ecosystems.
+          </h1>
+
+          <p data-reveal data-i18n="hero-paragraph" class="mt-7 max-w-xl text-lg sm:text-xl text-white/60 leading-relaxed">
+            Techit LLC is the holding enterprise backing leading regional platforms in
+            e-commerce, business optimization, and enterprise gateways.
+          </p>
+
+          <div data-reveal class="mt-10 flex flex-wrap items-center gap-5">
+            <a href="#platforms"
+               class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-base transition-all shadow-lg shadow-white/10">
+              <span data-i18n="hero-cta">Explore the Ecosystem</span>
+              <i data-lucide="arrow-down" class="w-4 h-4"></i>
+            </a>
+            <a href="#about"
+               class="group inline-flex items-center gap-2.5 rounded-2xl glass px-7 py-3.5 font-semibold text-base text-white/80 hover:bg-white/10 hover:text-white transition-all">
+              Why Techit
+              <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Planet hologram -->
+        <div id="hologram-wrap" class="relative order-first lg:order-none flex items-center justify-center py-10 lg:py-0" data-reveal>
+          <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(420px circle at 50% 50%, rgba(16,185,129,0.10), transparent 70%);"></div>
+          <canvas id="hologram" class="relative w-full max-w-[520px] h-auto" aria-hidden="true"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <a href="#platforms" class="scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/40 hover:text-white transition-colors">
+      <i data-lucide="chevrons-down" class="w-6 h-6"></i>
+    </a>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section id="about" class="relative py-24 lg:py-32 overflow-hidden grid-bg">
+    <div data-depth="0.3" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(560px circle at 88% 18%, rgba(34,211,238,0.07), transparent 65%);"></div>
+    <div data-depth="0.18" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(500px circle at 8% 82%, rgba(245,158,11,0.06), transparent 65%);"></div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-14 lg:gap-24 items-center">
+      <div>
+        <span data-3d-reveal data-3d-ry="-12deg" data-3d-rx="2deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="about-kicker">Company Overview</span>
+        <h2 data-3d-reveal data-3d-ry="-8deg" data-3d-rx="3deg" data-i18n-html="about-title" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
+          One holding,<br />many platforms,<br /><span class="text-white/50">unified purpose.</span>
+        </h2>
+
+        <!-- Animated stat counters -->
+        <div class="mt-10 grid grid-cols-3 gap-4 max-w-md">
+          <div data-3d-reveal data-3d-ry="-6deg" data-3d-rx="2deg" class="glass rounded-2xl p-4 text-center">
+            <span class="font-display font-extrabold text-3xl text-white"><span data-count-to="3">0</span></span>
+            <p class="mt-1 text-xs text-white/50 uppercase tracking-wide">Platforms</p>
+          </div>
+          <div data-3d-reveal data-3d-ry="-6deg" data-3d-rx="2deg" class="glass rounded-2xl p-4 text-center">
+            <span class="font-display font-extrabold text-3xl text-white"><span data-count-to="1">0</span></span>
+            <p class="mt-1 text-xs text-white/50 uppercase tracking-wide">Holding Co.</p>
+          </div>
+          <div data-3d-reveal data-3d-ry="-6deg" data-3d-rx="2deg" class="glass rounded-2xl p-4 text-center">
+            <span class="font-display font-extrabold text-3xl"><span data-count-to="100">0</span>%</span>
+            <p class="mt-1 text-xs text-white/50 uppercase tracking-wide">In-house</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6 text-white/65 leading-relaxed text-lg">
+        <p data-3d-reveal data-3d-ry="8deg" data-3d-rx="-2deg" data-i18n="about-p1">
+          Techit LLC is a technology incubation and holding enterprise committed to
+          operational reliability and sustained platform growth. We conceive, back, and
+          scale specialized digital products that move real value across the region.
+        </p>
+        <p data-3d-reveal data-3d-ry="8deg" data-3d-rx="-2deg" data-i18n="about-p2">
+          From on-the-go coffee ordering to hourly hotel booking and secure enterprise
+          gateways, each subsidiary operates with its own focus — while sharing
+          the infrastructure, governance, and long-term vision of the Techit umbrella.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PLATFORMS ================= -->
+  <section id="platforms" class="relative overflow-hidden">
+
+    <!-- Wfrlee -->
+    <div class="relative py-24 lg:py-32 overflow-hidden glow-wfrlee">
+      <div data-depth="0.4" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(620px circle at 78% 30%, rgba(16,185,129,0.12), transparent 65%);"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div data-reveal class="lg:order-2">
+          <div class="flex items-center gap-4">
+            <img src="https://wfrlee.com/logo192.png" alt="Wfrlee logo" width="64" height="64" loading="lazy" class="w-16 h-16 rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/40 p-2.5 object-contain logo-hover" onerror="this.style.display='none'" />
+            <div>
+              <h3 data-i18n="wfrlee-name" class="font-display font-extrabold text-3xl sm:text-4xl text-white">Wfrlee.com</h3>
+              <span class="text-emerald-400 text-sm font-semibold">wfrlee.com</span>
+            </div>
+          </div>
+          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug" data-i18n="wfrlee-tagline">
+            Hotels, booked by the hour.
+          </p>
+          <p class="mt-4 text-white/60 text-lg leading-relaxed" data-i18n="wfrlee-desc">
+            Book short stays with flexible hourly rates. Pay only for the time you
+            use — no need to pay for a full night.
+          </p>
+          <ul class="mt-8 space-y-3 text-white/70">
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span data-i18n="wfrlee-c1">Flexible hourly-rate booking</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span data-i18n="wfrlee-c2">Pay-as-you-stay pricing</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span data-i18n="wfrlee-c3">Instant short-stay scheduling</span></li>
+          </ul>
+          <a href="https://wfrlee.com" target="_blank" rel="noopener"
+             class="group mt-9 inline-flex items-center gap-2 text-emerald-400 font-semibold text-sm magnetic-link">
+            <span class="group-hover:tracking-wider transition-all" data-i18n="wfrlee-visit">Visit wfrlee.com</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+          </a>
+        </div>
+
+        <div data-reveal class="tilt-card glow-wfrlee-card card-border-glow glass rounded-3xl p-10 border-t-2 border-emerald-400/50 lg:order-1 scan-overlay" style="--border-glow: rgba(16,185,129,0.4);">
+          <div class="tilt-inner">
+            <div class="flex items-center gap-3 text-emerald-400">
+              <i data-lucide="clock" class="w-5 h-5"></i>
+              <span class="text-xs font-semibold uppercase tracking-widest" data-i18n="wfrlee-label">Hourly Hotel Booking</span>
+            </div>
+            <p class="mt-6 text-white/60 leading-relaxed" data-i18n="wfrlee-idea">
+              The idea: you rarely need a whole night. Wfrlee lets you book a hotel room
+              for the exact hours you need and pay only for those hours — not the full day.
+            </p>
+            <div class="mt-8 space-y-0 divide-y divide-white/5">
+              <div class="flex items-center gap-4 py-4 step-item">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-sm font-bold ring-1 ring-emerald-500/25">1</span>
+                <p class="text-sm text-white/70" data-i18n-html="wfrlee-step1"><span class="text-white font-semibold">Search</span> — find a hotel and choose your hours (3–24h).</p>
+              </div>
+              <div class="flex items-center gap-4 py-4 step-item">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-sm font-bold ring-1 ring-emerald-500/25">2</span>
+                <p class="text-sm text-white/70" data-i18n-html="wfrlee-step2"><span class="text-white font-semibold">Book hourly</span> — pay per hour, no full-night charge.</p>
+              </div>
+              <div class="flex items-center gap-4 py-4 step-item">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-sm font-bold ring-1 ring-emerald-500/25">3</span>
+                <p class="text-sm text-white/70" data-i18n-html="wfrlee-step3"><span class="text-white font-semibold">Stay &amp; go</span> — check in instantly, check out on your time.</p>
+              </div>
+            </div>
+            <p class="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/25 px-4 py-1.5 text-sm text-emerald-300 font-medium">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span data-i18n="wfrlee-badge">Currently available in Saudi Arabia</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OneEGate -->
+    <div class="relative py-24 lg:py-32 overflow-hidden glow-onegate">
+      <div data-depth="0.4" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(620px circle at 25% 35%, rgba(34,211,238,0.12), transparent 65%);"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div data-reveal>
+          <div class="flex items-center gap-4">
+            <img src="https://oneegate.com/logo192.png" alt="OneEGate logo" width="64" height="64" loading="lazy" class="w-16 h-16 rounded-2xl bg-cyan-500/10 ring-1 ring-cyan-500/40 p-2.5 object-contain logo-hover" onerror="this.style.display='none'" />
+            <div>
+              <h3 class="font-display font-extrabold text-3xl sm:text-4xl text-white">OneEGate</h3>
+              <span class="text-cyan-400 text-sm font-semibold">oneegate.com</span>
+            </div>
+          </div>
+          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug" data-i18n="oneegate-tagline">
+            One gateway for the enterprise.
+          </p>
+          <p class="mt-4 text-white/60 text-lg leading-relaxed" data-i18n="oneegate-desc">
+            Managing enterprise-level central gateways, institutional access systems,
+            and secure infrastructure tools.
+          </p>
+          <ul class="mt-8 space-y-3 text-white/70">
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i><span data-i18n="oneegate-c1">Central enterprise gateways</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i><span data-i18n="oneegate-c2">Institutional access systems</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i><span data-i18n="oneegate-c3">Secure infrastructure tools</span></li>
+          </ul>
+          <a href="https://oneegate.com" target="_blank" rel="noopener"
+             class="group mt-9 inline-flex items-center gap-2 text-cyan-400 font-semibold text-sm magnetic-link">
+            <span class="group-hover:tracking-wider transition-all" data-i18n="oneegate-visit">Visit oneegate.com</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+          </a>
+        </div>
+
+        <div data-reveal class="tilt-card glow-onegate-card card-border-glow glass rounded-3xl p-10 border-t-2 border-cyan-400/50 scan-overlay" style="--border-glow: rgba(34,211,238,0.4);">
+          <div class="tilt-inner">
+            <div class="flex items-center gap-3 text-cyan-400">
+              <i data-lucide="shield" class="w-5 h-5"></i>
+              <span class="text-xs font-semibold uppercase tracking-widest" data-i18n="oneegate-label">Enterprise Gateway</span>
+            </div>
+            <p class="mt-6 text-white/60 leading-relaxed" data-i18n="oneegate-idea">
+              The idea: institutions shouldn't juggle a dozen logins and systems.
+              OneEGate is a single, secure front door for enterprise access,
+              teams, and infrastructure.
+            </p>
+            <div class="mt-8 space-y-0 divide-y divide-white/5">
+              <div class="flex items-center gap-4 py-4 step-item">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 text-sm font-bold ring-1 ring-cyan-500/25">1</span>
+                <p class="text-sm text-white/70" data-i18n-html="oneegate-step1"><span class="text-white font-semibold">Centralize</span> — one secure gateway for all institutional systems.</p>
+              </div>
+              <div class="flex items-center gap-4 py-4 step-item">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 text-sm font-bold ring-1 ring-cyan-500/25">2</span>
+                <p class="text-sm text-white/70" data-i18n-html="oneegate-step2"><span class="text-white font-semibold">Control access</span> — define who reaches what, policy-driven.</p>
+              </div>
+              <div class="flex items-center gap-4 py-4 step-item">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 text-sm font-bold ring-1 ring-cyan-500/25">3</span>
+                <p class="text-sm text-white/70" data-i18n-html="oneegate-step3"><span class="text-white font-semibold">Operate securely</span> — infrastructure protected at the core.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sabaah -->
+    <div class="relative py-24 lg:py-32 overflow-hidden glow-sabaah">
+      <div data-depth="0.4" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(620px circle at 72% 40%, rgba(245,158,11,0.12), transparent 65%);"></div>
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div data-reveal>
+          <div class="flex items-center gap-4">
+            <img src="https://sabaah.net/favicon.svg" alt="Sabaah logo" width="64" height="64" loading="lazy" class="w-16 h-16 rounded-2xl bg-amber-500/10 ring-1 ring-amber-500/40 p-2.5 object-contain logo-hover" onerror="this.style.display='none'" />
+            <div>
+              <h3 class="font-display font-extrabold text-3xl sm:text-4xl text-white">Sabaah</h3>
+              <span class="text-amber-400 text-sm font-semibold">sabaah.net</span>
+            </div>
+          </div>
+          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug" data-i18n="sabaah-tagline">
+            Coffee, ordered on the go.
+          </p>
+          <p class="mt-4 text-white/60 text-lg leading-relaxed" data-i18n="sabaah-desc">
+            Order your coffee from anywhere — browse nearby cafés, skip the queue,
+            and have your brew ready the moment you arrive.
+          </p>
+          <ul class="mt-8 space-y-3 text-white/70">
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i><span data-i18n="sabaah-c1">Order ahead from nearby cafés</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i><span data-i18n="sabaah-c2">Skip the queue with fast pickup</span></li>
+            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i><span data-i18n="sabaah-c3">Streamlined mobile ordering pipeline</span></li>
+          </ul>
+          <a href="https://sabaah.net" target="_blank" rel="noopener"
+             class="group mt-9 inline-flex items-center gap-2 text-amber-400 font-semibold text-sm magnetic-link">
+            <span class="group-hover:tracking-wider transition-all" data-i18n="sabaah-visit">Visit sabaah.net</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+          </a>
+        </div>
+
+        <div data-reveal class="tilt-card glow-sabaah-card card-border-glow glass rounded-3xl p-10 border-t-2 border-amber-400/50 scan-overlay" style="--border-glow: rgba(245,158,11,0.4);">
+          <div class="tilt-inner">
+            <div class="flex items-center gap-3 text-amber-400">
+              <i data-lucide="coffee" class="w-5 h-5"></i>
+              <span class="text-xs font-semibold uppercase tracking-widest" data-i18n="sabaah-label">On-the-Go Coffee</span>
+            </div>
+            <p class="mt-6 text-white/60 leading-relaxed" data-i18n="sabaah-idea">
+              The idea: instead of queuing at a café, order before you're even there.
+              Sabaah connects you to nearby cafés and has your drink ready on arrival.
+            </p>
+            <div class="mt-8 space-y-0 divide-y divide-white/5">
+              <div class="flex items-center gap-4 py-4 step-item">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 text-sm font-bold ring-1 ring-amber-500/25">1</span>
+                <p class="text-sm text-white/70" data-i18n-html="sabaah-step1"><span class="text-white font-semibold">Discover</span> — browse cafés near you and pick a drink.</p>
+              </div>
+              <div class="flex items-center gap-4 py-4 step-item">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 text-sm font-bold ring-1 ring-amber-500/25">2</span>
+                <p class="text-sm text-white/70" data-i18n-html="sabaah-step2"><span class="text-white font-semibold">Order ahead</span> — pay in app and the café starts your brew.</p>
+              </div>
+              <div class="flex items-center gap-4 py-4 step-item">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 text-sm font-bold ring-1 ring-amber-500/25">3</span>
+                <p class="text-sm text-white/70" data-i18n-html="sabaah-step3"><span class="text-white font-semibold">Skip the queue</span> — walk in and grab your ready cup.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PILLARS ================= -->
+  <section id="pillars" class="relative py-24 lg:py-32 overflow-hidden grid-bg">
+    <div data-depth="0.3" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(560px circle at 24% 18%, rgba(16,185,129,0.07), transparent 65%);"></div>
+
+    <!-- Decorative self-drawing SVG -->
+    <svg class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-[0.04]" viewBox="0 0 1200 600" fill="none" aria-hidden="true">
+      <path data-draw class="draw-svg" d="M0,300 Q300,100 600,300 T1200,300" stroke="url(#svg-grad)" stroke-width="1" fill="none" />
+      <path data-draw class="draw-svg" d="M0,320 Q300,520 600,320 T1200,320" stroke="url(#svg-grad)" stroke-width="0.5" fill="none" />
+      <defs>
+        <linearGradient id="svg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#f59e0b" />
+          <stop offset="50%" stop-color="#10b981" />
+          <stop offset="100%" stop-color="#22d3ee" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+      <div class="max-w-2xl">
+        <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="3deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="pillars-kicker">Core Pillars</span>
+        <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="4deg" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-i18n="pillars-title">
+          What we stand on.
+        </h2>
+      </div>
+
+      <div data-stagger-parent class="mt-14 grid gap-6 md:grid-cols-3">
+        <div data-3d-reveal-child class="pillar-card glass rounded-3xl p-8 border-t-2 border-amber-400/60 cursor-default">
+          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/20 logo-hover">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+          </div>
+          <h3 class="mt-6 font-display font-bold text-xl text-white" data-i18n="pillars-1-title">Scalability</h3>
+          <p class="mt-3 text-white/60 leading-relaxed" data-i18n="pillars-1-desc">
+            Architectures engineered to grow from first user to full regional
+            scale without breaking stride.
+          </p>
+        </div>
+
+        <div data-3d-reveal-child class="pillar-card glass rounded-3xl p-8 border-t-2 border-emerald-400/60 cursor-default">
+          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20 logo-hover">
+            <i data-lucide="workflow" class="w-6 h-6"></i>
+          </div>
+          <h3 class="mt-6 font-display font-bold text-xl text-white" data-i18n="pillars-2-title">Unified Integration</h3>
+          <p class="mt-3 text-white/60 leading-relaxed" data-i18n="pillars-2-desc">
+            Platforms that connect cleanly — shared data, shared standards, and one
+            cohesive ecosystem experience.
+          </p>
+        </div>
+
+        <div data-3d-reveal-child class="pillar-card glass rounded-3xl p-8 border-t-2 border-cyan-400/60 cursor-default">
+          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/20 logo-hover">
+            <i data-lucide="lock" class="w-6 h-6"></i>
+          </div>
+          <h3 class="mt-6 font-display font-bold text-xl text-white" data-i18n="pillars-3-title">Enterprise Security</h3>
+          <p class="mt-3 text-white/60 leading-relaxed" data-i18n="pillars-3-desc">
+            Institutional-grade protection embedded at the core of every gateway
+            and access system we operate.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact" class="relative py-24 lg:py-32 overflow-hidden">
+    <div data-depth="0.35" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(600px circle at 85% 30%, rgba(245,158,11,0.07), transparent 65%);"></div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-14 lg:gap-20 items-start">
+        <div>
+          <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="2deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="contact-kicker">Contact Us</span>
+          <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="3deg" data-i18n-html="contact-title" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
+Let's build <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">together.</span>
+          </h2>
+          <p data-3d-reveal data-3d-ry="-4deg" data-3d-rx="2deg" class="mt-5 text-white/60 text-lg leading-relaxed max-w-md" data-i18n="contact-desc">
+            Whether you're a partner, a business exploring our platforms, or a team
+            looking to grow under the Techit umbrella — we'd love to hear from you.
+          </p>
+
+          <a data-3d-reveal data-3d-ry="-8deg" data-3d-rx="2deg" href="mailto:info@techit-llc.com" class="group mt-9 inline-flex items-center gap-3 glass rounded-2xl px-5 py-4 hover:bg-white/10 transition-colors magnetic-link">
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-white">
+              <i data-lucide="mail" class="w-5 h-5"></i>
+            </span>
+            <span>
+              <span class="block text-xs text-white/40 uppercase tracking-wide" data-i18n="contact-email-label">Email</span>
+              <span class="block text-white/90 font-medium">info@techit-llc.com</span>
+            </span>
+          </a>
+        </div>
+
+        <form data-3d-reveal data-3d-ry="10deg" data-3d-rx="-3deg" class="glass rounded-[2rem] p-8 lg:p-10 space-y-5 bg-[rgba(17,23,38,0.6)]" id="contact-form">
+          <div class="grid sm:grid-cols-2 gap-5">
+            <label class="block">
+              <span class="text-sm text-white/60" data-i18n="form-name">Name</span>
+              <input type="text" name="name" required placeholder="Your name" data-i18n-ph="form-name-ph"
+                     class="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 outline-none focus:border-amber-400/60 focus:bg-white/10 transition-colors" />
+            </label>
+            <label class="block">
+              <span class="text-sm text-white/60" data-i18n="form-email">Email</span>
+              <input type="email" name="email" required placeholder="you@company.com" data-i18n-ph="form-email-ph"
+                     class="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 outline-none focus:border-amber-400/60 focus:bg-white/10 transition-colors" />
+            </label>
+          </div>
+          <label class="block">
+            <span class="text-sm text-white/60" data-i18n="form-message">Message</span>
+            <textarea name="message" rows="4" required placeholder="How can we help?" data-i18n-ph="form-message-ph"
+                      class="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 outline-none focus:border-amber-400/60 focus:bg-white/10 transition-colors resize-none"></textarea>
+          </label>
+          <button type="submit"
+                  class="cta-glow w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 font-semibold text-base text-base transition-all">
+            <span data-i18n="form-submit">Send Message</span>
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+          <p id="form-status" class="hidden text-center text-sm text-emerald-400"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="relative border-t border-white/5 mt-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-14">
+      <div class="flex flex-col md:flex-row justify-between gap-10">
+        <div class="max-w-xs">
+          <a href="#top" class="flex items-center gap-2.5">
+            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/70 via-emerald-400/50 to-cyan-400/70 font-display font-extrabold text-base text-white">T</span>
+            <span class="font-display font-bold text-lg text-white">Techit LLC</span>
+          </a>
+          <p class="mt-4 text-sm text-white/50 leading-relaxed" data-i18n="footer-tagline">
+            Holding the platforms powering regional digital ecosystems.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-10">
+          <div>
+            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4" data-i18n="footer-company">Company</h4>
+            <ul class="space-y-3 text-white/60 text-sm">
+              <li><a href="#about" class="anchor hover:text-white transition-colors" data-i18n="nav-about">About</a></li>
+              <li><a href="#platforms" class="anchor hover:text-white transition-colors" data-i18n="nav-platforms">Platforms</a></li>
+              <li><a href="#pillars" class="anchor hover:text-white transition-colors" data-i18n="nav-pillars">Pillars</a></li>
+              <li><a href="#contact" class="anchor hover:text-white transition-colors" data-i18n="nav-contact">Contact</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4" data-i18n="footer-platforms">Platforms</h4>
+            <ul class="space-y-3 text-white/60 text-sm">
+              <li><a href="https://sabaah.net" target="_blank" rel="noopener" class="anchor magnetic-link hover:text-amber-400 transition-colors">Sabaah</a></li>
+              <li><a href="https://wfrlee.com" target="_blank" rel="noopener" class="anchor magnetic-link hover:text-emerald-400 transition-colors">Wfrlee</a></li>
+              <li><a href="https://oneegate.com" target="_blank" rel="noopener" class="anchor magnetic-link hover:text-cyan-400 transition-colors">OneEGate</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4" data-i18n="footer-contact">Contact</h4>
+            <ul class="space-y-3 text-white/60 text-sm">
+              <li><a href="mailto:info@techit-llc.com" class="anchor magnetic-link hover:text-white transition-colors">info@techit-llc.com</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/40">
+        <p id="footer-rights" data-i18n-html="footer-rights">© <span id="year"><%= year %></span> Techit LLC. All rights reserved.</p>
+        <p>techit-llc.com</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- App logic + interactions -->
+  <script src="/js/main.js"></script>
+  <!-- Canvas hologram globe -->
+  <script src="/js/hologram.js"></script>
+</body>
+</html>
