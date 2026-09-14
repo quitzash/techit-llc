@@ -36,6 +36,12 @@ body {
   border: 1px solid rgba(255,255,255,0.08);
 }
 
+/* ---- Hero height ----
+   100svh = small viewport height, so the hero fills the visible area on
+   mobile while the iOS/Android URL bar is expanded. Browsers without svh
+   fall back to the min-h-screen (100vh) utility below. */
+#hero { min-height: 100svh; }
+
 /* ---- Radial background glow layers ---- */
 .glow-hero {
   background:
@@ -321,6 +327,15 @@ body {
   background: linear-gradient(90deg, #f59e0b, #10b981, #22d3ee);
   transform-origin: 0 50%;
   z-index: 60;
+}
+
+/* ---- Hologram canvas: force a composited layer.
+   Without this, iOS Safari may drop the canvas bitmap during scroll
+   repaints, causing the globe to vanish while scrolling. */
+#hologram {
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 body.lang-ar,

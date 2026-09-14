@@ -208,10 +208,26 @@
     ctx.strokeStyle = 'rgba(255,255,255,0.05)';
     ctx.lineWidth = 1;
     ctx.stroke();
-
-    if (!reduced) requestAnimationFrame(frame);
   }
 
-  if (reduced) frame(performance.now());
-  else requestAnimationFrame(frame);
+  // ---- external scheduler ----
+  // Instead of self-scheduling rAF, we render on demand: first frame
+  // immediately, then nudge on scroll / touch / visibility / resize so
+  // the canvas never blanks while the user is interacting with the page.
+  frame(performance.now());
+
+  if (!reduced) {
+    let raf = null;
+    const schedule = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(t => {
+        raf = null;
+        frame(t);
+      });
+    };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('touchmove', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    document.addEventListener('visibilitychange', schedule);
+  }
 })();

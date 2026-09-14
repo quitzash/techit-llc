@@ -62,7 +62,7 @@
   </header>
 
   <!-- ================= HERO ================= -->
-  <section id="hero" class="relative min-h-screen min-h-[100svh] flex items-center overflow-hidden glow-hero grid-bg">
+  <section id="hero" class="relative min-h-screen flex items-center overflow-hidden glow-hero grid-bg">
     <!-- Floating orbs -->
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
       <div class="float-orb absolute top-[15%] left-[10%] h-64 w-64 rounded-full bg-amber-500/[0.04] blur-3xl"></div>
@@ -102,8 +102,8 @@
           </div>
         </div>
 
-        <!-- Planet hologram -->
-        <div id="hologram-wrap" class="relative order-first lg:order-none flex items-center justify-center py-10 lg:py-0" data-reveal>
+        <!-- Planet hologram (after the copy on mobile) -->
+        <div id="hologram-wrap" class="relative flex items-center justify-center py-10 lg:py-0" data-reveal>
           <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(420px circle at 50% 50%, rgba(16,185,129,0.10), transparent 70%);"></div>
           <canvas id="hologram" class="relative w-full max-w-[520px] h-auto" aria-hidden="true"></canvas>
         </div>
@@ -167,7 +167,10 @@
       <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div data-reveal class="lg:order-2">
           <div class="flex items-center gap-4">
-            <img src="https://wfrlee.com/logo192.png" alt="Wfrlee logo" width="64" height="64" loading="lazy" class="w-16 h-16 rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/40 p-2.5 object-contain logo-hover" onerror="this.style.display='none'" />
+            <span class="relative inline-flex w-16 h-16 shrink-0 rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/40 overflow-hidden">
+              <span aria-hidden="true" class="absolute inset-0 flex items-center justify-center font-display font-extrabold text-2xl text-emerald-400">W</span>
+              <img src="https://wfrlee.com/logo192.png" alt="Wfrlee logo" width="64" height="64" loading="lazy" class="relative w-full h-full p-2.5 object-contain logo-hover" onerror="this.remove()" />
+            </span>
             <div>
               <h3 data-i18n="wfrlee-name" class="font-display font-extrabold text-3xl sm:text-4xl text-white">Wfrlee.com</h3>
               <span class="text-emerald-400 text-sm font-semibold">wfrlee.com</span>
@@ -231,7 +234,10 @@
       <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div data-reveal>
           <div class="flex items-center gap-4">
-            <img src="https://oneegate.com/logo192.png" alt="OneEGate logo" width="64" height="64" loading="lazy" class="w-16 h-16 rounded-2xl bg-cyan-500/10 ring-1 ring-cyan-500/40 p-2.5 object-contain logo-hover" onerror="this.style.display='none'" />
+            <span class="relative inline-flex w-16 h-16 shrink-0 rounded-2xl bg-cyan-500/10 ring-1 ring-cyan-500/40 overflow-hidden">
+              <span aria-hidden="true" class="absolute inset-0 flex items-center justify-center font-display font-extrabold text-2xl text-cyan-400">O</span>
+              <img src="https://oneegate.com/logo192.png" alt="OneEGate logo" width="64" height="64" loading="lazy" class="relative w-full h-full p-2.5 object-contain logo-hover" onerror="this.remove()" />
+            </span>
             <div>
               <h3 class="font-display font-extrabold text-3xl sm:text-4xl text-white">OneEGate</h3>
               <span class="text-cyan-400 text-sm font-semibold">oneegate.com</span>
@@ -292,7 +298,10 @@
       <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div data-reveal>
           <div class="flex items-center gap-4">
-            <img src="https://sabaah.net/favicon.svg" alt="Sabaah logo" width="64" height="64" loading="lazy" class="w-16 h-16 rounded-2xl bg-amber-500/10 ring-1 ring-amber-500/40 p-2.5 object-contain logo-hover" onerror="this.style.display='none'" />
+            <span class="relative inline-flex w-16 h-16 shrink-0 rounded-2xl bg-amber-500/10 ring-1 ring-amber-500/40 overflow-hidden">
+              <span aria-hidden="true" class="absolute inset-0 flex items-center justify-center font-display font-extrabold text-2xl text-amber-400">S</span>
+              <img src="https://sabaah.net/favicon.svg" alt="Sabaah logo" width="64" height="64" loading="lazy" class="relative w-full h-full p-2.5 object-contain logo-hover" onerror="this.remove()" />
+            </span>
             <div>
               <h3 class="font-display font-extrabold text-3xl sm:text-4xl text-white">Sabaah</h3>
               <span class="text-amber-400 text-sm font-semibold">sabaah.net</span>

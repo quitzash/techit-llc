@@ -535,31 +535,73 @@ if (!prefersReduced && window.gsap && window.ScrollTrigger) {
       scrollTrigger: { trigger: path.closest('section'), start: 'top 80%', once: true }
     });
   });
+}
 
-  // ---------------------------------------------------------
-  //  ANIMATED COUNTER NUMBERS
-  // ---------------------------------------------------------
-  document.querySelectorAll('[data-count-to]').forEach(el => {
-    const target = parseFloat(el.dataset.countTo);
-    const isFloat = target % 1 !== 0;
-    ScrollTrigger.create({
-      trigger: el,
-      start: 'top 90%',
-      once: true,
-      onEnter: () => {
-        const start = performance.now();
-        const duration = 2000;
-        function tick(now) {
-          const p = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - p, 4);
-          const val = eased * target;
-          el.textContent = isFloat ? val.toFixed(1) : Math.floor(val);
-          if (p < 1) requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
+// ============================================================
+//  ANIMATED COUNTERS + REVEAL SAFETY NET
+//  Driven by IntersectionObserver so it fires regardless of
+//  ScrollTrigger/Lenis state (iOS Safari included). GSAP still
+//  does the fancy reveals on desktop; this guarantees counters
+//  always count up and no reveal element is ever left hidden.
+// ============================================================
+function runCountUp(el, target) {
+  if (prefersReduced) { el.textContent = target % 1 !== 0 ? target.toFixed(1) : String(target); return; }
+  const isFloat = target % 1 !== 0;
+  const duration = 2000;
+  const start = performance.now();
+  function tick(now) {
+    const eased = 1 - Math.pow(1 - Math.min((now - start) / duration, 1), 4);
+    if (now - start < duration) {
+      el.textContent = isFloat ? (eased * target).toFixed(1) : Math.floor(eased * target);
+      requestAnimationFrame(tick);
+    } else {
+      el.textContent = isFloat ? target.toFixed(1) : String(target);
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+if ('IntersectionObserver' in window) {
+  // Counters fire when the stat approaches the viewport.
+  const counterObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      counterObserver.unobserve(entry.target);
+      runCountUp(entry.target, parseFloat(entry.target.dataset.countTo));
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('[data-count-to]').forEach(el => counterObserver.observe(el));
+
+  // Reveal safety net: anything GSAP left hidden is animated in once it
+  // reaches the viewport. Hero elements are excluded (they always run on
+  // load with their own stagger).
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      revealObserver.unobserve(el);
+      if (parseFloat(getComputedStyle(el).opacity) !== 0) return; // GSAP already handled it
+      if (window.gsap) {
+        gsap.to(el, { opacity: 1, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: 'power3.out', clearProps: 'transform' });
+      } else {
+        el.style.opacity = 1;
+        el.style.transform = '';
       }
     });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('[data-reveal], [data-3d-reveal], [data-3d-reveal-child], .step-item, .check-item')
+    .forEach(el => {
+      if (el.closest('#hero')) return;
+      revealObserver.observe(el);
+    });
+} else {
+  // No IntersectionObserver: never hide or leave anything at zero.
+  document.querySelectorAll('[data-count-to]').forEach(el => {
+    const target = parseFloat(el.dataset.countTo);
+    el.textContent = target % 1 !== 0 ? target.toFixed(1) : String(target);
   });
+  document.querySelectorAll('[data-reveal], [data-3d-reveal], [data-3d-reveal-child], .step-item, .check-item')
+    .forEach(el => { el.style.opacity = 1; el.style.transform = ''; });
 }
 
 // ============================================================
