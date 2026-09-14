@@ -4,7 +4,7 @@
 // ============================================================
 
 // ---- Render Lucide icons ----
-lucide.createIcons();
+if (window.lucide) lucide.createIcons();
 
 // ---- Year ----
 document.getElementById('year').textContent = new Date().getFullYear();
@@ -288,13 +288,18 @@ if (contactForm) {
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ---- Lenis smooth scroll ----
-if (!prefersReduced) {
+// syncTouch: true makes touch scrolling go through Lenis too, so the
+// ScrollTrigger updates (driven from the rAF loop) stay in sync on mobile
+// and the scroll-reveal animations actually fire on phones/tablets.
+if (!prefersReduced && typeof Lenis !== 'undefined') {
   const lenis = new Lenis({
     duration: 0.8,
     easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
+    syncTouch: true,
+    syncTouchLerp: 0.075,
     wheelMultiplier: 1,
-    touchMultiplier: 1.5,
+    touchMultiplier: 1,
   });
   lenis.stop();
   function raf(time) {
@@ -325,8 +330,17 @@ if (!prefersReduced) {
   });
 }
 
-if (!prefersReduced && window.gsap) {
+if (!prefersReduced && window.gsap && window.ScrollTrigger) {
   gsap.registerPlugin(ScrollTrigger);
+  // Keep trigger positions stable while the iOS address bar shows/hides.
+  ScrollTrigger.config({ ignoreMobileResize: true });
+
+  // Re-measure after fonts and lazy-loaded images settle, or scroll-triggered
+  // reveals can measure wrong and stay hidden on mobile.
+  const recalibrate = () => ScrollTrigger.refresh();
+  if (document.readyState === 'complete') recalibrate();
+  else window.addEventListener('load', recalibrate);
+  setTimeout(recalibrate, 1500);
 
   // Soft fade-in: single trigger per element, fires once, freed immediately.
   // (Hero uses its own staggered entrance; tilt-cards get their own fade below.)
@@ -372,7 +386,7 @@ if (!prefersReduced && window.gsap) {
 // ============================================================
 //  Reveal-on-scroll animations (simple, smooth fades only)
 // ============================================================
-if (!prefersReduced && window.gsap) {
+if (!prefersReduced && window.gsap && window.ScrollTrigger) {
   gsap.registerPlugin(ScrollTrigger);
 
   // Hero entrance handled above; this block handles scroll-driven reveals
@@ -550,52 +564,82 @@ if (!prefersReduced && window.gsap) {
 
 // ============================================================
 //  Interactive hover effects (tilt, magnetic, cursor glow)
+//  Mouse on desktop; finger-position tilt + glow on touch
 // ============================================================
-if (!prefersReduced && window.matchMedia('(pointer: fine)').matches) {
+if (!prefersReduced) {
+  const finePointer = window.matchMedia('(pointer: fine)').matches;
+  const touchEnd = ['touchend', 'touchcancel'];
 
   // ---- Cursor-follow glow on CTA buttons ----
+  // Desktop: follows the cursor. Touch: follows the finger while pressed.
   document.querySelectorAll('.cta-glow').forEach(btn => {
-    btn.addEventListener('mousemove', e => {
+    const setGlow = (clientX, clientY) => {
       const rect = btn.getBoundingClientRect();
-      btn.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
-      btn.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
-    });
+      btn.style.setProperty('--mx', ((clientX - rect.left) / rect.width * 100) + '%');
+      btn.style.setProperty('--my', ((clientY - rect.top) / rect.height * 100) + '%');
+    };
+    if (finePointer) {
+      btn.addEventListener('mousemove', e => setGlow(e.clientX, e.clientY));
+    } else {
+      btn.addEventListener('touchstart', e => {
+        btn.classList.add('touch-active');
+        if (e.touches[0]) setGlow(e.touches[0].clientX, e.touches[0].clientY);
+      });
+      btn.addEventListener('touchmove', e => {
+        if (e.touches[0]) setGlow(e.touches[0].clientX, e.touches[0].clientY);
+      });
+      touchEnd.forEach(ev => btn.addEventListener(ev, () => btn.classList.remove('touch-active')));
+    }
   });
 
   // ---- Magnetic links (navbar + footer + visit links) ----
-  document.querySelectorAll('.magnetic-link').forEach(link => {
-    const strength = 18;
-    link.addEventListener('mousemove', e => {
-      const rect = link.getBoundingClientRect();
-      const relX = e.clientX - (rect.left + rect.width / 2);
-      const relY = e.clientY - (rect.top + rect.height / 2);
-      link.style.transform = `translate(${relX * 0.25}px, ${relY * 0.35}px)`;
+  // Desktop only — a link that jumps toward your finger feels wrong on touch.
+  if (finePointer) {
+    document.querySelectorAll('.magnetic-link').forEach(link => {
+      link.addEventListener('mousemove', e => {
+        const rect = link.getBoundingClientRect();
+        const relX = e.clientX - (rect.left + rect.width / 2);
+        const relY = e.clientY - (rect.top + rect.height / 2);
+        link.style.transform = `translate(${relX * 0.25}px, ${relY * 0.35}px)`;
+      });
+      link.addEventListener('mouseleave', () => {
+        link.style.transform = '';
+      });
     });
-    link.addEventListener('mouseleave', () => {
-      link.style.transform = '';
-    });
-  });
+  }
 
-  // ---- Subtle 3D tilt on platform cards (perspective depth on hover) ----
+  // ---- Subtle 3D tilt on platform cards ----
+  // Mouse tilt on desktop; the card tilts toward your finger on touch.
   document.querySelectorAll('.tilt-card').forEach(card => {
     const inner = card.querySelector('.tilt-inner');
-    card.addEventListener('mouseenter', () => {
-      card.style.willChange = 'transform';
-    });
-    card.addEventListener('mousemove', e => {
+    const setTilt = (clientX, clientY) => {
       const rect = card.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
+      const x = (clientX - rect.left) / rect.width;
+      const y = (clientY - rect.top) / rect.height;
       const rx = (0.5 - y) * 7;
       const ry = (x - 0.5) * 9;
       card.style.transform =
         `perspective(1200px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
       if (inner) inner.style.transform = 'translateZ(40px)';
-    });
-    card.addEventListener('mouseleave', () => {
+    };
+    const resetTilt = () => {
       card.style.transform = '';
       card.style.willChange = '';
       if (inner) inner.style.transform = '';
-    });
+    };
+
+    if (finePointer) {
+      card.addEventListener('mouseenter', () => {
+        card.style.willChange = 'transform';
+      });
+      card.addEventListener('mousemove', e => setTilt(e.clientX, e.clientY));
+      card.addEventListener('mouseleave', resetTilt);
+    } else {
+      card.addEventListener('touchstart', () => { card.style.willChange = 'transform'; });
+      card.addEventListener('touchmove', e => {
+        if (e.touches[0]) setTilt(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+      touchEnd.forEach(ev => card.addEventListener(ev, resetTilt));
+    }
   });
 }

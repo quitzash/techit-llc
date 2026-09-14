@@ -768,6 +768,10 @@ video {
   height: 100%;
 }
 
+.min-h-\[100svh\] {
+  min-height: 100svh;
+}
+
 .min-h-screen {
   min-height: 100vh;
 }

@@ -49,7 +49,9 @@
   function resize() {
     const parent = canvas.parentElement;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
-    size = Math.max(240, Math.min(parent.clientWidth, 560));
+    const parentW = parent ? parent.clientWidth : 0;
+    // Fall back to viewport width if the wrapper isn't laid out yet.
+    size = Math.max(240, Math.min(parentW || Math.min(window.innerWidth, 560), 560));
     canvas.width = Math.round(size * dpr);
     canvas.height = Math.round(size * dpr);
     canvas.style.width = size + 'px';
@@ -58,6 +60,9 @@
   }
   resize();
   window.addEventListener('resize', resize);
+  window.addEventListener('orientationchange', resize);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) resize(); });
+  setTimeout(resize, 300);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
