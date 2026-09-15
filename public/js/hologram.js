@@ -210,24 +210,26 @@
     ctx.stroke();
   }
 
-  // ---- external scheduler ----
-  // Instead of self-scheduling rAF, we render on demand: first frame
-  // immediately, then nudge on scroll / touch / visibility / resize so
-  // the canvas never blanks while the user is interacting with the page.
+  // ---- continuous scheduler ----
+  // Renders a first frame immediately, then keeps animating via rAF.
+  // Drawing is skipped while the tab is hidden or the canvas is scrolled
+  // out of view so Safari iOS never blanks the bitmap behind a frozen
+  // frame, and we don't burn battery animating off-screen content.
   frame(performance.now());
+  if (reduced) return;
 
-  if (!reduced) {
-    let raf = null;
-    const schedule = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(t => {
-        raf = null;
-        frame(t);
-      });
-    };
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('touchmove', schedule, { passive: true });
-    window.addEventListener('resize', schedule, { passive: true });
-    document.addEventListener('visibilitychange', schedule);
+  let drawing = !document.hidden;
+  let inView = true;
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; });
+    io.observe(canvas);
   }
+  document.addEventListener('visibilitychange', () => { drawing = !document.hidden; });
+
+  const loop = (t) => {
+    if (drawing && inView) frame(t);
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
 })();

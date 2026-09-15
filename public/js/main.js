@@ -286,20 +286,121 @@ if (contactForm) {
 //  Smooth scroll + scroll-driven animation
 // ============================================================
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = window.matchMedia('(pointer: fine)').matches;
 
-// ---- Lenis smooth scroll ----
-// syncTouch: true makes touch scrolling go through Lenis too, so the
-// ScrollTrigger updates (driven from the rAF loop) stay in sync on mobile
-// and the scroll-reveal animations actually fire on phones/tablets.
-if (!prefersReduced && typeof Lenis !== 'undefined') {
+// ============================================================
+//  ANIMATED COUNTERS + REVEAL SAFETY NET.
+//  Registered FIRST, before Lenis/GSAP, and driven by
+//  IntersectionObserver. On iOS Safari, Lenis + GSAP ScrollTriggers
+//  are the most fragile pieces of the page; if any of their setup
+//  hiccups, the safety net still guarantees every element that was
+//  given an `opacity: 0` starting value is animated in (and every
+//  counter still counts up) the moment it enters the viewport.
+//  Nothing is ever left permanently hidden.
+// ============================================================
+function runCountUp(el, target) {
+  if (prefersReduced) { el.textContent = target % 1 !== 0 ? target.toFixed(1) : String(target); return; }
+  const isFloat = target % 1 !== 0;
+  const duration = 2000;
+  const start = performance.now();
+  function tick(now) {
+    const eased = 1 - Math.pow(1 - Math.min((now - start) / duration, 1), 4);
+    if (now - start < duration) {
+      el.textContent = isFloat ? (eased * target).toFixed(1) : Math.floor(eased * target);
+      requestAnimationFrame(tick);
+    } else {
+      el.textContent = isFloat ? target.toFixed(1) : String(target);
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+if ('IntersectionObserver' in window) {
+  const counterObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      counterObserver.unobserve(entry.target);
+      runCountUp(entry.target, parseFloat(entry.target.dataset.countTo));
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('[data-count-to]').forEach(el => counterObserver.observe(el));
+
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      if (parseFloat(getComputedStyle(el).opacity) !== 0) return; // GSAP will handle it — keep observing
+      revealObserver.unobserve(el);
+      if (window.gsap) {
+        gsap.to(el, { opacity: 1, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: 'power3.out', clearProps: 'transform' });
+      } else {
+        el.style.opacity = 1;
+        el.style.transform = '';
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('[data-reveal], [data-3d-reveal], [data-3d-reveal-child], .step-item, .check-item')
+    .forEach(el => {
+      if (el.closest('#hero')) return;
+      revealObserver.observe(el);
+    });
+
+  // Hero-only fallback: if the entrance tween gets interrupted after it
+  // already zeroed the opacity (iOS interruptions), force everything up.
+  if (!prefersReduced) {
+    setTimeout(() => {
+      document.querySelectorAll('#hero [data-reveal], #hologram-wrap, .scroll-cue').forEach(el => {
+        if (parseFloat(getComputedStyle(el).opacity) === 0) {
+          el.style.opacity = 1;
+          if (window.gsap) gsap.set(el, { clearProps: 'transform,opacity' });
+        }
+      });
+    }, 2600);
+  }
+} else {
+  document.querySelectorAll('[data-count-to]').forEach(el => {
+    const target = parseFloat(el.dataset.countTo);
+    el.textContent = target % 1 !== 0 ? target.toFixed(1) : String(target);
+  });
+  document.querySelectorAll('[data-reveal], [data-3d-reveal], [data-3d-reveal-child], .step-item, .check-item')
+    .forEach(el => { el.style.opacity = 1; el.style.transform = ''; });
+}
+
+// ============================================================
+//  SCROLL ====================================================
+//  Lenis smooth scroll is a *desktop wheel* nicety. Its touch
+//  hijacking (`syncTouch`) is documented as unstable on iOS and is
+//  the classic reason these pages feel dead on iPhone Safari —
+//  native scrolling gets fought, reveals under the fold never fire,
+//  and whole sections look "missing". So: Lenis only on fine
+//  pointers; on touch we keep native momentum scroll and wire up the
+//  anchor navigation + navbar hide ourselves.
+// ============================================================
+const navbar = document.getElementById('navbar');
+let lastY = 0;
+const onScrollNav = () => {
+  const y = window.scrollY;
+  if (y > 120 && y > lastY) navbar.classList.add('nav-hidden');
+  else navbar.classList.remove('nav-hidden');
+  lastY = y;
+};
+const scrollToSection = (id) => {
+  const target = document.querySelector(id);
+  if (!target) return;
+  const top = target.getBoundingClientRect().top + window.scrollY - 80;
+  try {
+    window.scrollTo({ top, behavior: 'smooth' });
+  } catch (e) {
+    window.scrollTo(0, top);
+  }
+};
+
+if (!prefersReduced && finePointer && typeof Lenis !== 'undefined') {
   const lenis = new Lenis({
     duration: 0.8,
     easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
-    syncTouch: true,
-    syncTouchLerp: 0.075,
     wheelMultiplier: 1,
-    touchMultiplier: 1,
   });
   lenis.stop();
   function raf(time) {
@@ -320,14 +421,18 @@ if (!prefersReduced && typeof Lenis !== 'undefined') {
     });
   });
 
-  const navbar = document.getElementById('navbar');
-  let lastY = 0;
-  lenis.on('scroll', () => {
-    const y = window.scrollY;
-    if (y > 120 && y > lastY) navbar.classList.add('nav-hidden');
-    else navbar.classList.remove('nav-hidden');
-    lastY = y;
+  lenis.on('scroll', onScrollNav);
+} else {
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (id.length > 1) {
+        e.preventDefault();
+        scrollToSection(id);
+      }
+    });
   });
+  window.addEventListener('scroll', onScrollNav, { passive: true });
 }
 
 if (!prefersReduced && window.gsap && window.ScrollTrigger) {
@@ -481,8 +586,11 @@ if (!prefersReduced && window.gsap && window.ScrollTrigger) {
     );
   });
 
-  // Feature lists — 3D rise stagger
-  document.querySelectorAll('ul:has(.check-item)').forEach(ul => {
+  // Feature lists — 3D rise stagger.
+  // (Avoid `ul:has(...)`: an unsupported selector in Safari < 15.4 makes
+  // querySelectorAll throw a SyntaxError that would abort everything after it.)
+  document.querySelectorAll('ul').forEach(ul => {
+    if (!ul.querySelector('.check-item')) return;
     const items = ul.querySelectorAll('.check-item');
     gsap.fromTo(items,
       { opacity: 0, transformPerspective: 900, rotateX: 26, y: 16 },
@@ -538,78 +646,10 @@ if (!prefersReduced && window.gsap && window.ScrollTrigger) {
 }
 
 // ============================================================
-//  ANIMATED COUNTERS + REVEAL SAFETY NET
-//  Driven by IntersectionObserver so it fires regardless of
-//  ScrollTrigger/Lenis state (iOS Safari included). GSAP still
-//  does the fancy reveals on desktop; this guarantees counters
-//  always count up and no reveal element is ever left hidden.
-// ============================================================
-function runCountUp(el, target) {
-  if (prefersReduced) { el.textContent = target % 1 !== 0 ? target.toFixed(1) : String(target); return; }
-  const isFloat = target % 1 !== 0;
-  const duration = 2000;
-  const start = performance.now();
-  function tick(now) {
-    const eased = 1 - Math.pow(1 - Math.min((now - start) / duration, 1), 4);
-    if (now - start < duration) {
-      el.textContent = isFloat ? (eased * target).toFixed(1) : Math.floor(eased * target);
-      requestAnimationFrame(tick);
-    } else {
-      el.textContent = isFloat ? target.toFixed(1) : String(target);
-    }
-  }
-  requestAnimationFrame(tick);
-}
-
-if ('IntersectionObserver' in window) {
-  // Counters fire when the stat approaches the viewport.
-  const counterObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      counterObserver.unobserve(entry.target);
-      runCountUp(entry.target, parseFloat(entry.target.dataset.countTo));
-    });
-  }, { threshold: 0.4 });
-  document.querySelectorAll('[data-count-to]').forEach(el => counterObserver.observe(el));
-
-  // Reveal safety net: anything GSAP left hidden is animated in once it
-  // reaches the viewport. Hero elements are excluded (they always run on
-  // load with their own stagger).
-  const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const el = entry.target;
-      revealObserver.unobserve(el);
-      if (parseFloat(getComputedStyle(el).opacity) !== 0) return; // GSAP already handled it
-      if (window.gsap) {
-        gsap.to(el, { opacity: 1, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: 'power3.out', clearProps: 'transform' });
-      } else {
-        el.style.opacity = 1;
-        el.style.transform = '';
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('[data-reveal], [data-3d-reveal], [data-3d-reveal-child], .step-item, .check-item')
-    .forEach(el => {
-      if (el.closest('#hero')) return;
-      revealObserver.observe(el);
-    });
-} else {
-  // No IntersectionObserver: never hide or leave anything at zero.
-  document.querySelectorAll('[data-count-to]').forEach(el => {
-    const target = parseFloat(el.dataset.countTo);
-    el.textContent = target % 1 !== 0 ? target.toFixed(1) : String(target);
-  });
-  document.querySelectorAll('[data-reveal], [data-3d-reveal], [data-3d-reveal-child], .step-item, .check-item')
-    .forEach(el => { el.style.opacity = 1; el.style.transform = ''; });
-}
-
-// ============================================================
 //  Interactive hover effects (tilt, magnetic, cursor glow)
 //  Mouse on desktop; finger-position tilt + glow on touch
 // ============================================================
 if (!prefersReduced) {
-  const finePointer = window.matchMedia('(pointer: fine)').matches;
   const touchEnd = ['touchend', 'touchcancel'];
 
   // ---- Cursor-follow glow on CTA buttons ----

@@ -11,6 +11,9 @@ body {
   letter-spacing: -0.01em;
   overflow-x: clip;
 }
+/* Anchored sections clear the fixed navbar (native anchor / smooth
+   scroll fallback used on touch, where Lenis isn't active). */
+section[id] { scroll-margin-top: 96px; }
 ::selection { background: rgba(245,158,11,0.35); color: #fff; }
 
 /* ---- Mono label voice (matches the Nexus reference) ---- */
@@ -234,15 +237,22 @@ body {
     linear-gradient(115deg, #f59e0b, #10b981, #22d3ee) border-box;
 }
 
-/* ---- Noise texture overlay (film-grain polish) ---- */
-.noise-bg::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 999;
-  pointer-events: none;
-  opacity: 0.018;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+/* ---- Noise texture overlay (film-grain polish) ----
+   Keep it to fine-pointer (desktop) screens only. On iOS Safari a
+   full-viewport `position: fixed` layer backed by an SVG filter data
+   URI forces constant recompositing while scrolling — the #1 cause of
+   the "site is frozen / doesn't work" feel on iPhones. Desktop keeps
+   the grain, touch gets native scrolling with zero compositing debt. */
+@media (pointer: fine) {
+  .noise-bg::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    pointer-events: none;
+    opacity: 0.018;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
 }
 
 /* ---- Subtle grid background ---- */
