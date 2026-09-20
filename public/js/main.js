@@ -1,687 +1,636 @@
-// ============================================================
-//  Techit LLC — app logic
-//  i18n, smooth scroll, animations, hover interactions, contact
-// ============================================================
+/* Techit LLC — front-end enhancements.
+   All content is visible by default; this script only enhances:
+   reveal-on-scroll, counters, wordmark rotation, mobile menu,
+   scroll progress, language toggle, and the contact form. */
 
-// ---- Render Lucide icons ----
-if (window.lucide) lucide.createIcons();
+(function () {
+  'use strict';
 
-// ---- Year ----
-document.getElementById('year').textContent = new Date().getFullYear();
+  var I18N = window.I18N || {};
+  var LANG = window.LANG || 'en';
+  var ICONS = window.LUCIDE_ICONS || {};
+  var OTHER_LANG = LANG === 'ar' ? 'en' : 'ar';
+  var YEAR = String(new Date().getFullYear());
+  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var transitionMs = 260;
+  var toastTimer = null;
 
-// ---- Arabic / English translation toggle ----
-const I18N = {
-  en: {
-    "meta-title": "Techit LLC — Powering Next-Generation Digital Ecosystems",
-    "meta-desc": "Techit LLC is the holding enterprise backing leading regional platforms in e-commerce, business optimization, and enterprise gateways.",
-    "nav-about": "About",
-    "nav-platforms": "Platforms",
-    "nav-pillars": "Pillars",
-    "nav-contact": "Contact",
-    "hero-badge": "Holding Enterprise · Regional Digital Platforms",
-    "hero-title": `Powering <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">Next-Generation</span><br class="hidden sm:block" />Digital Ecosystems.`,
-    "hero-paragraph": "Techit LLC is the holding enterprise backing leading regional platforms in e-commerce, business optimization, and enterprise gateways.",
-    "hero-cta": "Explore the Ecosystem",
-    "about-kicker": "Company Overview",
-    "about-title": `One holding,<br />many platforms,<br /><span class="text-white/50">unified purpose.</span>`,
-    "about-p1": "Techit LLC is a technology incubation and holding enterprise committed to operational reliability and sustained platform growth. We conceive, back, and scale specialized digital products that move real value across the region.",
-    "about-p2": "From on-the-go coffee ordering to hourly hotel booking and secure enterprise gateways, each subsidiary operates with its own focus — while sharing the infrastructure, governance, and long-term vision of the Techit umbrella.",
-    "wfrlee-name": "Wfrlee.com",
-    "wfrlee-tagline": "Hotels, booked by the hours.",
-    "wfrlee-desc": "Book short stays with flexible hourly rates. Pay only for the time you use — no need to pay for a full night.",
-    "wfrlee-c1": "Flexible hourly-rate booking",
-    "wfrlee-c2": "Pay-as-you-stay pricing",
-    "wfrlee-c3": "Instant short-stay scheduling",
-    "wfrlee-visit": "Visit wfrlee.com",
-    "wfrlee-label": "Hourly Hotel Booking",
-    "wfrlee-idea": "The idea: you rarely need a whole night. Wfrlee lets you book a hotel room for the exact hours you need and pay only for those hours — not the full day.",
-    "wfrlee-step1": `<span class="text-white font-semibold">Search</span> — find a hotel and choose your hours (3–24h).`,
-    "wfrlee-step2": `<span class="text-white font-semibold">Book hourly</span> — pay per hour, no full-night charge.`,
-    "wfrlee-step3": `<span class="text-white font-semibold">Stay &amp; go</span> — check in instantly, check out on your time.`,
-    "wfrlee-badge": "Currently available in Saudi Arabia",
-    "oneegate-tagline": "One gateway for the enterprise.",
-    "oneegate-desc": "Managing enterprise-level central gateways, institutional access systems, and secure infrastructure tools.",
-    "oneegate-c1": "Central enterprise gateways",
-    "oneegate-c2": "Institutional access systems",
-    "oneegate-c3": "Secure infrastructure tools",
-    "oneegate-visit": "Visit oneegate.com",
-    "oneegate-label": "Enterprise Gateway",
-    "oneegate-idea": "The idea: institutions shouldn't juggle a dozen logins and systems. OneEGate is a single, secure front door for enterprise access, teams, and infrastructure.",
-    "oneegate-step1": `<span class="text-white font-semibold">Centralize</span> — one secure gateway for all institutional systems.`,
-    "oneegate-step2": `<span class="text-white font-semibold">Control access</span> — define who reaches what, policy-driven.`,
-    "oneegate-step3": `<span class="text-white font-semibold">Operate securely</span> — infrastructure protected at the core.`,
-    "sabaah-tagline": "Coffee, ordered on the go.",
-    "sabaah-desc": "Order your coffee from anywhere — browse nearby cafés, skip the queue, and have your brew ready the moment you arrive.",
-    "sabaah-c1": "Order ahead from nearby cafés",
-    "sabaah-c2": "Skip the queue with fast pickup",
-    "sabaah-c3": "Streamlined mobile ordering pipeline",
-    "sabaah-visit": "Visit sabaah.net",
-    "sabaah-label": "On-the-Go Coffee",
-    "sabaah-idea": "The idea: instead of queuing at a café, order before you're even there. Sabaah connects you to nearby cafés and has your drink ready on arrival.",
-    "sabaah-step1": `<span class="text-white font-semibold">Discover</span> — browse cafés near you and pick a drink.`,
-    "sabaah-step2": `<span class="text-white font-semibold">Order ahead</span> — pay in app and the café starts your brew.`,
-    "sabaah-step3": `<span class="text-white font-semibold">Skip the queue</span> — walk in and grab your ready cup.`,
-    "pillars-kicker": "Core Pillars",
-    "pillars-title": "What we stand on.",
-    "pillars-1-title": "Scalability",
-    "pillars-1-desc": "Architectures engineered to grow from first user to full regional scale without breaking stride.",
-    "pillars-2-title": "Unified Integration",
-    "pillars-2-desc": "Platforms that connect cleanly — shared data, shared standards, and one cohesive ecosystem experience.",
-    "pillars-3-title": "Enterprise Security",
-    "pillars-3-desc": "Institutional-grade protection embedded at the core of every gateway and access system we operate.",
-    "contact-kicker": "Contact Us",
-    "contact-title": `Let's build <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">together.</span>`,
-    "contact-desc": "Whether you're a partner, a business exploring our platforms, or a team looking to grow under the Techit umbrella — we'd love to hear from you.",
-    "contact-email-label": "Email",
-    "form-name": "Name",
-    "form-email": "Email",
-    "form-message": "Message",
-    "form-submit": "Send Message",
-    "form-name-ph": "Your name",
-    "form-email-ph": "you@company.com",
-    "form-message-ph": "How can we help?",
-    "form-sending": "Sending…",
-    "form-success": `Thanks {name} — your message has been sent.`,
-    "form-mailto": `Thanks {name} — your message is ready. Opening your mail app…`,
-    "form-error": "Something went wrong — please email us directly at info@techit-llc.com.",
-    "footer-tagline": "Holding the platforms powering regional digital ecosystems.",
-    "footer-company": "Company",
-    "footer-platforms": "Platforms",
-    "footer-contact": "Contact",
-    "footer-rights": `© <span id="year"></span> Techit LLC. All rights reserved.`,
-  },
-
-  ar: {
-    "meta-title": "تيكيت LLC — نقود النظم الرقمية للجيل القادم",
-    "meta-desc": "تيكيت هي الشركة القابضة الداعمة لأبرز المنصات الإقليمية في التجارة الإلكترونية وتحسين الأعمال وبوابات المؤسسات.",
-    "nav-about": "عن الشركة",
-    "nav-platforms": "المنصات",
-    "nav-pillars": "الركائز",
-    "nav-contact": "تواصل معنا",
-    "hero-badge": "شركة قابضة · منصات رقمية إقليمية",
-    "hero-title": `نقود <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">الجيل القادم</span><br class="hidden sm:block" /> من النظم الرقمية.`,
-    "hero-paragraph": "تيكيت هي الشركة القابضة التي تقف خلف أبرز المنصات الإقليمية في التجارة الإلكترونية وتحسين الأعمال وبوابات المؤسسات.",
-    "hero-cta": "استكشف المنظومة",
-    "about-kicker": "نبذة عامة",
-    "about-title": `شركة واحدة،<br />منصات متعددة،<br /><span class="text-white/50">هدف موحّد.</span>`,
-    "about-p1": "تيكيت هي مؤسسة احتضان تقني وشركة قابضة ملتزمة بالموثوقية التشغيلية والنمو المستدام للمنصات. نبتكر ونموّل ونوسّع منتجات رقمية متخصصة تنقل قيمة حقيقية في المنطقة.",
-    "about-p2": "من طلب القهوة أثناء التنقّل إلى حجز الفنادق بالساعة وبوابات المؤسسات الآمنة، تعمل كل شركة تابعة بتركيزها الخاص — مع مشاركة البنية التحتية والحوكمة والرؤية طويلة الأجل لمظلة تيكيت.",
-    "wfrlee-name": "Wfrlee.com",
-    "wfrlee-tagline": "فنادق تُحجز بالساعة.",
-    "wfrlee-desc": "احجز إقامات قصيرة بأسعار مرنة بالساعة. ادفع فقط مقابل الوقت الذي تستخدمه — دون الحاجة لدفع قيمة ليلة كاملة.",
-    "wfrlee-c1": "حجز مرن بأسعار الساعة",
-    "wfrlee-c2": "تسعير الدفع حسب الإقامة",
-    "wfrlee-c3": "جدولة فورية للإقامات القصيرة",
-    "wfrlee-visit": "زيارة wfrlee.com",
-    "wfrlee-label": "حجز الفنادق بالساعة",
-    "wfrlee-idea": "الفكرة: نادرًا ما تحتاج ليلة كاملة. يتيح لك وفرلي حجز غرفة فندقية للساعات التي تحتاجها بالضبط والدفع فقط لتلك الساعات — لا ليوم كامل.",
-    "wfrlee-step1": `<span class="text-white font-semibold">ابحث</span> — اعثر على فندق واختر ساعاتك (3–24 ساعة).`,
-    "wfrlee-step2": `<span class="text-white font-semibold">احجز بالساعة</span> — ادفع لكل ساعة دون رسوم الليلة الكاملة.`,
-    "wfrlee-step3": `<span class="text-white font-semibold">تقم وانطلق</span> — تسجيل دخول فوري ومغادرة في وقتك.`,
-    "wfrlee-badge": "متاح حاليًا في المملكة العربية السعودية",
-    "oneegate-tagline": "بوابة واحدة للمؤسسة.",
-    "oneegate-desc": "إدارة بوابات مركزية على مستوى المؤسسات، وأنظمة وصول مؤسسية، وأدوات بنية تحتية آمنة.",
-    "oneegate-c1": "بوابات مركزيّة للمؤسسات",
-    "oneegate-c2": "أنظمة وصول مؤسسية",
-    "oneegate-c3": "أدوات بنية تحتية آمنة",
-    "oneegate-visit": "زيارة oneegate.com",
-    "oneegate-label": "بوابة المؤسسات",
-    "oneegate-idea": "الفكرة: لا ينبغي أن تتخبّط المؤسسات بين عشرات الأنظمة وتسجيلات الدخول. ون إيغيت هي بوابة واحدة آمنة للوصول المؤسسي والفرق والبنية التحتية.",
-    "oneegate-step1": `<span class="text-white font-semibold">وحّد</span> — بوابة آمنة واحدة لجميع الأنظمة المؤسسية.`,
-    "oneegate-step2": `<span class="text-white font-semibold">تحكّم في الوصول</span> — حدّد من يصل إلى ماذا وفق السياسات.`,
-    "oneegate-step3": `<span class="text-white font-semibold">شغّل بأمان</span> — بنية تحتية محمية من الجوهر.`,
-    "sabaah-tagline": "قهوة تُطلب أثناء التنقّل.",
-    "sabaah-desc": "اطلب قهوتك من أي مكان — تصفّح المقاهي القريبة، وتجاوز الطوابير، واجد مشروبك جاهزًا فور وصولك.",
-    "sabaah-c1": "اطلب مسبقًا من المقاهي القريبة",
-    "sabaah-c2": "تجاوز الطابور مع استلام سريع",
-    "sabaah-c3": "مسار طلب جوال مبسّط",
-    "sabaah-visit": "زيارة sabaah.net",
-    "sabaah-label": "قهوة أثناء التنقّل",
-    "sabaah-idea": "الفكرة: بدلًا من الانتظار في المقهى، اطلب قبل وصولك. يوصلك صباح بالمقاهي القريبة ويجهّز مشروبك عند وصولك.",
-    "sabaah-step1": `<span class="text-white font-semibold">اكتشف</span> — تصفّح المقاهي القريبة واختر مشروبك.`,
-    "sabaah-step2": `<span class="text-white font-semibold">اطلب مسبقًا</span> — ادفع من التطبيق ليبدأ المقهى بتحضير مشروبك.`,
-    "sabaah-step3": `<span class="text-white font-semibold">تجاوز الطابور</span> — ادخل وخذ كوبك الجاهز.`,
-    "pillars-kicker": "الركائز الأساسية",
-    "pillars-title": "ما الذي نرتكز عليه.",
-    "pillars-1-title": "قابلية التوسّع",
-    "pillars-1-desc": "أبنية هندسية مصممة لتنمو من المستخدم الأول إلى النطاق الإقليمي الكامل دون كسر الخطوة.",
-    "pillars-2-title": "تكامل موحّد",
-    "pillars-2-desc": "منصات تتصل بسلاسة — بيانات مشتركة ومعايير موحدة وتجربة منظومة متكاملة واحدة.",
-    "pillars-3-title": "أمن المؤسسات",
-    "pillars-3-desc": "حماية بمستوى المؤسسات مدمجة في صميم كل بوابة ونظام وصول نديره.",
-    "contact-kicker": "تواصل معنا",
-    "contact-title": `لنبنِ <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">معًا.</span>`,
-    "contact-desc": "سواء كنت شريكًا، أو نشاطًا تجاريًا يستكشف منصاتنا، أو فريقًا يتطلع للنمو تحت مظلة تيكيت — يسعدنا أن نسمع منك.",
-    "contact-email-label": "البريد الإلكتروني",
-    "form-name": "الاسم",
-    "form-email": "البريد الإلكتروني",
-    "form-message": "الرسالة",
-    "form-submit": "إرسال الرسالة",
-    "form-name-ph": "اسمك",
-    "form-email-ph": "بريدك@p.com",
-    "form-message-ph": "كيف يمكننا مساعدتك؟",
-    "form-sending": "جارٍ الإرسال…",
-    "form-success": `شكرًا {name} — تم إرسال رسالتك.`,
-    "form-mailto": `شكرًا {name} — رسالتك جاهزة. نفتح تطبيق البريد…`,
-    "form-error": "حدث خطأ ما — يرجى مراسلتنا مباشرة على info@techit-llc.com.",
-    "footer-tagline": "نحمل المنصات التي تقوّي النظم الرقمية الإقليمية.",
-    "footer-company": "الشركة",
-    "footer-platforms": "المنصات",
-    "footer-contact": "التواصل",
-    "footer-rights": `© <span id="year"></span> تيكيت. جميع الحقوق محفوظة.`,
-  },
-};
-
-// Allow `?lang=ar` to seed the language preference (e.g. from the server render).
-try {
-  const qLang = new URLSearchParams(window.location.search).get('lang');
-  if (qLang === 'en' || qLang === 'ar') localStorage.setItem('techit-lang', qLang);
-} catch (e) {}
-
-let currentLang = 'en';
-try { currentLang = localStorage.getItem('techit-lang') || 'en'; } catch (e) {}
-
-const t = (key, vars) => {
-  const dict = I18N[currentLang] || I18N.en;
-  let str = dict[key] != null ? dict[key] : key;
-  if (vars) Object.keys(vars).forEach(k => { str = str.split('{' + k + '}').join(vars[k]); });
-  return str;
-};
-
-function applyLang(lang) {
-  const dict = I18N[lang] || I18N.en;
-  const isAr = lang === 'ar';
-  document.documentElement.lang = isAr ? 'ar' : 'en';
-  document.documentElement.dir = isAr ? 'rtl' : 'ltr';
-  document.body.classList.toggle('lang-ar', isAr);
-  document.title = dict['meta-title'];
-  const metaDesc = document.querySelector('meta[name="description"]');
-  if (metaDesc) metaDesc.setAttribute('content', dict['meta-desc']);
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (dict[key]) el.innerHTML = dict[key];
-  });
-  document.querySelectorAll('[data-i18n-html]').forEach(el => {
-    const key = el.getAttribute('data-i18n-html');
-    if (dict[key]) el.innerHTML = dict[key];
-  });
-  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-    const key = el.getAttribute('data-i18n-ph');
-    if (dict[key]) el.placeholder = dict[key];
-  });
-  const btn = document.getElementById('lang-toggle');
-  if (btn) btn.textContent = isAr ? 'EN' : 'عربي';
-  const yearEl = document.getElementById('year');
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
-  if (window.ScrollTrigger) ScrollTrigger.refresh();
-}
-
-const langToggle = document.getElementById('lang-toggle');
-if (langToggle) {
-  langToggle.addEventListener('click', () => {
-    currentLang = currentLang === 'ar' ? 'en' : 'ar';
-    try { localStorage.setItem('techit-lang', currentLang); } catch (e) {}
-    applyLang(currentLang);
-  });
-}
-applyLang(currentLang);
-
-// ---- Contact form ----
-// Posts to /api/contact; if the request fails (e.g. server unreachable) it
-// falls back to the visitor's mail client via a mailto: link.
-const contactForm = document.getElementById('contact-form');
-const statusEl = document.getElementById('form-status');
-const showStatus = (msg, isError) => {
-  if (!statusEl) return;
-  statusEl.textContent = msg;
-  statusEl.classList.remove('hidden');
-  statusEl.classList.toggle('text-red-400', !!isError);
-  statusEl.classList.toggle('text-emerald-400', !isError);
-};
-
-if (contactForm) {
-  contactForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const payload = {
-      name: contactForm.querySelector('[name="name"]').value.trim(),
-      email: contactForm.querySelector('[name="email"]').value.trim(),
-      message: contactForm.querySelector('[name="message"]').value.trim(),
-    };
-    if (!payload.name || !payload.email || !payload.message) return;
-
-    showStatus(t('form-sending'), false);
-    const submitBtn = contactForm.querySelector('button[type="submit"]');
-    if (submitBtn) submitBtn.disabled = true;
-
-    fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-      .then(res => res.json().catch(() => ({ ok: false })))
-      .then(data => {
-        if (data && data.ok) {
-          showStatus(t('form-success', { name: payload.name }), false);
-          contactForm.reset();
-        } else {
-          throw new Error(data && data.error ? data.error : 'contact failed');
-        }
-      })
-      .catch(() => {
-        // Fallback: open the visitor's mail client (original behavior).
-        showStatus(t('form-mailto', { name: payload.name }), false);
-        window.location.href = 'mailto:info@techit-llc.com?subject=' +
-          encodeURIComponent('Contact from techit-llc.com') +
-          '&body=' + encodeURIComponent(payload.message);
-        contactForm.reset();
-      })
-      .finally(() => {
-        if (submitBtn) submitBtn.disabled = false;
-        setTimeout(() => statusEl && statusEl.classList.add('hidden'), 9000);
-      });
-  });
-}
-
-// ============================================================
-//  Smooth scroll + scroll-driven animation
-// ============================================================
-const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-// ---- Lenis smooth scroll ----
-// syncTouch: true makes touch scrolling go through Lenis too, so the
-// ScrollTrigger updates (driven from the rAF loop) stay in sync on mobile
-// and the scroll-reveal animations actually fire on phones/tablets.
-if (!prefersReduced && typeof Lenis !== 'undefined') {
-  const lenis = new Lenis({
-    duration: 0.8,
-    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    smoothWheel: true,
-    syncTouch: true,
-    syncTouchLerp: 0.075,
-    wheelMultiplier: 1,
-    touchMultiplier: 1,
-  });
-  lenis.stop();
-  function raf(time) {
-    lenis.raf(time);
-    if (window.ScrollTrigger) ScrollTrigger.update();
-    requestAnimationFrame(raf);
+  function $(sel, ctx) {
+    return (ctx || document).querySelector(sel);
   }
-  requestAnimationFrame(raf);
-  requestAnimationFrame(() => lenis.start());
+  function $$(sel, ctx) {
+    return Array.prototype.slice.call((ctx || document).querySelectorAll(sel));
+  }
 
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const id = a.getAttribute('href');
-      if (id.length > 1) {
-        e.preventDefault();
-        lenis.scrollTo(id, { offset: -80, duration: 1.1 });
-      }
+  /* ---------------- Icons (inline SVGs generated at build time) ------------- */
+  function swapIcon(el, name) {
+    var svg = ICONS[name];
+    if (!svg) return;
+    var wrap = document.createElement('span');
+    wrap.innerHTML = svg;
+    var node = wrap.firstElementChild;
+    var i;
+    for (i = 0; i < el.attributes.length; i++) {
+      var a = el.attributes[i];
+      if (a.name === 'data-lucide') continue;
+      node.setAttribute(a.name, a.value);
+    }
+    node.setAttribute('aria-hidden', 'true');
+    el.parentNode.replaceChild(node, el);
+    return node;
+  }
+
+  function initIcons() {
+    $$('[data-lucide]').forEach(function (el) {
+      swapIcon(el, el.getAttribute('data-lucide'));
     });
-  });
+  }
 
-  const navbar = document.getElementById('navbar');
-  let lastY = 0;
-  lenis.on('scroll', () => {
-    const y = window.scrollY;
-    if (y > 120 && y > lastY) navbar.classList.add('nav-hidden');
-    else navbar.classList.remove('nav-hidden');
-    lastY = y;
-  });
-}
+  /* ---------------- Language toggle ---------------- */
+  function fill(html) {
+    return html.replace(/\{year\}/g, YEAR);
+  }
 
-if (!prefersReduced && window.gsap && window.ScrollTrigger) {
-  gsap.registerPlugin(ScrollTrigger);
-  // Keep trigger positions stable while the iOS address bar shows/hides.
-  ScrollTrigger.config({ ignoreMobileResize: true });
+  function getDict() {
+    return I18N[LANG] || I18N.en || {};
+  }
 
-  // Re-measure after fonts and lazy-loaded images settle, or scroll-triggered
-  // reveals can measure wrong and stay hidden on mobile.
-  const recalibrate = () => ScrollTrigger.refresh();
-  if (document.readyState === 'complete') recalibrate();
-  else window.addEventListener('load', recalibrate);
-  setTimeout(recalibrate, 1500);
+  function applyLang() {
+    var dict = getDict();
+    document.documentElement.lang = LANG;
+    document.documentElement.dir = LANG === 'ar' ? 'rtl' : 'ltr';
 
-  // Soft fade-in: single trigger per element, fires once, freed immediately.
-  // (Hero uses its own staggered entrance; tilt-cards get their own fade below.)
-  gsap.utils.toArray('[data-reveal]').forEach(el => {
-    if (el.closest('#hero')) return;
-    if (el.classList.contains('tilt-card')) return;
-    gsap.fromTo(el,
-      { y: 40, opacity: 0 },
-      {
-        y: 0, opacity: 1,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+    $$('[data-i18n-html]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-html');
+      if (dict[key] != null) el.innerHTML = fill(dict[key]);
+    });
+    $$('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (dict[key] != null) el.textContent = fill(dict[key]);
+    });
+    $$('[data-i18n-ph]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-ph');
+      if (dict[key] != null) el.setAttribute('placeholder', dict[key]);
+    });
+    $$('[data-i18n-var-year]').forEach(function (el) {
+      el.setAttribute('data-i18n-var-year', YEAR);
+    });
+
+    var toggle = $('#lang-toggle');
+    if (toggle) toggle.textContent = LANG === 'ar' ? 'EN' : 'عربي';
+  }
+
+  function setLang(next) {
+    if (next === LANG) return;
+    LANG = next;
+    OTHER_LANG = LANG === 'ar' ? 'en' : 'ar';
+    try {
+      localStorage.setItem('techit-lang', LANG);
+    } catch (e) {}
+    applyLang();
+    var url = new URL(window.location.href);
+    if (LANG === 'en') url.searchParams.delete('lang');
+    else url.searchParams.set('lang', 'ar');
+    window.history.replaceState(null, '', url.toString());
+  }
+
+  function initLangToggle() {
+    var toggle = $('#lang-toggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', function () {
+      setLang(OTHER_LANG);
+    });
+  }
+
+  /* ---------------- Reveal on scroll ---------------- */
+  function revealAll() {
+    $$('[data-reveal]').forEach(function (el) {
+      el.classList.add('is-in');
+    });
+  }
+
+  function initReveal() {
+    var els = $$('[data-reveal]');
+    if (!els.length) return;
+    if (REDUCED.matches || !('IntersectionObserver' in window)) {
+      revealAll();
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-in');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+    );
+    els.forEach(function (el) {
+      io.observe(el);
+    });
+  }
+
+  /* ---------------- Counters ---------------- */
+  function initCounters() {
+    var els = $$('[data-count-to]');
+    if (!els.length) return;
+
+    function run(el) {
+      var target = parseInt(el.getAttribute('data-count-to'), 10) || 0;
+      if (REDUCED.matches) {
+        el.textContent = String(target);
+        return;
       }
-    );
-  });
-
-  // ---------------------------------------------------------
-  //  HERO ENTRANCE — staggered reveal with spring feel
-  // ---------------------------------------------------------
-  const heroReveal = (selector, y, delay) => {
-    gsap.fromTo(selector,
-      { y, opacity: 0, transformPerspective: 800, rotateX: 4 },
-      { y: 0, opacity: 1, rotateX: 0, duration: 1, ease: 'power3.out', delay }
-    );
-  };
-  heroReveal('#hero span[data-reveal]', 20, 0.1);
-  heroReveal('#hero h1[data-reveal]', 40, 0.3);
-  heroReveal('#hero p[data-reveal]', 30, 0.55);
-  heroReveal('#hero .mt-10', 35, 0.8);
-  gsap.fromTo('#hologram-wrap',
-    { y: 30, opacity: 0, transformPerspective: 800, rotateX: 4 },
-    { y: 0, opacity: 1, rotateX: 0, duration: 1, ease: 'power3.out', delay: 0.9, clearProps: 'transform' }
-  );
-
-  // Scroll-cue fades in after hero loads
-  gsap.fromTo('.scroll-cue',
-    { opacity: 0, y: -10 },
-    { opacity: 1, y: 0, duration: 0.8, delay: 1.5, ease: 'power2.out' }
-  );
-}
-
-// ============================================================
-//  Reveal-on-scroll animations (simple, smooth fades only)
-// ============================================================
-if (!prefersReduced && window.gsap && window.ScrollTrigger) {
-  gsap.registerPlugin(ScrollTrigger);
-
-  // Hero entrance handled above; this block handles scroll-driven reveals
-
-  // ============================================================
-  //  SCROLL-DRIVEN 3D REVEALS (perspective flips + rise)
-  // ============================================================
-  const noTransition = el => {
-    const prev = el.style.transition;
-    el.style.transition = 'none';
-    return () => { el.style.transition = prev || ''; };
-  };
-
-  // Content panels tilt in from their stored angle (data-3d-rx / data-3d-ry)
-  document.querySelectorAll('[data-3d-reveal]').forEach(el => {
-    const restore = noTransition(el);
-    const rx = parseFloat(el.dataset['3dRx'] || '16');
-    const ry = parseFloat(el.dataset['3dRy'] || '0');
-    gsap.fromTo(el,
-      { opacity: 0, transformPerspective: 1100, rotateX: rx, rotateY: ry, y: 44 },
-      {
-        opacity: 1, rotateX: 0, rotateY: 0, y: 0,
-        duration: 1.1,
-        ease: 'power3.out',
-        onComplete: restore,
-        scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+      var start = null;
+      var dur = 1300;
+      function step(ts) {
+        if (start === null) start = ts;
+        var p = Math.min((ts - start) / dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = String(Math.round(target * eased));
+        if (p < 1) requestAnimationFrame(step);
       }
-    );
-  });
+      requestAnimationFrame(step);
+    }
 
-  // Platform header logos — 3D flip open on scroll
-  document.querySelectorAll('#platforms img.logo-hover').forEach(img => {
-    const restore = noTransition(img);
-    gsap.fromTo(img,
-      { opacity: 0, transformPerspective: 600, rotateY: 90, scale: 0.9 },
-      {
-        opacity: 1, rotateY: 0, scale: 1,
-        duration: 0.9,
-        ease: 'back.out(1.6)',
-        onComplete: restore,
-        scrollTrigger: { trigger: img, start: 'top 90%', once: true }
-      }
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(run);
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            run(entry.target);
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.4 }
     );
-  });
+    els.forEach(function (el) {
+      io.observe(el);
+    });
+  }
 
-  // Platform intro columns — content lifts in with a 3D stagger
-  document.querySelectorAll('#platforms [data-reveal]:not(.tilt-card)').forEach(col => {
-    gsap.fromTo(col.children,
-      { opacity: 0, transformPerspective: 1000, rotateX: 22, y: 30 },
-      {
-        opacity: 1, rotateX: 0, y: 0,
-        stagger: 0.09,
-        duration: 0.9,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: col, start: 'top 88%', once: true }
-      }
-    );
-  });
+  /* ---------------- Hero wordmark rotation ---------------- */
+  var ROTATION_MS = 4400;
 
-  // Numbered step rows fade in (no tilt — numbers stay flat)
-  document.querySelectorAll('.step-item').forEach(item => {
-    const restore = noTransition(item);
-    const card = item.closest('.tilt-card');
-    gsap.fromTo(item,
-      { opacity: 0 },
-      {
-        opacity: 1,
-        duration: 0.7,
-        ease: 'power2.out',
-        delay: 0.35,
-        onComplete: () => {
-          restore();
-          gsap.set(item, { clearProps: 'transform,opacity' });
+  function initWordmark() {
+    var rotator = $('.hero-word-rotator');
+    if (!rotator) return;
+    var words = $$('.hero-word', rotator);
+    if (words.length < 2) return;
+    var idx = 0;
+    var paused = false;
+
+    function activate(i) {
+      words.forEach(function (w, n) {
+        w.classList.toggle('is-active', n === i);
+      });
+      var color = words[i].getAttribute('data-word-color') || '';
+      rotator.setAttribute('data-active', color);
+    }
+
+    activate(0); // every (re)entry into view starts on Sabaah,
+    if (REDUCED.matches) return; // never rotates for reduced-motion users.
+
+    function tick() {
+      if (paused) return;
+      idx = (idx + 1) % words.length;
+      activate(idx);
+    }
+
+    // Pause while the card is off-screen; on re-entry always begin on Sabaah.
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              paused = false;
+              if (idx !== 0) {
+                idx = 0;
+                activate(0);
+              }
+            } else {
+              paused = true;
+            }
+          });
         },
-        scrollTrigger: { trigger: card, start: 'top 60%', once: true }
-      }
-    );
-  });
-
-  // Pillar cards — 3D flip stagger
-  document.querySelectorAll('[data-stagger-parent]').forEach(parent => {
-    const kids = parent.querySelectorAll('[data-3d-reveal-child]');
-    gsap.fromTo(kids,
-      { opacity: 0, transformPerspective: 900, rotateX: 38, y: 26 },
-      {
-        opacity: 1, rotateX: 0, y: 0,
-        stagger: 0.13,
-        duration: 0.95,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: parent, start: 'top 88%', once: true }
-      }
-    );
-  });
-
-  // Feature lists — 3D rise stagger
-  document.querySelectorAll('ul:has(.check-item)').forEach(ul => {
-    const items = ul.querySelectorAll('.check-item');
-    gsap.fromTo(items,
-      { opacity: 0, transformPerspective: 900, rotateX: 26, y: 16 },
-      {
-        opacity: 1, rotateX: 0, y: 0,
-        stagger: 0.1,
-        duration: 0.8,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: ul, start: 'top 90%', once: true }
-      }
-    );
-  });
-
-  // Gentle parallax on background glow layers for 3D depth
-  gsap.utils.toArray('[data-depth]').forEach(el => {
-    const depth = parseFloat(el.dataset.depth || '0.2');
-    gsap.fromTo(el,
-      { yPercent: -depth * 22 },
-      {
-        yPercent: depth * 22,
-        ease: 'none',
-        scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: 0.8 }
-      }
-    );
-  });
-
-  // ---------------------------------------------------------
-  //  FULL-PAGE SCROLL PROGRESS BAR.
-  // ---------------------------------------------------------
-  gsap.fromTo('#scroll-progress',
-    { scaleX: 0 },
-    {
-      scaleX: 1, scaleY: 1.2,
-      ease: 'none',
-      scrollTrigger: { start: 0, end: 'max', scrub: 0.3 }
+        { threshold: 0.4 }
+      );
+      io.observe(rotator);
     }
-  );
 
-  // ---------------------------------------------------------
-  //  SELF-DRAWING SVG LINES
-  // ---------------------------------------------------------
-  document.querySelectorAll('.draw-svg').forEach(path => {
-    const len = path.getTotalLength ? path.getTotalLength() : 1000;
-    path.style.strokeDasharray = len;
-    path.style.strokeDashoffset = len;
-    gsap.to(path, {
-      strokeDashoffset: 0,
-      duration: 2.5,
-      ease: 'power2.inOut',
-      scrollTrigger: { trigger: path.closest('section'), start: 'top 80%', once: true }
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) paused = true;
+      else if (idx === 0) paused = false;
     });
-  });
-}
 
-// ============================================================
-//  ANIMATED COUNTERS + REVEAL SAFETY NET
-//  Driven by IntersectionObserver so it fires regardless of
-//  ScrollTrigger/Lenis state (iOS Safari included). GSAP still
-//  does the fancy reveals on desktop; this guarantees counters
-//  always count up and no reveal element is ever left hidden.
-// ============================================================
-function runCountUp(el, target) {
-  if (prefersReduced) { el.textContent = target % 1 !== 0 ? target.toFixed(1) : String(target); return; }
-  const isFloat = target % 1 !== 0;
-  const duration = 2000;
-  const start = performance.now();
-  function tick(now) {
-    const eased = 1 - Math.pow(1 - Math.min((now - start) / duration, 1), 4);
-    if (now - start < duration) {
-      el.textContent = isFloat ? (eased * target).toFixed(1) : Math.floor(eased * target);
-      requestAnimationFrame(tick);
-    } else {
-      el.textContent = isFloat ? target.toFixed(1) : String(target);
-    }
+    setInterval(tick, ROTATION_MS);
   }
-  requestAnimationFrame(tick);
-}
 
-if ('IntersectionObserver' in window) {
-  // Counters fire when the stat approaches the viewport.
-  const counterObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      counterObserver.unobserve(entry.target);
-      runCountUp(entry.target, parseFloat(entry.target.dataset.countTo));
-    });
-  }, { threshold: 0.4 });
-  document.querySelectorAll('[data-count-to]').forEach(el => counterObserver.observe(el));
+  /* ---------------- Mobile menu ---------------- */
+  function initMobileMenu() {
+    var toggle = $('#menu-toggle');
+    var menu = $('#mobile-menu');
+    var iconWrap = $('#menu-icon');
+    if (!toggle || !menu) return;
 
-  // Reveal safety net: anything GSAP left hidden is animated in once it
-  // reaches the viewport. Hero elements are excluded (they always run on
-  // load with their own stagger).
-  const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const el = entry.target;
-      revealObserver.unobserve(el);
-      if (parseFloat(getComputedStyle(el).opacity) !== 0) return; // GSAP already handled it
-      if (window.gsap) {
-        gsap.to(el, { opacity: 1, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: 'power3.out', clearProps: 'transform' });
+    function close() {
+      menu.classList.add('hidden');
+      toggle.setAttribute('aria-expanded', 'false');
+      if (ICONS.menu) swapIcon($('#menu-icon') || iconWrap, 'menu');
+      else if (iconWrap) iconWrap.removeAttribute('data-lucide');
+    }
+
+    toggle.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      var open = menu.classList.contains('hidden');
+      if (open) {
+        menu.classList.remove('hidden');
+        toggle.setAttribute('aria-expanded', 'true');
+        if (ICONS.x) {
+          var i = $('#menu-icon');
+          if (i) swapIcon(i, 'x');
+        }
       } else {
-        el.style.opacity = 1;
-        el.style.transform = '';
+        close();
       }
     });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('[data-reveal], [data-3d-reveal], [data-3d-reveal-child], .step-item, .check-item')
-    .forEach(el => {
-      if (el.closest('#hero')) return;
-      revealObserver.observe(el);
+
+    $$('.mobile-link', menu).forEach(function (link) {
+      link.addEventListener('click', close);
     });
-} else {
-  // No IntersectionObserver: never hide or leave anything at zero.
-  document.querySelectorAll('[data-count-to]').forEach(el => {
-    const target = parseFloat(el.dataset.countTo);
-    el.textContent = target % 1 !== 0 ? target.toFixed(1) : String(target);
-  });
-  document.querySelectorAll('[data-reveal], [data-3d-reveal], [data-3d-reveal-child], .step-item, .check-item')
-    .forEach(el => { el.style.opacity = 1; el.style.transform = ''; });
-}
-
-// ============================================================
-//  Interactive hover effects (tilt, magnetic, cursor glow)
-//  Mouse on desktop; finger-position tilt + glow on touch
-// ============================================================
-if (!prefersReduced) {
-  const finePointer = window.matchMedia('(pointer: fine)').matches;
-  const touchEnd = ['touchend', 'touchcancel'];
-
-  // ---- Cursor-follow glow on CTA buttons ----
-  // Desktop: follows the cursor. Touch: follows the finger while pressed.
-  document.querySelectorAll('.cta-glow').forEach(btn => {
-    const setGlow = (clientX, clientY) => {
-      const rect = btn.getBoundingClientRect();
-      btn.style.setProperty('--mx', ((clientX - rect.left) / rect.width * 100) + '%');
-      btn.style.setProperty('--my', ((clientY - rect.top) / rect.height * 100) + '%');
-    };
-    if (finePointer) {
-      btn.addEventListener('mousemove', e => setGlow(e.clientX, e.clientY));
-    } else {
-      btn.addEventListener('touchstart', e => {
-        btn.classList.add('touch-active');
-        if (e.touches[0]) setGlow(e.touches[0].clientX, e.touches[0].clientY);
-      });
-      btn.addEventListener('touchmove', e => {
-        if (e.touches[0]) setGlow(e.touches[0].clientX, e.touches[0].clientY);
-      });
-      touchEnd.forEach(ev => btn.addEventListener(ev, () => btn.classList.remove('touch-active')));
-    }
-  });
-
-  // ---- Magnetic links (navbar + footer + visit links) ----
-  // Desktop only — a link that jumps toward your finger feels wrong on touch.
-  if (finePointer) {
-    document.querySelectorAll('.magnetic-link').forEach(link => {
-      link.addEventListener('mousemove', e => {
-        const rect = link.getBoundingClientRect();
-        const relX = e.clientX - (rect.left + rect.width / 2);
-        const relY = e.clientY - (rect.top + rect.height / 2);
-        link.style.transform = `translate(${relX * 0.25}px, ${relY * 0.35}px)`;
-      });
-      link.addEventListener('mouseleave', () => {
-        link.style.transform = '';
-      });
+    menu.addEventListener('click', function (ev) {
+      if (ev.target === menu) close();
+    });
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && !menu.classList.contains('hidden')) close();
     });
   }
 
-  // ---- Subtle 3D tilt on platform cards ----
-  // Mouse tilt on desktop; the card tilts toward your finger on touch.
-  document.querySelectorAll('.tilt-card').forEach(card => {
-    const inner = card.querySelector('.tilt-inner');
-    const setTilt = (clientX, clientY) => {
-      const rect = card.getBoundingClientRect();
-      const x = (clientX - rect.left) / rect.width;
-      const y = (clientY - rect.top) / rect.height;
-      const rx = (0.5 - y) * 7;
-      const ry = (x - 0.5) * 9;
-      card.style.transform =
-        `perspective(1200px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
-      if (inner) inner.style.transform = 'translateZ(40px)';
-    };
-    const resetTilt = () => {
-      card.style.transform = '';
-      card.style.willChange = '';
-      if (inner) inner.style.transform = '';
-    };
-
-    if (finePointer) {
-      card.addEventListener('mouseenter', () => {
-        card.style.willChange = 'transform';
-      });
-      card.addEventListener('mousemove', e => setTilt(e.clientX, e.clientY));
-      card.addEventListener('mouseleave', resetTilt);
-    } else {
-      card.addEventListener('touchstart', () => { card.style.willChange = 'transform'; });
-      card.addEventListener('touchmove', e => {
-        if (e.touches[0]) setTilt(e.touches[0].clientX, e.touches[0].clientY);
-      }, { passive: true });
-      touchEnd.forEach(ev => card.addEventListener(ev, resetTilt));
+  /* ---------------- Scroll progress bar ---------------- */
+  function initScrollProgress() {
+    var bar = $('#scroll-progress');
+    if (!bar) return;
+    var ticking = false;
+    function update() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var p = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+      bar.style.transform = 'scaleX(' + p + ')';
+      ticking = false;
     }
-  });
-}
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+    update();
+  }
+
+  /* ---------------- Form toast ---------------- */
+  function showToast(mode, message) {
+    var existing = $('#form-toast');
+    if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+
+    var dict = getDict();
+    var icon = mode === 'success' ? ICONS['circle-check'] : ICONS['circle-alert'];
+    var toast = document.createElement('div');
+    toast.id = 'form-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.className = 'toast-' + mode;
+    var inner = document.createElement('div');
+    inner.className = 'flex items-start gap-3';
+    if (icon) {
+      var wrap = document.createElement('span');
+      wrap.innerHTML = icon;
+      var svg = wrap.firstElementChild;
+      svg.setAttribute('class', 'w-5 h-5 shrink-0');
+      svg.setAttribute('aria-hidden', 'true');
+      inner.appendChild(svg);
+    }
+    var label = document.createElement('span');
+    label.textContent = message || dict[message] || dict['form-toast-' + (mode === 'success' ? 'success' : 'error')] || '';
+    inner.appendChild(label);
+    toast.appendChild(inner);
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(function () {
+      toast.classList.add('is-visible');
+    });
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toast.classList.remove('is-visible');
+      setTimeout(function () {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, transitionMs);
+    }, 6000);
+
+    toast.addEventListener('click', function () {
+      toast.classList.remove('is-visible');
+      if (toastTimer) clearTimeout(toastTimer);
+    });
+  }
+
+  function initToast() {
+    var serverToast = $('#form-toast');
+    if (!serverToast) return;
+    setTimeout(function () {
+      serverToast.classList.add('is-visible');
+      setTimeout(function () {
+        if (serverToast.parentNode) serverToast.parentNode.removeChild(serverToast);
+      }, 6000);
+    }, 150);
+    serverToast.addEventListener('click', function () {
+      serverToast.classList.remove('is-visible');
+    });
+  }
+
+  /* ---------------- Contact form ---------------- */
+  function openMailto() {
+    var form = $('#contact-form');
+    if (!form) return;
+    var name = $('#cf-name') ? $('#cf-name').value : '';
+    var email = $('#cf-email') ? $('#cf-email').value : '';
+    var message = $('#cf-message') ? $('#cf-message').value : '';
+    var subject = 'Techit LLC contact inquiry' + (name ? ' — ' + name : '');
+    var body =
+      'Name: ' + name + '\nEmail: ' + email + '\n\n' + message;
+    window.location.href =
+      'mailto:' + 'info@techit-llc.com' + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  }
+
+  function initForm() {
+    var form = $('#contact-form');
+    if (!form) return;
+    var submit = $('#cf-submit');
+    var label = $('#cf-submit-label');
+    var t = getDict();
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      var payload = new URLSearchParams();
+      [['cf-name', 'name'], ['cf-email', 'email'], ['cf-message', 'message']].forEach(function (pair) {
+        var input = document.getElementById(pair[0]);
+        if (input && input.value) payload.append(pair[1], input.value);
+      });
+      if (submit) {
+        submit.disabled = true;
+        if (label) label.textContent = t['form-sending'] || 'Sending…';
+      }
+
+      fetch('/api/contact', { method: 'POST', body: payload, headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8', Accept: 'application/json' } })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok && data.ok, data: data };
+          });
+        })
+        .then(function (result) {
+          var name = ($('#cf-name') && $('#cf-name').value.trim()) || '';
+          if (result.ok) {
+            form.reset();
+            showToast('success', t['form-toast-success']);
+          } else {
+            openMailto();
+            showToast('success', ('' + t['form-mailto']).replace('{name}', name));
+          }
+        })
+        .catch(function () {
+          var name = ($('#cf-name') && $('#cf-name').value.trim()) || '';
+          openMailto();
+          showToast('success', ('' + t['form-mailto']).replace('{name}', name));
+        })
+        .finally(function () {
+          if (submit) {
+            submit.disabled = false;
+            if (label) label.textContent = t['form-submit'];
+          }
+        });
+    });
+  }
+
+  /* ---------------- Platforms pinned scroller ---------------- */
+  /* SkillLoop-inspired pinned section: on capable, motion-friendly displays
+     the platforms section becomes a sticky full-screen stage on a tall
+     track. Each card holds in place for a scroll window, then steps out to
+     reveal the next — scrub-linked through requestAnimationFrame, with a
+     progress bar and step counter. Everything is a progressive enhancement:
+     without this script, or for reduced-motion users, the cards remain a
+     plain, fully-visible vertical stack (tilt-in + brand glow on reveal). */
+  function initPlatformScroller() {
+    var section = $('[data-platform-scroll]');
+    if (!section) return;
+    var stage = $('.platforms-stage', section);
+    var track = $('.platforms-track', section);
+    var bar = $('.platforms-progress', section);
+    var badge = $('[data-platform-badge]', section);
+    var num = $('[data-platform-num]', section);
+    var head = $('.platforms-head', section);
+    var slides = $$('.platforms-slide', section);
+    var cards = $$('.platform', section);
+    if (!stage || !track || !slides.length) return;
+
+    var pinned = false;
+    var slideH = 0;
+    var startY = 0;
+    var range = 1;
+    var current = 0;
+    var smoothP = 0; // one scrubbed master progress drives bar + badge + track
+    var rawP = 0;
+    var ticking = false;
+    var EARLY = 0.15; // share of the pin each card holds before stepping out
+    var SNAP = 0.03;  // share of the pin spent stepping between cards
+    var MIN_SLIDE = 600; // px of card window below which pinning is not worth it
+    var TRACK = 8;    // scroll budget of the pin, in viewport-heights. The
+    // section becomes TRACK+1 = 9 screens tall and the pin walks its cards
+    // over TRACK = 8 screens of scroll — the SkillLoop system, where each
+    // early panel is planted ~120vh then snaps out in ~24vh, and the final
+    // card keeps the whole tail (~500vh) so it stays easy to read.
+
+    /* Fallback for anyone who cannot pin: gentle tilt-in + brand glow. */
+    function fallbackReveal() {
+      if (!('IntersectionObserver' in window)) {
+        cards.forEach(function (c) { c.classList.add('is-inview'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) entry.target.classList.add('is-inview');
+        });
+      }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
+      cards.forEach(function (c) { io.observe(c); });
+    }
+
+    if (REDUCED.matches || !('IntersectionObserver' in window)) {
+      fallbackReveal();
+      return;
+    }
+
+    /* --- Pinned mode --- */
+    function measure() {
+      var headH = head ? head.offsetHeight : 0;
+      var stageH = stage.offsetHeight || window.innerHeight;
+      slideH = Math.max(stageH - headH, window.innerHeight * 0.5);
+      slides.forEach(function (s) { s.style.height = slideH + 'px'; });
+      section.style.height = stageH + TRACK * stageH + 'px';
+      if (stage.style) stage.style.setProperty('--head-h', headH + 'px');
+      startY = section.getBoundingClientRect().top + window.scrollY;
+      range = section.offsetHeight - stageH;
+      if (range < 1) range = 1;
+    }
+
+    function readP() {
+      var p = (window.scrollY - startY) / range;
+      return Math.max(0, Math.min(1, p));
+    }
+
+    /* Map raw progress (0..1) to a slide offset (0..n-1). Each card holds
+       for its own scroll window, then steps out quickly (linear, SkillLoop
+       eases snaps with "none"); the last card keeps the whole tail of the
+       track so it stays readable. */
+    function offsetFor(p) {
+      var n = slides.length;
+      for (var i = 0; i < n - 1; i++) {
+        var s = EARLY + i * (EARLY + SNAP);
+        if (p < s) return i;
+        if (p < s + SNAP) return i + (p - s) / SNAP;
+      }
+      return n - 1;
+    }
+
+    /* Per-frame card states: each card fades out as the next is scrolled
+       in, and fades back in when you scroll the other way — opacity and
+       saturation are purely a function of distance from the current slide. */
+    function paint() {
+      var o = current;
+      for (var i = 0; i < cards.length; i++) {
+        var a = 1 - Math.abs(i - o) * 1.4;
+        if (a < 0) a = 0;
+        if (a > 1) a = 1;
+        var card = cards[i];
+        card.style.opacity = a.toFixed(3);
+        card.style.filter = 'saturate(' + (0.45 + 0.55 * a).toFixed(2) + ')';
+      }
+    }
+
+    function apply() {
+      track.style.transform = 'translate3d(0, ' + (-(current * slideH)).toFixed(1) + 'px, 0)';
+      var idx = Math.max(0, Math.min(slides.length - 1, Math.round(current)));
+      slides.forEach(function (s, i) {
+        s.classList.toggle('is-current', i === idx);
+      });
+      if (num) num.textContent = String(idx + 1);
+      paint();
+    }
+
+    /* One lerped master progress feeds the track offset, the progress bar,
+       and the rotating loop badge — exactly the shared-scrub feel of
+       SkillLoop's timeline (its scrub: 0.2 ≈ lerp k 0.14). */
+    function frame() {
+      smoothP += (rawP - smoothP) * 0.14;
+      if (Math.abs(rawP - smoothP) < 0.0004) {
+        smoothP = rawP;
+        ticking = false;
+      }
+      current = offsetFor(smoothP);
+      if (bar) bar.style.transform = 'scaleX(' + smoothP.toFixed(4) + ')';
+      if (badge) badge.style.transform = 'translateX(-50%) rotate(' + (smoothP * 360).toFixed(2) + 'deg)';
+      apply();
+      if (ticking) requestAnimationFrame(frame);
+    }
+
+    function onScroll() {
+      if (!pinned) return;
+      rawP = readP();
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(frame);
+      }
+    }
+
+    function onResize() {
+      measure();
+      onScroll();
+    }
+
+    /* The pinned deck must always show a full card at natural height — a
+       card that needs its own scrollbar would swallow the mouse wheel and
+       trap the section on its first slide. If the viewport cannot give each
+       card a tall-enough window, drop straight to the plain stack instead.
+       The decision waits for the webfonts: fonts change the heading height,
+       which is exactly what the window size is computed from. */
+    function decide() {
+      pinned = true;
+      section.classList.add('is-pinned');
+      measure();
+      if (slideH < MIN_SLIDE) {
+        pinned = false;
+        section.classList.remove('is-pinned');
+        section.style.height = '';
+        slides.forEach(function (s) { s.style.height = ''; });
+        fallbackReveal();
+        return;
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onResize);
+      onScroll();
+      apply();
+    }
+
+    var decided = false;
+
+    function enable() {
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function () {
+          if (!decided) { decided = true; decide(); }
+          else { measure(); onScroll(); }
+        });
+        /* Safety: if the webfont promise stalls, decide after a beat anyway
+           (the deck simply re-measures once fonts finally settle). */
+        setTimeout(function () {
+          if (!decided) { decided = true; decide(); }
+        }, 1200);
+      } else {
+        decided = true;
+        decide();
+      }
+    }
+
+    enable();
+  }
+
+  /* ---------------- Boot ---------------- */
+  function boot() {
+    initIcons();
+    applyLang();
+    initLangToggle();
+    initReveal();
+    initPlatformScroller();
+    initCounters();
+    initWordmark();
+    initMobileMenu();
+    initScrollProgress();
+    initToast();
+    initForm();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();

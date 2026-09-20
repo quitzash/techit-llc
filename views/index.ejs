@@ -1,529 +1,445 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="<%= lang %>" dir="<%= lang === 'ar' ? 'rtl' : 'ltr' %>">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <meta name="description" content="<%= description %>" />
+  <title><%= dict['meta-title'] %></title>
+  <meta name="description" content="<%= dict['meta-desc'] %>" />
+  <link rel="icon" type="image/png" href="/img/favicon.png" />
 
-  <!-- Google Fonts -->
+  <!-- JS-only visual enhancements. Without this class nothing is hidden:
+       the whole page is visible by default. data-reveal elements only
+       animate when this 'js' class is present. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <!-- Full i18n dictionary for the client-side language toggle. -->
+  <script>window.I18N = <%- i18nJson %>; window.LANG = '<%= lang %>';</script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Tajawal:wght@400;500;700;800&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Tajawal:wght@400;500;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind (compiled locally by `npm run build:css`) -->
   <link rel="stylesheet" href="/css/tailwind.css" />
-
-  <!-- Custom styles (glass, glows, animations, reduced-motion overrides) -->
   <link rel="stylesheet" href="/css/styles.css" />
-
-  <!-- GSAP + ScrollTrigger (served locally, no CDN) -->
-  <script src="/vendor/gsap/gsap.min.js"></script>
-  <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
-
-  <!-- Lenis smooth scroll -->
-  <script src="/vendor/lenis/lenis.min.js"></script>
-
-  <!-- Lucide Icons -->
-  <script src="/vendor/lucide/umd/lucide.min.js"></script>
 </head>
 
-<body class="antialiased noise-bg" id="top">
+<body class="antialiased noise-bg">
+  <div id="scroll-progress" aria-hidden="true"></div>
 
-  <!-- Full-page 3D scroll progress bar -->
-  <div id="scroll-progress"></div>
-
-  <!-- Fixed Glass Navigation -->
-  <header id="navbar" class="fixed inset-x-0 top-0 z-50 transition-all duration-500">
-    <nav class="max-w-7xl mx-auto px-6 lg:px-8">
-      <div class="glass mt-4 rounded-2xl px-5 py-3 flex items-center justify-between bg-[rgba(17,23,38,0.85)]">
-        <!-- Branding -->
+  <!-- ================= NAVIGATION ================= -->
+  <header id="navbar" class="fixed inset-x-0 top-0 z-50">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="nav-shell glass mt-4 rounded-2xl px-4 sm:px-5 py-3 flex items-center justify-between">
         <a href="#top" class="flex items-center gap-2.5">
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/70 via-emerald-400/50 to-cyan-400/70 font-display font-extrabold text-base text-white">T</span>
-          <span class="font-display font-bold text-lg tracking-tight text-white">
-            Techit<span class="text-white/50 font-medium"> LLC</span>
-          </span>
+          <img src="/img/techit-logo.png" alt="Techit LLC" width="48" height="48" class="h-9 w-9 shrink-0 rounded-xl object-contain bg-white/5 ring-1 ring-white/10">
+          <span class="font-display font-bold text-lg tracking-tight text-white">Techit<span class="text-white/40 font-medium"> LLC</span></span>
         </a>
 
-        <!-- Quick scroll anchors -->
-        <div class="hidden md:flex items-center gap-8 text-sm text-white/70">
-          <a href="#about" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-about">About</a>
-          <a href="#platforms" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-platforms">Platforms</a>
-          <a href="#pillars" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-pillars">Pillars</a>
-          <a href="#contact" class="anchor magnetic-link hover:text-white transition-colors" data-i18n="nav-contact">Contact</a>
+        <div class="hidden md:flex items-center gap-7 lg:gap-9 text-sm text-white/60">
+          <a href="#about" class="anchor hover:text-white transition-colors" data-i18n="nav-about"><%= t('nav-about') %></a>
+          <a href="#journey" class="anchor hover:text-white transition-colors" data-i18n="nav-journey"><%= t('nav-journey') %></a>
+          <a href="#platforms" class="anchor hover:text-white transition-colors" data-i18n="nav-platforms"><%= t('nav-platforms') %></a>
+          <a href="#pillars" class="anchor hover:text-white transition-colors" data-i18n="nav-pillars"><%= t('nav-pillars') %></a>
+          <a href="#contact" class="anchor hover:text-white transition-colors" data-i18n="nav-contact"><%= t('nav-contact') %></a>
         </div>
 
-        <button id="lang-toggle" type="button" aria-label="Switch language"
-                class="glass rounded-xl px-3.5 py-2 text-sm font-bold text-white/85 hover:bg-white/15 hover:text-white transition-colors cursor-pointer select-none">
-          عربي
-        </button>
+        <div class="flex items-center gap-2">
+          <button id="lang-toggle" type="button" aria-label="Switch language" class="glass rounded-xl px-3.5 py-2 text-sm font-bold text-white/80 hover:bg-white/10 hover:text-white transition-colors cursor-pointer select-none">
+            <%= lang === 'ar' ? 'EN' : 'عربي' %>
+          </button>
+          <button id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden glass rounded-xl px-3 py-2.5 text-white/80 hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
+            <i data-lucide="menu" class="w-5 h-5" id="menu-icon"></i>
+          </button>
+        </div>
       </div>
     </nav>
+
+    <!-- Mobile navigation panel -->
+    <div id="mobile-menu" class="md:hidden fixed top-20 inset-x-4 z-40 hidden">
+      <nav class="nav-menu glass rounded-2xl p-3 text-white/75 text-sm flex flex-col gap-1 shadow-2xl shadow-black/40">
+        <a href="#about" data-i18n="nav-about" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors"><%= t('nav-about') %></a>
+        <a href="#journey" data-i18n="nav-journey" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors"><%= t('nav-journey') %></a>
+        <a href="#platforms" data-i18n="nav-platforms" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors"><%= t('nav-platforms') %></a>
+        <a href="#pillars" data-i18n="nav-pillars" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors"><%= t('nav-pillars') %></a>
+        <a href="#contact" data-i18n="nav-contact" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors"><%= t('nav-contact') %></a>
+      </nav>
+    </div>
   </header>
 
+  <main id="top">
+
   <!-- ================= HERO ================= -->
-  <section id="hero" class="relative min-h-screen flex items-center overflow-hidden glow-hero grid-bg">
-    <!-- Floating orbs -->
+  <section id="hero" class="relative min-h-screen flex items-center overflow-hidden grid-bg">
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
-      <div class="float-orb absolute top-[15%] left-[10%] h-64 w-64 rounded-full bg-amber-500/[0.04] blur-3xl"></div>
-      <div class="float-orb float-orb-delay absolute top-[40%] right-[8%] h-80 w-80 rounded-full bg-cyan-500/[0.04] blur-3xl"></div>
-      <div class="float-orb float-orb-slow absolute bottom-[10%] left-[30%] h-72 w-72 rounded-full bg-emerald-500/[0.04] blur-3xl"></div>
+      <div class="float-orb absolute top-[12%] left-[6%] h-72 w-72 rounded-full bg-white/[0.03] blur-3xl"></div>
+      <div class="float-orb float-orb-delay absolute top-[38%] right-[6%] h-80 w-80 rounded-full bg-white/[0.025] blur-3xl"></div>
+      <div class="float-orb float-orb-slow absolute bottom-[8%] left-[28%] h-72 w-72 rounded-full bg-white/[0.02] blur-3xl"></div>
     </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-28 pb-20 w-full">
-      <div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-14 lg:gap-8 items-center">
-        <div>
-          <span data-reveal class="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium tracking-wide text-white/70 mb-8 glow-pulse" style="--glow-color: rgba(16,185,129,0.15);">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span data-i18n="hero-badge">Holding Enterprise · Regional Digital Platforms</span>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 w-full">
+      <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-16 lg:gap-10 items-center">
+        <div class="max-w-xl">
+          <span data-reveal class="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium tracking-wide text-white/60 mb-8 glow-pulse" style="--glow-color: rgba(140,145,157,0.12);">
+            <span class="h-1.5 w-1.5 rounded-full bg-white/40 animate-pulse"></span>
+            <span data-i18n="hero-badge"><%= t('hero-badge') %></span>
           </span>
 
           <h1 data-reveal data-i18n-html="hero-title" class="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white">
-            Powering <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">Next-Generation</span><br class="hidden sm:block" />
-            Digital Ecosystems.
+            <%- t('hero-title') %>
           </h1>
 
-          <p data-reveal data-i18n="hero-paragraph" class="mt-7 max-w-xl text-lg sm:text-xl text-white/60 leading-relaxed">
-            Techit LLC is the holding enterprise backing leading regional platforms in
-            e-commerce, business optimization, and enterprise gateways.
+          <p data-reveal data-i18n="hero-paragraph" class="mt-7 max-w-xl text-lg sm:text-xl text-white/50 leading-relaxed">
+            <%= t('hero-paragraph') %>
           </p>
 
           <div data-reveal class="mt-10 flex flex-wrap items-center gap-5">
-            <a href="#platforms"
-               class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-base transition-all shadow-lg shadow-white/10">
-              <span data-i18n="hero-cta">Explore the Ecosystem</span>
+            <a href="#platforms" class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-slate-900 transition-all shadow-lg shadow-white/10 hover:shadow-white/20">
+              <span data-i18n="hero-cta"><%= t('hero-cta') %></span>
               <i data-lucide="arrow-down" class="w-4 h-4"></i>
             </a>
-            <a href="#about"
-               class="group inline-flex items-center gap-2.5 rounded-2xl glass px-7 py-3.5 font-semibold text-base text-white/80 hover:bg-white/10 hover:text-white transition-all">
-              Why Techit
+            <a href="#about" class="group inline-flex items-center gap-2.5 rounded-2xl glass px-7 py-3.5 font-semibold text-base text-white/70 hover:bg-white/10 hover:text-white transition-all">
+              <span data-i18n="hero-why"><%= t('hero-why') %></span>
               <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
             </a>
           </div>
         </div>
 
-        <!-- Planet hologram (after the copy on mobile) -->
-        <div id="hologram-wrap" class="relative flex items-center justify-center py-10 lg:py-0" data-reveal>
-          <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(420px circle at 50% 50%, rgba(16,185,129,0.10), transparent 70%);"></div>
-          <canvas id="hologram" class="relative w-full max-w-[520px] h-auto" aria-hidden="true"></canvas>
+        <!-- Rotating platform wordmark -->
+        <div id="hero-wordmark" class="relative flex flex-col text-left lg:text-right justify-center py-10 lg:py-0" data-reveal>
+          <div class="absolute -inset-10 pointer-events-none" style="background: radial-gradient(420px circle at 50% 50%, rgba(140,145,157,0.06), transparent 70%);"></div>
+          <div class="relative glass rounded-3xl p-8 sm:p-10">
+            <span class="hero-wordmark-label" data-i18n="hero-word-label"><%= t('hero-word-label') %></span>
+            <div class="hero-word-rotator" aria-hidden="true">
+              <span class="hero-word is-active" data-word-color="sabaah"><%= t('sabaah-name') %></span>
+              <span class="hero-word" data-word-color="wfrlee"><%= t('wfrlee-name') %></span>
+              <span class="hero-word" data-word-color="onegate"><%= t('oneegate-name') %></span>
+            </div>
+            <p class="mt-8 flex items-center gap-3 text-sm text-white/40 font-medium justify-start lg:justify-end">
+              <span data-i18n="hero-word-caption"><%= t('hero-word-caption') %></span>
+              <span class="h-px w-10 bg-gradient-to-r from-transparent to-white/15"></span>
+            </p>
+          </div>
         </div>
       </div>
     </div>
 
-    <a href="#platforms" class="scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/40 hover:text-white transition-colors">
+    <a href="#about" class="scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/30 hover:text-white transition-colors" aria-label="Scroll down">
       <i data-lucide="chevrons-down" class="w-6 h-6"></i>
     </a>
   </section>
 
   <!-- ================= ABOUT ================= -->
   <section id="about" class="relative py-24 lg:py-32 overflow-hidden grid-bg">
-    <div data-depth="0.3" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(560px circle at 88% 18%, rgba(34,211,238,0.07), transparent 65%);"></div>
-    <div data-depth="0.18" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(500px circle at 8% 82%, rgba(245,158,11,0.06), transparent 65%);"></div>
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-14 lg:gap-24 items-center">
+    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(560px circle at 85% 18%, rgba(140,145,157,0.05), transparent 65%);"></div>
+    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(500px circle at 8% 82%, rgba(140,145,157,0.035), transparent 65%);"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
       <div>
-        <span data-3d-reveal data-3d-ry="-12deg" data-3d-rx="2deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="about-kicker">Company Overview</span>
-        <h2 data-3d-reveal data-3d-ry="-8deg" data-3d-rx="3deg" data-i18n-html="about-title" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
-          One holding,<br />many platforms,<br /><span class="text-white/50">unified purpose.</span>
+        <span class="kicker" data-reveal data-i18n="about-kicker"><%= t('about-kicker') %></span>
+        <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-reveal data-i18n-html="about-title">
+          <%- t('about-title') %>
         </h2>
 
-        <!-- Animated stat counters -->
-        <div class="mt-10 grid grid-cols-3 gap-4 max-w-md">
-          <div data-3d-reveal data-3d-ry="-6deg" data-3d-rx="2deg" class="glass rounded-2xl p-4 text-center">
-            <span class="font-display font-extrabold text-3xl text-white"><span data-count-to="3">0</span></span>
-            <p class="mt-1 text-xs text-white/50 uppercase tracking-wide">Platforms</p>
+        <div class="mt-10 grid grid-cols-3 gap-4 max-w-md" data-reveal>
+          <div class="glass rounded-2xl p-4 text-center">
+            <span class="font-display font-extrabold text-3xl text-white" data-count-to="3">3</span>
+            <p class="mt-1 text-xs text-white/40 uppercase tracking-wide" data-i18n="stat-platforms"><%= t('stat-platforms') %></p>
           </div>
-          <div data-3d-reveal data-3d-ry="-6deg" data-3d-rx="2deg" class="glass rounded-2xl p-4 text-center">
-            <span class="font-display font-extrabold text-3xl text-white"><span data-count-to="1">0</span></span>
-            <p class="mt-1 text-xs text-white/50 uppercase tracking-wide">Holding Co.</p>
+          <div class="glass rounded-2xl p-4 text-center">
+            <span class="font-display font-extrabold text-3xl text-white" data-count-to="1">1</span>
+            <p class="mt-1 text-xs text-white/40 uppercase tracking-wide" data-i18n="stat-holding"><%= t('stat-holding') %></p>
           </div>
-          <div data-3d-reveal data-3d-ry="-6deg" data-3d-rx="2deg" class="glass rounded-2xl p-4 text-center">
-            <span class="font-display font-extrabold text-3xl"><span data-count-to="100">0</span>%</span>
-            <p class="mt-1 text-xs text-white/50 uppercase tracking-wide">In-house</p>
+          <div class="glass rounded-2xl p-4 text-center">
+            <span class="font-display font-extrabold text-3xl"><span data-count-to="100">100</span>%</span>
+            <p class="mt-1 text-xs text-white/40 uppercase tracking-wide" data-i18n="stat-inhouse"><%= t('stat-inhouse') %></p>
           </div>
         </div>
       </div>
 
-      <div class="space-y-6 text-white/65 leading-relaxed text-lg">
-        <p data-3d-reveal data-3d-ry="8deg" data-3d-rx="-2deg" data-i18n="about-p1">
-          Techit LLC is a technology incubation and holding enterprise committed to
-          operational reliability and sustained platform growth. We conceive, back, and
-          scale specialized digital products that move real value across the region.
-        </p>
-        <p data-3d-reveal data-3d-ry="8deg" data-3d-rx="-2deg" data-i18n="about-p2">
-          From on-the-go coffee ordering to hourly hotel booking and secure enterprise
-          gateways, each subsidiary operates with its own focus — while sharing
-          the infrastructure, governance, and long-term vision of the Techit umbrella.
-        </p>
+      <div class="space-y-6 text-white/55 leading-relaxed text-lg">
+        <p data-reveal data-i18n="about-p1"><%= t('about-p1') %></p>
+        <p data-reveal data-i18n="about-p2"><%= t('about-p2') %></p>
       </div>
     </div>
   </section>
 
-  <!-- ================= PLATFORMS ================= -->
-  <section id="platforms" class="relative overflow-hidden">
+  <!-- ================= JOURNEY (How we work — always visible) ================= -->
+  <section id="journey" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-2xl">
+        <span class="kicker" data-reveal data-i18n="journey-kicker"><%= t('journey-kicker') %></span>
+        <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-reveal data-i18n-html="journey-title">
+          <%- t('journey-title') %>
+        </h2>
+        <p class="mt-5 text-white/50 text-lg leading-relaxed" data-reveal data-i18n="journey-desc"><%= t('journey-desc') %></p>
+      </div>
 
-    <!-- Wfrlee -->
-    <div class="relative py-24 lg:py-32 overflow-hidden glow-wfrlee">
-      <div data-depth="0.4" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(620px circle at 78% 30%, rgba(16,185,129,0.12), transparent 65%);"></div>
-      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        <div data-reveal class="lg:order-2">
-          <div class="flex items-center gap-4">
-            <span class="relative inline-flex w-16 h-16 shrink-0 rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/40 overflow-hidden">
-              <span aria-hidden="true" class="absolute inset-0 flex items-center justify-center font-display font-extrabold text-2xl text-emerald-400">W</span>
-              <img src="https://wfrlee.com/logo192.png" alt="Wfrlee logo" width="64" height="64" loading="lazy" class="relative w-full h-full p-2.5 object-contain logo-hover" onerror="this.remove()" />
-            </span>
-            <div>
-              <h3 data-i18n="wfrlee-name" class="font-display font-extrabold text-3xl sm:text-4xl text-white">Wfrlee.com</h3>
-              <span class="text-emerald-400 text-sm font-semibold">wfrlee.com</span>
-            </div>
+      <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
+        <% const journeySteps = ['conceive', 'back', 'support', 'operate']; %>
+        <% const journeyIcons = ['lightbulb', 'rocket', 'shield-check', 'globe']; %>
+        <% const journeyNums = ['1', '2', '3', '4']; %>
+        <% journeySteps.forEach((step, i) => { %>
+        <article class="journey-card glass rounded-3xl p-7 relative overflow-hidden group">
+          <div class="flex items-center justify-between">
+            <span class="journey-num" aria-hidden="true"><%= t('journey-' + journeyNums[i] + '-num') %></span>
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 text-white/50 ring-1 ring-white/10"><i data-lucide="<%= journeyIcons[i] %>" class="w-5 h-5"></i></span>
           </div>
-          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug" data-i18n="wfrlee-tagline">
-            Hotels, booked by the hour.
-          </p>
-          <p class="mt-4 text-white/60 text-lg leading-relaxed" data-i18n="wfrlee-desc">
-            Book short stays with flexible hourly rates. Pay only for the time you
-            use — no need to pay for a full night.
-          </p>
-          <ul class="mt-8 space-y-3 text-white/70">
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span data-i18n="wfrlee-c1">Flexible hourly-rate booking</span></li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span data-i18n="wfrlee-c2">Pay-as-you-stay pricing</span></li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span data-i18n="wfrlee-c3">Instant short-stay scheduling</span></li>
-          </ul>
-          <a href="https://wfrlee.com" target="_blank" rel="noopener"
-             class="group mt-9 inline-flex items-center gap-2 text-emerald-400 font-semibold text-sm magnetic-link">
-            <span class="group-hover:tracking-wider transition-all" data-i18n="wfrlee-visit">Visit wfrlee.com</span>
-            <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
-          </a>
-        </div>
-
-        <div data-reveal class="tilt-card glow-wfrlee-card card-border-glow glass rounded-3xl p-10 border-t-2 border-emerald-400/50 lg:order-1 scan-overlay" style="--border-glow: rgba(16,185,129,0.4);">
-          <div class="tilt-inner">
-            <div class="flex items-center gap-3 text-emerald-400">
-              <i data-lucide="clock" class="w-5 h-5"></i>
-              <span class="text-xs font-semibold uppercase tracking-widest" data-i18n="wfrlee-label">Hourly Hotel Booking</span>
-            </div>
-            <p class="mt-6 text-white/60 leading-relaxed" data-i18n="wfrlee-idea">
-              The idea: you rarely need a whole night. Wfrlee lets you book a hotel room
-              for the exact hours you need and pay only for those hours — not the full day.
-            </p>
-            <div class="mt-8 space-y-0 divide-y divide-white/5">
-              <div class="flex items-center gap-4 py-4 step-item">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-sm font-bold ring-1 ring-emerald-500/25">1</span>
-                <p class="text-sm text-white/70" data-i18n-html="wfrlee-step1"><span class="text-white font-semibold">Search</span> — find a hotel and choose your hours (3–24h).</p>
-              </div>
-              <div class="flex items-center gap-4 py-4 step-item">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-sm font-bold ring-1 ring-emerald-500/25">2</span>
-                <p class="text-sm text-white/70" data-i18n-html="wfrlee-step2"><span class="text-white font-semibold">Book hourly</span> — pay per hour, no full-night charge.</p>
-              </div>
-              <div class="flex items-center gap-4 py-4 step-item">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-sm font-bold ring-1 ring-emerald-500/25">3</span>
-                <p class="text-sm text-white/70" data-i18n-html="wfrlee-step3"><span class="text-white font-semibold">Stay &amp; go</span> — check in instantly, check out on your time.</p>
-              </div>
-            </div>
-            <p class="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/25 px-4 py-1.5 text-sm text-emerald-300 font-medium">
-              <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span data-i18n="wfrlee-badge">Currently available in Saudi Arabia</span>
-            </p>
-          </div>
-        </div>
+          <span class="mt-6 block text-xs font-semibold uppercase tracking-widest text-white/40" data-i18n="journey-<%= journeyNums[i] %>-kicker"><%= t('journey-' + journeyNums[i] + '-kicker') %></span>
+          <h3 class="mt-3 font-display font-bold text-xl text-white" data-i18n-html="journey-<%= journeyNums[i] %>-title"><%- t('journey-' + journeyNums[i] + '-title') %></h3>
+          <p class="mt-3 text-sm leading-relaxed text-white/50" data-i18n-html="journey-<%= journeyNums[i] %>-body"><%- t('journey-' + journeyNums[i] + '-body') %></p>
+        </article>
+        <% }); %>
       </div>
     </div>
+  </section>
 
-    <!-- OneEGate -->
-    <div class="relative py-24 lg:py-32 overflow-hidden glow-onegate">
-      <div data-depth="0.4" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(620px circle at 25% 35%, rgba(34,211,238,0.12), transparent 65%);"></div>
-      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        <div data-reveal>
-          <div class="flex items-center gap-4">
-            <span class="relative inline-flex w-16 h-16 shrink-0 rounded-2xl bg-cyan-500/10 ring-1 ring-cyan-500/40 overflow-hidden">
-              <span aria-hidden="true" class="absolute inset-0 flex items-center justify-center font-display font-extrabold text-2xl text-cyan-400">O</span>
-              <img src="https://oneegate.com/logo192.png" alt="OneEGate logo" width="64" height="64" loading="lazy" class="relative w-full h-full p-2.5 object-contain logo-hover" onerror="this.remove()" />
-            </span>
-            <div>
-              <h3 class="font-display font-extrabold text-3xl sm:text-4xl text-white">OneEGate</h3>
-              <span class="text-cyan-400 text-sm font-semibold">oneegate.com</span>
-            </div>
-          </div>
-          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug" data-i18n="oneegate-tagline">
-            One gateway for the enterprise.
-          </p>
-          <p class="mt-4 text-white/60 text-lg leading-relaxed" data-i18n="oneegate-desc">
-            Managing enterprise-level central gateways, institutional access systems,
-            and secure infrastructure tools.
-          </p>
-          <ul class="mt-8 space-y-3 text-white/70">
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i><span data-i18n="oneegate-c1">Central enterprise gateways</span></li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i><span data-i18n="oneegate-c2">Institutional access systems</span></li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-cyan-400 mt-0.5 shrink-0"></i><span data-i18n="oneegate-c3">Secure infrastructure tools</span></li>
-          </ul>
-          <a href="https://oneegate.com" target="_blank" rel="noopener"
-             class="group mt-9 inline-flex items-center gap-2 text-cyan-400 font-semibold text-sm magnetic-link">
-            <span class="group-hover:tracking-wider transition-all" data-i18n="oneegate-visit">Visit oneegate.com</span>
-            <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
-          </a>
-        </div>
+  <!-- ================= PLATFORMS — pinned scroller ================= -->
+  <!-- SkillLoop-style pinned section: a tall scroll track with a sticky,
+       full-screen stage. Each platform card holds in place, then steps out
+       to reveal the next (JS enhancement). Without JS — or for reduced-motion
+       visitors — the cards simply stack one below the next with a soft 3D
+       tilt-in; all content is visible by default. -->
+  <section id="platforms" class="relative overflow-clip grid-bg" data-platform-scroll>
+    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(700px circle at 12% 28%, rgba(140,145,157,0.05), transparent 62%);"></div>
 
-        <div data-reveal class="tilt-card glow-onegate-card card-border-glow glass rounded-3xl p-10 border-t-2 border-cyan-400/50 scan-overlay" style="--border-glow: rgba(34,211,238,0.4);">
-          <div class="tilt-inner">
-            <div class="flex items-center gap-3 text-cyan-400">
-              <i data-lucide="shield" class="w-5 h-5"></i>
-              <span class="text-xs font-semibold uppercase tracking-widest" data-i18n="oneegate-label">Enterprise Gateway</span>
-            </div>
-            <p class="mt-6 text-white/60 leading-relaxed" data-i18n="oneegate-idea">
-              The idea: institutions shouldn't juggle a dozen logins and systems.
-              OneEGate is a single, secure front door for enterprise access,
-              teams, and infrastructure.
-            </p>
-            <div class="mt-8 space-y-0 divide-y divide-white/5">
-              <div class="flex items-center gap-4 py-4 step-item">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 text-sm font-bold ring-1 ring-cyan-500/25">1</span>
-                <p class="text-sm text-white/70" data-i18n-html="oneegate-step1"><span class="text-white font-semibold">Centralize</span> — one secure gateway for all institutional systems.</p>
-              </div>
-              <div class="flex items-center gap-4 py-4 step-item">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 text-sm font-bold ring-1 ring-cyan-500/25">2</span>
-                <p class="text-sm text-white/70" data-i18n-html="oneegate-step2"><span class="text-white font-semibold">Control access</span> — define who reaches what, policy-driven.</p>
-              </div>
-              <div class="flex items-center gap-4 py-4 step-item">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 text-sm font-bold ring-1 ring-cyan-500/25">3</span>
-                <p class="text-sm text-white/70" data-i18n-html="oneegate-step3"><span class="text-white font-semibold">Operate securely</span> — infrastructure protected at the core.</p>
-              </div>
-            </div>
-          </div>
+    <div class="platforms-stage">
+      <!-- Ambient backdrop (CSS-only motion) -->
+      <div class="platforms-ambient" aria-hidden="true">
+        <div class="float-orb platforms-orb platforms-orb-l"></div>
+        <div class="float-orb float-orb-delay platforms-orb platforms-orb-r"></div>
+        <div class="float-orb float-orb-soft platforms-orb platforms-orb-t"></div>
+        <div class="platforms-ring platforms-ring-solid"></div>
+        <div class="platforms-ring platforms-ring-dashed"></div>
+      </div>
+
+      <!-- Scroller chrome: progress bar + rotating loop badge + step counter -->
+      <div class="platforms-chrome" aria-hidden="true">
+        <div class="platforms-progress" data-platform-progress></div>
+        <svg class="platforms-badge" data-platform-badge viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="10 8"></circle>
+        </svg>
+        <div class="platforms-counter">
+          <span class="platforms-counter-num" data-platform-num>1</span>
+          <span class="platforms-counter-total">/ 03</span>
         </div>
       </div>
-    </div>
 
-    <!-- Sabaah -->
-    <div class="relative py-24 lg:py-32 overflow-hidden glow-sabaah">
-      <div data-depth="0.4" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(620px circle at 72% 40%, rgba(245,158,11,0.12), transparent 65%);"></div>
-      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        <div data-reveal>
-          <div class="flex items-center gap-4">
-            <span class="relative inline-flex w-16 h-16 shrink-0 rounded-2xl bg-amber-500/10 ring-1 ring-amber-500/40 overflow-hidden">
-              <span aria-hidden="true" class="absolute inset-0 flex items-center justify-center font-display font-extrabold text-2xl text-amber-400">S</span>
-              <img src="https://sabaah.net/favicon.svg" alt="Sabaah logo" width="64" height="64" loading="lazy" class="relative w-full h-full p-2.5 object-contain logo-hover" onerror="this.remove()" />
-            </span>
-            <div>
-              <h3 class="font-display font-extrabold text-3xl sm:text-4xl text-white">Sabaah</h3>
-              <span class="text-amber-400 text-sm font-semibold">sabaah.net</span>
-            </div>
-          </div>
-          <p class="mt-6 text-2xl text-white font-display font-bold leading-snug" data-i18n="sabaah-tagline">
-            Coffee, ordered on the go.
-          </p>
-          <p class="mt-4 text-white/60 text-lg leading-relaxed" data-i18n="sabaah-desc">
-            Order your coffee from anywhere — browse nearby cafés, skip the queue,
-            and have your brew ready the moment you arrive.
-          </p>
-          <ul class="mt-8 space-y-3 text-white/70">
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i><span data-i18n="sabaah-c1">Order ahead from nearby cafés</span></li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i><span data-i18n="sabaah-c2">Skip the queue with fast pickup</span></li>
-            <li class="flex items-start gap-3 check-item"><i data-lucide="check" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i><span data-i18n="sabaah-c3">Streamlined mobile ordering pipeline</span></li>
-          </ul>
-          <a href="https://sabaah.net" target="_blank" rel="noopener"
-             class="group mt-9 inline-flex items-center gap-2 text-amber-400 font-semibold text-sm magnetic-link">
-            <span class="group-hover:tracking-wider transition-all" data-i18n="sabaah-visit">Visit sabaah.net</span>
-            <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
-          </a>
+      <!-- Section heading (stays put while the track steps underneath) -->
+      <header class="platforms-head">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 lg:pt-28">
+          <span class="kicker" data-reveal data-i18n="nav-platforms"><%= t('nav-platforms') %></span>
+          <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white" data-reveal data-i18n-html="platforms-title">
+            <%- t('platforms-title') %>
+          </h2>
         </div>
+      </header>
 
-        <div data-reveal class="tilt-card glow-sabaah-card card-border-glow glass rounded-3xl p-10 border-t-2 border-amber-400/50 scan-overlay" style="--border-glow: rgba(245,158,11,0.4);">
-          <div class="tilt-inner">
-            <div class="flex items-center gap-3 text-amber-400">
-              <i data-lucide="coffee" class="w-5 h-5"></i>
-              <span class="text-xs font-semibold uppercase tracking-widest" data-i18n="sabaah-label">On-the-Go Coffee</span>
+      <!-- The track: one full-height slide per platform -->
+      <% const platforms = [
+        { id: 'wfrlee', monogram: 'W', icon: 'calendar-clock', target: 'https://wfrlee.com', logo: '/img/wfrlee.png' },
+        { id: 'sabaah', monogram: 'S', icon: 'coffee', target: 'https://sabaah.net', logo: 'https://www.sabaah.net/favicon.svg' },
+        { id: 'oneegate', monogram: '1E', icon: 'shield-check', target: 'https://oneegate.com' },
+      ]; %>
+      <div class="platforms-track" data-platform-track>
+        <% platforms.forEach((p) => { %>
+        <div class="platforms-slide">
+          <article class="platform platform-<%= p.id %> glass rounded-3xl" id="platform-<%= p.id %>">
+            <span class="platform-glow" aria-hidden="true"></span>
+            <div class="platforms-body p-6 sm:p-8 grid lg:grid-cols-2 gap-8 lg:gap-12 items-start relative">
+              <div>
+                <div class="flex items-center gap-5 sm:gap-6">
+                  <span class="platform-lockup" aria-hidden="true">
+                    <% if (p.id !== 'wfrlee') { %>
+                    <span class="platform-monogram"><%= p.monogram %></span>
+                    <% } %>
+                    <% if (p.logo) { %>
+                    <img class="platform-logo" src="<%= p.logo %>" alt="" loading="lazy" width="256" height="256" onerror="this.onerror=null;this.classList.add('platform-logo--missing');">
+                    <% } %>
+                  </span>
+                  <div class="min-w-0">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-white/45" data-i18n="<%= p.id %>-label"><%= t(p.id + '-label') %></span>
+                    <h3 class="mt-1.5 font-display font-bold text-3xl text-white leading-tight" data-i18n="<%= p.id %>-name"><%= t(p.id + '-name') %></h3>
+                    <p class="platform-tagline mt-1.5 font-medium" data-i18n="<%= p.id %>-tagline"><%= t(p.id + '-tagline') %></p>
+                  </div>
+                </div>
+
+                <p class="mt-4 text-white/55 leading-relaxed" data-i18n="<%= p.id %>-desc"><%= t(p.id + '-desc') %></p>
+
+                <% if (p.id === 'wfrlee') { %>
+                <span class="mt-4 inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium text-emerald-300/90" data-i18n="wfrlee-badge"><%= t('wfrlee-badge') %></span>
+                <% } %>
+
+                <ul class="mt-4 space-y-2">
+                  <% [1,2,3].forEach(i => { %>
+                  <li class="flex items-start gap-2.5 text-sm text-white/60">
+                    <i data-lucide="check" class="w-4 h-4 mt-0.5 text-emerald-400 shrink-0"></i>
+                    <span data-i18n="<%= p.id %>-c<%= i %>"><%= t(p.id + '-c' + i) %></span>
+                  </li>
+                  <% }); %>
+                </ul>
+
+                <a href="<%= p.target %>" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 rounded-xl glass px-5 py-2.5 text-sm font-semibold text-white/80 hover:bg-white/10 hover:text-white transition-all">
+                  <span data-i18n="<%= p.id %>-visit"><%= t(p.id + '-visit') %></span>
+                  <i data-lucide="external-link" class="w-4 h-4"></i>
+                </a>
+              </div>
+
+              <div class="space-y-4">
+                <div class="platforms-box glass rounded-2xl p-5">
+                  <span class="text-xs font-semibold uppercase tracking-widest text-white/40"><%= t('pillars-1-title') %></span>
+                  <p class="mt-3 text-white/60 leading-relaxed text-sm" data-i18n="<%= p.id %>-idea"><%= t(p.id + '-idea') %></p>
+                </div>
+                <ol class="space-y-3">
+                  <% [1,2,3].forEach(i => { %>
+                  <li class="flex gap-4">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/5 font-mono text-sm text-white/60 ring-1 ring-white/10"><%= i %></span>
+                    <p class="pt-1 text-sm text-white/60 leading-relaxed" data-i18n-html="<%= p.id %>-step<%= i %>"><%- t(p.id + '-step' + i) %></p>
+                  </li>
+                  <% }); %>
+                </ol>
+              </div>
             </div>
-            <p class="mt-6 text-white/60 leading-relaxed" data-i18n="sabaah-idea">
-              The idea: instead of queuing at a café, order before you're even there.
-              Sabaah connects you to nearby cafés and has your drink ready on arrival.
-            </p>
-            <div class="mt-8 space-y-0 divide-y divide-white/5">
-              <div class="flex items-center gap-4 py-4 step-item">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 text-sm font-bold ring-1 ring-amber-500/25">1</span>
-                <p class="text-sm text-white/70" data-i18n-html="sabaah-step1"><span class="text-white font-semibold">Discover</span> — browse cafés near you and pick a drink.</p>
-              </div>
-              <div class="flex items-center gap-4 py-4 step-item">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 text-sm font-bold ring-1 ring-amber-500/25">2</span>
-                <p class="text-sm text-white/70" data-i18n-html="sabaah-step2"><span class="text-white font-semibold">Order ahead</span> — pay in app and the café starts your brew.</p>
-              </div>
-              <div class="flex items-center gap-4 py-4 step-item">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 text-sm font-bold ring-1 ring-amber-500/25">3</span>
-                <p class="text-sm text-white/70" data-i18n-html="sabaah-step3"><span class="text-white font-semibold">Skip the queue</span> — walk in and grab your ready cup.</p>
-              </div>
-            </div>
-          </div>
+          </article>
         </div>
+        <% }); %>
       </div>
     </div>
   </section>
 
   <!-- ================= PILLARS ================= -->
-  <section id="pillars" class="relative py-24 lg:py-32 overflow-hidden grid-bg">
-    <div data-depth="0.3" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(560px circle at 24% 18%, rgba(16,185,129,0.07), transparent 65%);"></div>
-
-    <!-- Decorative self-drawing SVG -->
-    <svg class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-[0.04]" viewBox="0 0 1200 600" fill="none" aria-hidden="true">
-      <path data-draw class="draw-svg" d="M0,300 Q300,100 600,300 T1200,300" stroke="url(#svg-grad)" stroke-width="1" fill="none" />
-      <path data-draw class="draw-svg" d="M0,320 Q300,520 600,320 T1200,320" stroke="url(#svg-grad)" stroke-width="0.5" fill="none" />
-      <defs>
-        <linearGradient id="svg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#f59e0b" />
-          <stop offset="50%" stop-color="#10b981" />
-          <stop offset="100%" stop-color="#22d3ee" />
-        </linearGradient>
-      </defs>
-    </svg>
-
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+  <section id="pillars" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="max-w-2xl">
-        <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="3deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="pillars-kicker">Core Pillars</span>
-        <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="4deg" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-i18n="pillars-title">
-          What we stand on.
+        <span class="kicker" data-reveal><%= t('pillars-kicker') %></span>
+        <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-reveal data-i18n-html="pillars-title">
+          <%- t('pillars-title') %>
         </h2>
+        <p class="mt-5 text-white/50 text-lg leading-relaxed" data-reveal data-i18n="about-p1"><%= t('about-p1') %></p>
       </div>
 
-      <div data-stagger-parent class="mt-14 grid gap-6 md:grid-cols-3">
-        <div data-3d-reveal-child class="pillar-card glass rounded-3xl p-8 border-t-2 border-amber-400/60 cursor-default">
-          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/20 logo-hover">
-            <i data-lucide="layers" class="w-6 h-6"></i>
-          </div>
-          <h3 class="mt-6 font-display font-bold text-xl text-white" data-i18n="pillars-1-title">Scalability</h3>
-          <p class="mt-3 text-white/60 leading-relaxed" data-i18n="pillars-1-desc">
-            Architectures engineered to grow from first user to full regional
-            scale without breaking stride.
-          </p>
-        </div>
-
-        <div data-3d-reveal-child class="pillar-card glass rounded-3xl p-8 border-t-2 border-emerald-400/60 cursor-default">
-          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20 logo-hover">
-            <i data-lucide="workflow" class="w-6 h-6"></i>
-          </div>
-          <h3 class="mt-6 font-display font-bold text-xl text-white" data-i18n="pillars-2-title">Unified Integration</h3>
-          <p class="mt-3 text-white/60 leading-relaxed" data-i18n="pillars-2-desc">
-            Platforms that connect cleanly — shared data, shared standards, and one
-            cohesive ecosystem experience.
-          </p>
-        </div>
-
-        <div data-3d-reveal-child class="pillar-card glass rounded-3xl p-8 border-t-2 border-cyan-400/60 cursor-default">
-          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/20 logo-hover">
-            <i data-lucide="lock" class="w-6 h-6"></i>
-          </div>
-          <h3 class="mt-6 font-display font-bold text-xl text-white" data-i18n="pillars-3-title">Enterprise Security</h3>
-          <p class="mt-3 text-white/60 leading-relaxed" data-i18n="pillars-3-desc">
-            Institutional-grade protection embedded at the core of every gateway
-            and access system we operate.
-          </p>
-        </div>
+      <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal>
+        <% const pillars = [
+          { icon: 'rocket' },
+          { icon: 'network' },
+          { icon: 'shield-check' },
+        ]; %>
+        <% pillars.forEach((p, i) => { %>
+        <article class="pillar-card glass rounded-3xl p-8 relative overflow-hidden group">
+          <span class="pillar-glow absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"></span>
+          <span class="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10 text-white/70">
+            <i data-lucide="<%= p.icon %>" class="w-6 h-6"></i>
+          </span>
+          <h3 class="mt-6 font-display font-bold text-2xl text-white" data-i18n="pillars-<%= i+1 %>-title"><%= t('pillars-' + (i+1) + '-title') %></h3>
+          <p class="mt-3 text-sm leading-relaxed text-white/50" data-i18n="pillars-<%= i+1 %>-desc"><%= t('pillars-' + (i+1) + '-desc') %></p>
+        </article>
+        <% }); %>
       </div>
     </div>
   </section>
 
   <!-- ================= CONTACT ================= -->
-  <section id="contact" class="relative py-24 lg:py-32 overflow-hidden">
-    <div data-depth="0.35" aria-hidden="true" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(600px circle at 85% 30%, rgba(245,158,11,0.07), transparent 65%);"></div>
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-      <div class="grid lg:grid-cols-2 gap-14 lg:gap-20 items-start">
-        <div>
-          <span data-3d-reveal data-3d-ry="-10deg" data-3d-rx="2deg" class="text-xs font-semibold tracking-[0.25em] uppercase text-white/40 block" data-i18n="contact-kicker">Contact Us</span>
-          <h2 data-3d-reveal data-3d-ry="-6deg" data-3d-rx="3deg" data-i18n-html="contact-title" class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white">
-Let's build <span class="bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent shimmer">together.</span>
-          </h2>
-          <p data-3d-reveal data-3d-ry="-4deg" data-3d-rx="2deg" class="mt-5 text-white/60 text-lg leading-relaxed max-w-md" data-i18n="contact-desc">
-            Whether you're a partner, a business exploring our platforms, or a team
-            looking to grow under the Techit umbrella — we'd love to hear from you.
-          </p>
+  <section id="contact" class="relative py-24 lg:py-32 overflow-hidden glow-hero">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid lg:grid-cols-[0.9fr_1.1fr] gap-14 lg:gap-20 items-start">
+      <div class="lg:sticky lg:top-32">
+        <span class="kicker" data-reveal data-i18n="contact-kicker"><%= t('contact-kicker') %></span>
+        <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-reveal data-i18n-html="contact-title">
+          <%- t('contact-title') %>
+        </h2>
+        <p class="mt-5 text-white/50 text-lg leading-relaxed" data-reveal data-i18n="contact-desc"><%= t('contact-desc') %></p>
 
-          <a data-3d-reveal data-3d-ry="-8deg" data-3d-rx="2deg" href="mailto:info@techit-llc.com" class="group mt-9 inline-flex items-center gap-3 glass rounded-2xl px-5 py-4 hover:bg-white/10 transition-colors magnetic-link">
-            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-white">
-              <i data-lucide="mail" class="w-5 h-5"></i>
+        <div data-reveal class="mt-8 space-y-3">
+          <a href="mailto:<%= email %>" class="flex items-center gap-3 text-white/70 hover:text-white transition-colors group">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 ring-1 ring-white/10">
+              <i data-lucide="mail" class="w-4 h-4"></i>
             </span>
-            <span>
-              <span class="block text-xs text-white/40 uppercase tracking-wide" data-i18n="contact-email-label">Email</span>
-              <span class="block text-white/90 font-medium">info@techit-llc.com</span>
-            </span>
+            <span class="font-mono text-sm"><%= email %></span>
           </a>
         </div>
-
-        <form data-3d-reveal data-3d-ry="10deg" data-3d-rx="-3deg" class="glass rounded-[2rem] p-8 lg:p-10 space-y-5 bg-[rgba(17,23,38,0.6)]" id="contact-form">
-          <div class="grid sm:grid-cols-2 gap-5">
-            <label class="block">
-              <span class="text-sm text-white/60" data-i18n="form-name">Name</span>
-              <input type="text" name="name" required placeholder="Your name" data-i18n-ph="form-name-ph"
-                     class="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 outline-none focus:border-amber-400/60 focus:bg-white/10 transition-colors" />
-            </label>
-            <label class="block">
-              <span class="text-sm text-white/60" data-i18n="form-email">Email</span>
-              <input type="email" name="email" required placeholder="you@company.com" data-i18n-ph="form-email-ph"
-                     class="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 outline-none focus:border-amber-400/60 focus:bg-white/10 transition-colors" />
-            </label>
-          </div>
-          <label class="block">
-            <span class="text-sm text-white/60" data-i18n="form-message">Message</span>
-            <textarea name="message" rows="4" required placeholder="How can we help?" data-i18n-ph="form-message-ph"
-                      class="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 outline-none focus:border-amber-400/60 focus:bg-white/10 transition-colors resize-none"></textarea>
-          </label>
-          <button type="submit"
-                  class="cta-glow w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 font-semibold text-base text-base transition-all">
-            <span data-i18n="form-submit">Send Message</span>
-            <i data-lucide="send" class="w-4 h-4"></i>
-          </button>
-          <p id="form-status" class="hidden text-center text-sm text-emerald-400"></p>
-        </form>
       </div>
+
+      <form id="contact-form" action="/api/contact" method="POST" class="glass rounded-3xl p-8 sm:p-10 space-y-6" data-reveal novalidate>
+        <p class="text-xs uppercase tracking-widest text-white/40"><%= t('contact-kicker') %></p>
+
+        <div class="space-y-5">
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="cf-name" class="block text-sm font-medium text-white/70 mb-2" data-i18n="form-name"><%= t('form-name') %></label>
+              <input id="cf-name" name="name" type="text" required autocomplete="name" placeholder="<%= t('form-name-ph') %>" data-i18n-ph="form-name-ph"
+                     class="field" />
+            </div>
+            <div>
+              <label for="cf-email" class="block text-sm font-medium text-white/70 mb-2" data-i18n="form-email"><%= t('form-email') %></label>
+              <input id="cf-email" name="email" type="email" required autocomplete="email" placeholder="<%= t('form-email-ph') %>" data-i18n-ph="form-email-ph"
+                     class="field" />
+            </div>
+          </div>
+          <div>
+            <label for="cf-message" class="block text-sm font-medium text-white/70 mb-2" data-i18n="form-message"><%= t('form-message') %></label>
+            <textarea id="cf-message" name="message" rows="5" required placeholder="<%= t('form-message-ph') %>" data-i18n-ph="form-message-ph" class="field resize-y"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" id="cf-submit"
+                class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-slate-900 transition-all shadow-lg shadow-white/10 hover:shadow-white/20 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+          <span id="cf-submit-label" data-i18n="form-submit"><%= t('form-submit') %></span>
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </form>
     </div>
   </section>
 
-  <!-- ================= FOOTER ================= -->
-  <footer class="relative border-t border-white/5 mt-8">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-14">
-      <div class="flex flex-col md:flex-row justify-between gap-10">
-        <div class="max-w-xs">
-          <a href="#top" class="flex items-center gap-2.5">
-            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/70 via-emerald-400/50 to-cyan-400/70 font-display font-extrabold text-base text-white">T</span>
-            <span class="font-display font-bold text-lg text-white">Techit LLC</span>
-          </a>
-          <p class="mt-4 text-sm text-white/50 leading-relaxed" data-i18n="footer-tagline">
-            Holding the platforms powering regional digital ecosystems.
-          </p>
-        </div>
+  <!-- Form toast (shown after a no-JS redirect from /api/contact) -->
+  <% if (sent) { %>
+  <div id="form-toast" role="status" aria-live="polite" class="toast-<%= sent %>">
+    <i data-lucide="<%= sent === 'success' ? 'circle-check' : 'circle-alert' %>" class="w-5 h-5 shrink-0"></i>
+    <span><%= sent === 'success' ? dict['form-toast-success'] : dict['form-toast-error'] %></span>
+  </div>
+  <% } %>
+  </main>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-10">
-          <div>
-            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4" data-i18n="footer-company">Company</h4>
-            <ul class="space-y-3 text-white/60 text-sm">
-              <li><a href="#about" class="anchor hover:text-white transition-colors" data-i18n="nav-about">About</a></li>
-              <li><a href="#platforms" class="anchor hover:text-white transition-colors" data-i18n="nav-platforms">Platforms</a></li>
-              <li><a href="#pillars" class="anchor hover:text-white transition-colors" data-i18n="nav-pillars">Pillars</a></li>
-              <li><a href="#contact" class="anchor hover:text-white transition-colors" data-i18n="nav-contact">Contact</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4" data-i18n="footer-platforms">Platforms</h4>
-            <ul class="space-y-3 text-white/60 text-sm">
-              <li><a href="https://sabaah.net" target="_blank" rel="noopener" class="anchor magnetic-link hover:text-amber-400 transition-colors">Sabaah</a></li>
-              <li><a href="https://wfrlee.com" target="_blank" rel="noopener" class="anchor magnetic-link hover:text-emerald-400 transition-colors">Wfrlee</a></li>
-              <li><a href="https://oneegate.com" target="_blank" rel="noopener" class="anchor magnetic-link hover:text-cyan-400 transition-colors">OneEGate</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4" data-i18n="footer-contact">Contact</h4>
-            <ul class="space-y-3 text-white/60 text-sm">
-              <li><a href="mailto:info@techit-llc.com" class="anchor magnetic-link hover:text-white transition-colors">info@techit-llc.com</a></li>
-            </ul>
-          </div>
+  <!-- ================= FOOTER ================= -->
+  <footer class="relative border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr] gap-10">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <img src="/img/techit-logo.png" alt="Techit LLC" width="48" height="48" class="h-9 w-9 shrink-0 rounded-xl object-contain bg-white/5 ring-1 ring-white/10">
+          <span class="font-display font-bold text-lg tracking-tight text-white">Techit<span class="text-white/40 font-medium"> LLC</span></span>
         </div>
+        <p class="mt-4 text-sm text-white/45 max-w-xs leading-relaxed" data-i18n="footer-tagline"><%= t('footer-tagline') %></p>
       </div>
 
-      <div class="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/40">
-        <p id="footer-rights" data-i18n-html="footer-rights">© <span id="year"><%= year %></span> Techit LLC. All rights reserved.</p>
-        <p>techit-llc.com</p>
+      <div>
+        <h4 class="text-xs font-semibold uppercase tracking-widest text-white/40" data-i18n="footer-company"><%= t('footer-company') %></h4>
+        <ul class="mt-4 space-y-2.5 text-sm text-white/60">
+          <li><a href="#about" class="hover:text-white transition-colors" data-i18n="nav-about"><%= t('nav-about') %></a></li>
+          <li><a href="#journey" class="hover:text-white transition-colors" data-i18n="nav-journey"><%= t('nav-journey') %></a></li>
+          <li><a href="#pillars" class="hover:text-white transition-colors" data-i18n="nav-pillars"><%= t('nav-pillars') %></a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold uppercase tracking-widest text-white/40" data-i18n="footer-platforms"><%= t('footer-platforms') %></h4>
+        <ul class="mt-4 space-y-2.5 text-sm text-white/60">
+          <li><a href="https://wfrlee.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="wfrlee-name"><%= t('wfrlee-name') %></a></li>
+          <li><a href="https://oneegate.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="oneegate-name"><%= t('oneegate-name') %></a></li>
+          <li><a href="https://sabaah.net" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="sabaah-name"><%= t('sabaah-name') %></a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold uppercase tracking-widest text-white/40" data-i18n="footer-contact"><%= t('footer-contact') %></h4>
+        <ul class="mt-4 space-y-2.5 text-sm text-white/60">
+          <li><a href="mailto:<%= email %>" class="hover:text-white transition-colors font-mono text-xs"><%= email %></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/35">
+        <span data-i18n-html="footer-rights" data-i18n-var-year="<%= year %>"><%= t('footer-rights').replace('{year}', String(year)) %></span>
+        <span class="font-mono">Riyadh · Jeddah · Dammam — KSA</span>
       </div>
     </div>
   </footer>
 
-  <!-- App logic + interactions -->
-  <script src="/js/main.js"></script>
-  <!-- Canvas hologram globe -->
-  <script src="/js/hologram.js"></script>
+  <script src="/js/icons.js" defer></script>
+  <script src="/js/main.js" defer></script>
 </body>
 </html>

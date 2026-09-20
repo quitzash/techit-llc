@@ -9,10 +9,7 @@ module.exports = {
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       colors: {
-        base: '#0b0f19',
-        sabaah: '#f59e0b',
-        wfrlee: '#10b981',
-        onegate: '#22d3ee',
+        base: '#0d0f14',
       },
     },
   },

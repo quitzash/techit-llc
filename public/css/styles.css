@@ -1,115 +1,523 @@
-/* ---- Global base ----
-   NOTE: use overflow-x: clip, NOT hidden. `overflow-x: hidden` makes
-   <body> a scroll container, which breaks Lenis (it measures window.scrollY)
-   and produces a delayed, janky scroll feel. */
+/* ============================================================
+   Techit LLC — core styles
+   Content is visible by default. JavaScript only adds the
+   `html.js` class (opt-in gate) to enable reveal animations.
+   ============================================================ */
+
+/* ---- Global base ---- */
 * { -webkit-tap-highlight-color: transparent; }
-html { background: #0b0f19; scroll-behavior: auto; overflow-x: clip; }
+html {
+  background: #0d0f14;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
 body {
-  background: #0b0f19;
-  color: #e7ecf5;
-  font-family: 'Space Grotesk', 'Tajawal', 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: #0d0f14;
+  color: #e4e6eb;
+  font-family: 'Space Grotesk', 'Tajawal', 'Inter', system-ui, sans-serif;
   letter-spacing: -0.01em;
   overflow-x: clip;
 }
-::selection { background: rgba(245,158,11,0.35); color: #fff; }
+::selection { background: rgba(140, 145, 157, 0.35); color: #fff; }
 
-/* ---- Mono label voice (matches the Nexus reference) ---- */
-.text-xs.uppercase,
-.text-[10px].uppercase,
-.text-[9px].uppercase {
+/* ---- Arabic typography (RTL document) ---- */
+html[dir="rtl"] body,
+html[dir="rtl"] .font-display {
+  font-family: 'Tajawal', 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  letter-spacing: 0;
+}
+html[dir="rtl"] .tracking-widest,
+html[dir="rtl"] .tracking-\[0\.25em\],
+html[dir="rtl"] .kicker,
+html[dir="rtl"] .hero-wordmark-label {
+  letter-spacing: 0;
+}
+
+/* ---- Mono label voice ---- */
+.kicker {
+  display: block;
   font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
-  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-reveal] { transform: none !important; opacity: 1 !important; }
-  .scroll-cue { animation: none; }
-}
-
-/* ---- Glassmorphism ----
-   IMPORTANT: no backdrop-filter on purpose. Blurring behind every card,
-   and especially behind the fixed navbar, repaints constantly on scroll
-   and is the #1 cause of jank on Windows. A translucent solid background
-   + hairline border reads as glass at a fraction of the cost. */
+/* ---- Glassmorphism ---- */
 .glass {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-/* ---- Hero height ----
-   100svh = small viewport height, so the hero fills the visible area on
-   mobile while the iOS/Android URL bar is expanded. Browsers without svh
-   fall back to the min-h-screen (100vh) utility below. */
+/* ---- Global polish ---- */
+::selection {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+:focus-visible {
+  outline: 2px solid rgba(124, 196, 255, 0.85);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+/* ---- Translucent nav (obsidian glass; wins over .glass) ---- */
+#navbar .nav-shell {
+  background: rgba(13, 15, 20, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+#mobile-menu .nav-menu {
+  background: rgba(13, 15, 20, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* ---- Hero ---- */
 #hero { min-height: 100svh; }
 
-/* ---- Radial background glow layers ---- */
+/* ---- Radial background glows (obsidian) ---- */
 .glow-hero {
   background:
-    radial-gradient(600px circle at 20% 15%, rgba(245,158,11,0.12), transparent 60%),
-    radial-gradient(650px circle at 85% 30%, rgba(34,211,238,0.12), transparent 60%),
-    radial-gradient(550px circle at 60% 80%, rgba(16,185,129,0.10), transparent 60%);
+    radial-gradient(600px circle at 18% 18%, rgba(140, 145, 157, 0.08), transparent 60%),
+    radial-gradient(650px circle at 85% 32%, rgba(140, 145, 157, 0.06), transparent 60%),
+    radial-gradient(550px circle at 62% 82%, rgba(140, 145, 157, 0.04), transparent 60%);
 }
-.glow-sabaah { background: radial-gradient(700px circle at 50% 40%, rgba(245,158,11,0.10), transparent 65%); }
-.glow-wfrlee { background: radial-gradient(700px circle at 50% 40%, rgba(16,185,129,0.10), transparent 65%); }
-.glow-onegate { background: radial-gradient(700px circle at 50% 40%, rgba(34,211,238,0.10), transparent 65%); }
 
-/* ---- White CTA buttons ----
-   The config defines `base: #0b0f19` as a color and the buttons carry
-   `text-base text-base` (font-size + color). Tailwind only emits the
-   font-size utility for that name, so lock the intended dark text in. */
-.bg-white.cta-glow { color: #0b0f19; }
+/* ---- White CTA buttons ---- */
+.bg-white.cta-glow { color: #0d0f14; }
 
 /* ---- Underline link hover ---- */
 .anchor { position: relative; }
 .anchor::after {
-  content: ''; position: absolute; left: 0; bottom: -3px; height: 1px; width: 100%;
-  background: currentColor; transform: scaleX(0); transform-origin: right;
-  transition: transform .3s ease; }
-.anchor:hover::after { transform: scaleX(1); transform-origin: left; }
+  content: '';
+  position: absolute;
+  left: 0; bottom: -3px;
+  height: 1px; width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+.anchor:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
 
 /* ---- Arrow bounce on CTA ---- */
 .scroll-cue { animation: floatDown 2.2s ease-in-out infinite; }
-@keyframes floatDown { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(8px);} }
-
-/* Hide nav before scroll */
-.nav-hidden { transform: translateY(-100%) translateY(-1rem); opacity: 0; }
-
-/* ---- Platform cards: enhanced with dual-layer glow ---- */
-.tilt-card {
-  transition: box-shadow 0.5s ease, border-color 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-.tilt-card:hover {
-  box-shadow:
-    0 25px 60px -12px rgba(0,0,0,0.5),
-    0 0 30px -10px var(--glow-color, rgba(255,255,255,0.06)),
-    0 0 80px -20px var(--glow-color, rgba(255,255,255,0.03));
-}
-.tilt-card:hover {
-  border-color: var(--glow-color, rgba(255,255,255,0.15));
+@keyframes floatDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
 }
 
-/* ---- Scan-line on tilt-cards ---- */
-.tilt-card.scan-overlay::after {
-  color: var(--glow-color, rgba(255,255,255,0.5));
+/* ---- Hero rotating platform wordmark ---- */
+.hero-wordmark-label {
+  font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+.hero-word-rotator {
+  position: relative;
+  margin-top: 1.4rem;
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  line-height: 1.16;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  /* The words are absolutely positioned, so the box itself collapses.
+     Reserve one line-height so the rotating words never overlap the
+     caption below (Arabic descenders included). */
+  min-height: 1.25em;
+}
+.hero-word {
+  position: absolute;
+  inset-inline: 0;
+  opacity: 0;
+  transform: translateY(0.5em);
+  filter: blur(12px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.8s ease;
+  pointer-events: none;
+}
+.hero-word.is-active {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.hero-word[data-word-color="sabaah"] {
+  background: linear-gradient(120deg, #ffb066, #f97316);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-word[data-word-color="wfrlee"] {
+  background: linear-gradient(120deg, #7cc4ff, #3b82f6);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-word[data-word-color="onegate"] {
+  background: linear-gradient(120deg, #a5b8ff, #4f6ef2);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
-/* ---- Glow color vars per platform ---- */
-.glow-wfrlee-card { --glow-color: rgba(16,185,129,0.3); }
-.glow-onegate-card { --glow-color: rgba(34,211,238,0.3); }
-.glow-sabaah-card { --glow-color: rgba(245,158,11,0.3); }
-
-/* ---- Pillar card hover ---- */
+/* ---- Cards (journey / platforms / pillars) ---- */
+.journey-card,
 .pillar-card {
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.45s ease,
               border-color 0.45s ease;
+  will-change: transform;
 }
+.journey-card:hover,
 .pillar-card:hover {
-  transform: translateY(-8px) rotateX(2deg);
-  box-shadow: 0 20px 50px -15px rgba(0,0,0,0.4),
-              0 0 30px -10px var(--glow-color, rgba(255,255,255,0.04)),
-              0 0 60px -20px var(--glow-color, rgba(255,255,255,0.02));
+  transform: translateY(-5px);
+  box-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.45),
+              0 0 60px -30px rgba(140, 145, 157, 0.14);
+  border-color: rgba(255, 255, 255, 0.13);
+}
+
+.journey-num {
+  font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.09);
+  transition: color 0.45s ease, transform 0.45s ease;
+}
+.journey-card:hover .journey-num { color: rgba(255, 255, 255, 0.22); }
+
+.platform {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 30px 60px -45px rgba(0, 0, 0, 0.7);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.5s ease,
+              border-color 0.5s ease;
+  will-change: transform;
+}
+.platform:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 40px 80px -45px rgba(0, 0, 0, 0.75),
+              0 0 60px -35px rgba(140, 145, 157, 0.14);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ---- Per-brand accent colors ---- */
+.platform-wfrlee   { --brand-rgb: 77, 166, 255;  }  /* blue   */
+.platform-sabaah   { --brand-rgb: 249, 115, 22;  }  /* orange */
+.platform-oneegate { --brand-rgb: 79, 110, 242;  }  /* blue   */
+
+.platform-tagline {
+  color: rgb(var(--brand-rgb));
+}
+
+/* ---- Platform lockup ----
+   A tall brand mark that spans the whole name + tagline block: the lockup
+   stretches to match the heading column, and the logo (or monogram) fills it.
+   The monogram sits underneath the image, so if a remote logo ever fails it
+   simply fades and the monogram shows through — no broken-image gap. */
+.platform-lockup {
+  position: relative;
+  flex-shrink: 0;
+  min-width: 4.25rem;
+  min-height: 4.5rem;
+  width: clamp(4.25rem, 7vw, 5.5rem);
+  height: clamp(4.5rem, 9vw, 5.75rem);
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  border-radius: 1.125rem;
+  background: radial-gradient(circle at 50% 28%, rgba(var(--brand-rgb), 0.14), rgba(var(--brand-rgb), 0.03) 72%);
+  border: 1px solid rgba(var(--brand-rgb), 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.platform-monogram {
+  grid-area: 1 / 1;
+  font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgb(var(--brand-rgb));
+}
+.platform-logo {
+  grid-area: 1 / 1;
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.platform-logo--missing { opacity: 0; }
+.platform:hover .platform-logo {
+  transform: scale(1.04);
+  filter: drop-shadow(0 6px 18px rgba(var(--brand-rgb), 0.35));
+}
+.platform-logo {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .platform:hover .platform-logo {
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Ambiguous ambient glow in the brand color, reaching out past every edge
+   of the card (all four sides). The card creates its own stacking context
+   (will-change on .platform), so a negative z-index sits behind the card
+   body yet above the page. Deliberately vivid, not translucent: we keep a
+   strong saturated core and a defined ring right at the border so it reads
+   as a glow washing over the card edges rather than a faint wash. */
+
+/* Brand glow, vivid (not translucent) and reaching past every edge of the
+   card. Hidden until the card scrolls into view (.is-inview), then pulses. */
+.platform-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 134%;
+  height: 134%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    rgba(var(--brand-rgb), 0.55),
+    rgba(var(--brand-rgb), 0.24) 42%,
+    rgba(var(--brand-rgb), 0.10) 64%,
+    transparent 80%
+  );
+  filter: blur(32px);
+  -webkit-filter: blur(32px);
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.platform.is-inview .platform-glow {
+  opacity: 1;
+  animation: platform-glow-pulse 3.2s ease-in-out infinite;
+}
+@keyframes platform-glow-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 0.85; }
+  50%      { transform: translate(-50%, -50%) scale(1.12); opacity: 1;    }
+}
+@media (prefers-reduced-motion: reduce) {
+  .platform.is-inview .platform-glow {
+    animation: none;
+    opacity: 0.9;
+  }
+}
+
+/* A tight, bright halo right on the card silhouette so the glow plainly
+   hugs all four sides instead of looking washed out or see-through. */
+.platform-halo {
+  position: absolute;
+  inset: -6%;
+  border-radius: 2rem;
+  box-shadow: 0 0 0 1.5px rgba(var(--brand-rgb), 0.12),
+              inset 0 0 40px rgba(var(--brand-rgb), 0.10),
+              0 0 70px 14px rgba(var(--brand-rgb), 0.18);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ---- Platforms: pinned scroll scroller ---- */
+/* SkillLoop-style "one loop, three moves" treatment. Default (no JS, or
+   reduced motion): the cards are a plain, fully-visible vertical stack that
+   tilts in gently on scroll. When JS pins the section, it becomes a sticky
+   full-screen stage on a tall track: each card holds, then steps out, with a
+   progress bar and step counter. All content stays readable in both modes. */
+.platforms-stage { position: relative; }
+
+/* ---- Fallback stack (un-pinned) ---- */
+.platforms-track {
+  max-width: 64rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  padding-bottom: clamp(4rem, 10vh, 7rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3.5rem, 7vw, 6rem);
+}
+.platforms-track .platform {
+  transform-style: preserve-3d;
+  opacity: 0;
+  transform: perspective(1200px) rotateX(16deg) translateY(3rem) scale(0.96);
+  transform-origin: 50% 20%;
+  transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.platforms-track .platform.is-inview {
+  opacity: 1;
+  transform: perspective(1200px) rotateX(0deg) translateY(0) scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .platforms-track .platform {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Chrome + ambient decoration: the plain stack ignores the chrome. */
+.platforms-chrome { display: none; }
+.platforms-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.platforms-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(48px);
+}
+.platforms-orb-l {
+  left: -4rem;
+  top: 16%;
+  width: 16rem;
+  height: 16rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+.platforms-orb-r {
+  right: -4rem;
+  bottom: 14%;
+  width: 18rem;
+  height: 18rem;
+  background: rgba(255, 255, 255, 0.025);
+}
+.platforms-orb-t {
+  right: 22%;
+  top: 30%;
+  width: 9rem;
+  height: 9rem;
+  background: rgba(255, 215, 102, 0.06);
+}
+.platforms-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 9999px;
+  transform: translate(-50%, -50%);
+}
+.platforms-ring-solid {
+  width: clamp(20rem, 50vmin, 26rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.platforms-ring-dashed {
+  width: clamp(25rem, 62vmin, 34rem);
+  aspect-ratio: 1;
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  animation: platRingSpin 26s linear infinite;
+}
+@keyframes platRingSpin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ---- Pinned stage (JS adds .is-pinned to the section) ---- */
+[data-platform-scroll].is-pinned .platforms-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+[data-platform-scroll].is-pinned .platforms-head {
+  position: relative;
+  z-index: 5;
+}
+[data-platform-scroll].is-pinned .platforms-chrome {
+  display: block;
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.platforms-progress {
+  height: 2px;
+  background: linear-gradient(90deg, #4da6ff, #4f6ef2, #f97316);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+html[dir="rtl"] .platforms-progress { transform-origin: 100% 50%; }
+.platforms-badge {
+  position: absolute;
+  top: 1.1rem;
+  left: 50%;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  will-change: transform;
+}
+.platforms-counter {
+  position: absolute;
+  top: 1.1rem;
+  inset-inline-end: clamp(1rem, 4vw, 3rem);
+  font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+}
+.platforms-counter-num { color: #fff; font-size: 1.05rem; }
+
+[data-platform-scroll].is-pinned .platforms-track {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--head-h, 0);
+  bottom: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  will-change: transform;
+}
+[data-platform-scroll].is-pinned .platforms-slide {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 2.5rem);
+}
+[data-platform-scroll].is-pinned .platforms-slide .platform {
+  max-width: 64rem;
+  width: 100%;
+  opacity: 0; /* painted per frame by JS: fades in/out with scroll distance */
+}
+[data-platform-scroll].is-pinned .platform.is-current .platform-glow {
+  opacity: 1;
+  animation: platform-glow-pulse 3.2s ease-in-out infinite;
+}
+
+/* Inside the pinned stage the deck is tightened so each card fits its slide
+   window at natural height — never internally scrollable. A scrollable card
+   would swallow the mouse wheel and leave the section stuck on its first
+   slide. (Short viewports, where the deck cannot reliably fit, are handled
+   in JS by falling back to the plain stack instead of pinning.) */
+[data-platform-scroll].is-pinned .platforms-head .max-w-7xl {
+  padding-top: 2.5rem;
+}
+[data-platform-scroll].is-pinned .platforms-body {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+}
+[data-platform-scroll].is-pinned .platforms-body h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+[data-platform-scroll].is-pinned .platforms-body .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.625rem;
+}
+[data-platform-scroll].is-pinned .platforms-box {
+  padding: 1.25rem;
 }
 
 /* ---- CTA button hover glow ---- */
@@ -122,119 +530,59 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.15), transparent 60%);
+  background: radial-gradient(circle at 50% 120%, rgba(13, 15, 20, 0.22), transparent 60%);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
 .cta-glow:hover::after { opacity: 1; }
-.cta-glow.touch-active::after { opacity: 1; }
 .cta-glow:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 10px 40px -10px rgba(255,255,255,0.2);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 40px -10px rgba(255, 255, 255, 0.12);
 }
 
-/* ---- Magnetic link hover ---- */
-.magnetic-link {
-  display: inline-block;
-  transition: transform 0.3s cubic-bezier(0.03, 0.98, 0.52, 0.99);
+/* ---- Contact card / form fields ---- */
+#contact-form {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#12151b, #12151b) padding-box,
+    linear-gradient(115deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1)) border-box;
+}
+.field {
+  display: block;
+  width: 100%;
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.8rem 1rem;
+  color: #fff;
+  font-size: 0.95rem;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+.field::placeholder { color: rgba(255, 255, 255, 0.28); }
+.field:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
 }
 
 /* ---- Floating orb animation ---- */
 .float-orb {
-  animation: floatOrb 6s ease-in-out infinite;
+  animation: floatOrb 7s ease-in-out infinite;
   will-change: transform;
 }
-.float-orb-delay { animation-delay: -2s; }
-.float-orb-slow { animation-duration: 8s; }
+.float-orb-delay { animation-delay: -2.5s; }
+.float-orb-slow { animation-duration: 9s; }
+.float-orb-soft { animation-duration: 5.5s; }
 @keyframes floatOrb {
   0%, 100% { transform: translate(0, 0) scale(1); }
   25% { transform: translate(15px, -20px) scale(1.05); }
-  50% { transform: translate(-10px, -35px) scale(0.95); }
+  50% { transform: translate(-12px, -32px) scale(0.95); }
   75% { transform: translate(20px, -15px) scale(1.03); }
 }
 
-/* ---- Scroll-driven reveal (initial hidden state; GSAP animates) ----
-   Elements fade in as the user scrolls. No 3D transforms / will-change
-   shortcuts — keeps GPU layers low for smooth, lag-free scrolling. */
-
-/* ---- Logo / icon chips: subtle 3D pop on hover (no full rotation) ---- */
-.logo-hover {
-  transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
-}
-.logo-hover:hover {
-  transform: perspective(520px) rotateX(9deg) rotateY(-7deg) translateZ(22px) scale(1.08);
-  box-shadow: 0 18px 40px -18px rgba(0,0,0,0.55);
-}
-
-/* ---- Step item hover (each numbered row grows as its own section) ---- */
-.step-item {
-  position: relative;
-  border-radius: 0.9rem;
-  z-index: 1;
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-              background 0.35s ease,
-              box-shadow 0.35s ease;
-}
-.step-item::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  border: 1px solid transparent;
-  opacity: 0;
-  transition: border-color 0.35s ease, opacity 0.35s ease;
-  pointer-events: none;
-}
-.step-item > span {
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.45s ease;
-}
-.step-item:hover {
-  transform: scale(1.06);
-  background: rgba(255,255,255,0.08);
-  box-shadow: 0 18px 36px -18px var(--glow-color, rgba(0,0,0,0.5));
-  z-index: 5;
-}
-.step-item:hover > span,
-.step-item:hover > p {
-  position: relative;
-  z-index: 2;
-}
-.step-item:hover::before {
-  border-color: var(--glow-color, rgba(255,255,255,0.2));
-  opacity: 1;
-}
-.step-item:hover > span {
-  transform: scale(1.22);
-  box-shadow: 0 12px 28px -14px var(--glow-color, rgba(255,255,255,0.4)),
-              inset 0 0 0 1px var(--glow-color, rgba(255,255,255,0.25));
-}
-.step-item > p {
-  transition: transform 0.4s ease, color 0.35s ease;
-}
-.step-item:hover > p {
-  transform: scale(1.02);
-  color: rgba(255,255,255,0.96);
-}
-.step-item:hover > p strong {
-  color: #fff;
-}
-
-/* ---- Check item stagger (revealed via GSAP) ---- */
-.check-item {
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-/* ---- Contact card border: gradient mix of amber, emerald, cyan (border only) ---- */
-#contact-form {
-  border: 1px solid transparent;
-  background:
-    linear-gradient(#0f1421, #0f1421) padding-box,
-    linear-gradient(115deg, #f59e0b, #10b981, #22d3ee) border-box;
-}
-
-/* ---- Noise texture overlay (film-grain polish) ---- */
+/* ---- Noise texture overlay ---- */
 .noise-bg::before {
   content: '';
   position: fixed;
@@ -252,39 +600,12 @@ body {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
   background-size: 80px 80px;
 }
 
-/* ---- Scan-line sweep animation ---- */
-.scan-overlay {
-  position: relative;
-  overflow: hidden;
-}
-.scan-overlay::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, currentColor, transparent);
-  opacity: 0.25;
-  animation: scan-line 4s linear infinite;
-  pointer-events: none;
-}
-@keyframes scan-line {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(100%); }
-}
-
-/* ---- Pulse glow utility ---- */
-.pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-/* ---- Shimmer utility ---- */
+/* ---- Shimmer utility (hero / contact headings) ---- */
 .shimmer {
   background-size: 200% 100%;
   animation: shimmer 2.5s ease-in-out infinite;
@@ -294,74 +615,103 @@ body {
   100% { background-position: 200% 0; }
 }
 
-/* ---- Shimmering gradient text ---- */
-.text-shimmer {
-  background-image: linear-gradient(110deg, #f59e0b 0%, #10b981 45%, #22d3ee 65%, #f59e0b 100%);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: shimmer 6s ease-in-out infinite;
-}
-
-/* ---- Glow pulse utility (box-shadow) ---- */
+/* ---- Glow pulse utility ---- */
 .glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 10px var(--glow-color, rgba(255,255,255,0.05)); }
-  50% { box-shadow: 0 0 30px var(--glow-color, rgba(255,255,255,0.12)), 0 0 80px var(--glow-color, rgba(255,255,255,0.04)); }
+  0%, 100% { box-shadow: 0 0 10px var(--glow-color, rgba(255, 255, 255, 0.04)); }
+  50% { box-shadow: 0 0 25px var(--glow-color, rgba(255, 255, 255, 0.08)), 0 0 60px var(--glow-color, rgba(255, 255, 255, 0.03)); }
 }
 
-/* ---- Self-drawing SVG lines ---- */
-.draw-svg {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-}
-
-/* ---- Full-page 3D scroll progress bar ---- */
+/* ---- Full-page scroll progress bar ---- */
 #scroll-progress {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, #f59e0b, #10b981, #22d3ee);
+  background: linear-gradient(90deg, #6b7280, #9ca3af, #6b7280);
   transform-origin: 0 50%;
+  transform: scaleX(0);
   z-index: 60;
+  pointer-events: none;
 }
 
-/* ---- Hologram canvas: force a composited layer.
-   Without this, iOS Safari may drop the canvas bitmap during scroll
-   repaints, causing the globe to vanish while scrolling. */
-#hologram {
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+/* ---- Form result toast ---- */
+#form-toast {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 1.5rem;
+  margin-inline: auto;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transform: translateY(16px) scale(0.98);
+  transition: opacity 0.26s ease, transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+}
+#form-toast.is-visible {
+  opacity: 1;
+  transform: none;
+}
+.toast-success {
+  background: linear-gradient(#10201a, #0d1a15) padding-box,
+              linear-gradient(115deg, rgba(74, 222, 128, 0.55), rgba(74, 222, 128, 0.15)) border-box;
+  border: 1px solid transparent;
+}
+.toast-error {
+  background: linear-gradient(#221515, #1c1111) padding-box,
+              linear-gradient(115deg, rgba(248, 113, 113, 0.55), rgba(248, 113, 113, 0.15)) border-box;
+  border: 1px solid transparent;
 }
 
-body.lang-ar,
-  body.lang-ar .font-display {
-    font-family: 'Tajawal', 'Plus Jakarta Sans', Inter, sans-serif;
-  }
-  body.lang-ar .tracking-widest,
-  body.lang-ar .tracking-[0.25em] {
-    letter-spacing: 0;
-  }
+/* ============================================================
+   Reveal-on-scroll (progressive enhancement)
+   — `html.js` is added synchronously in <head>. Without it,
+     data-reveal elements are fully visible — nothing is hidden.
+   — When JS is on, elements animate in once via .is-in.
+   ============================================================ */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
 
 /* ---- Reduced motion overrides ---- */
 @media (prefers-reduced-motion: reduce) {
-  .tilt-card, .pillar-card, .cta-glow, .magnetic-link,
-  .float-orb, .float-orb-delay, .float-orb-slow,
-  .logo-hover, .step-item,
-  .pulse-glow, .shimmer, .text-shimmer, .glow-pulse,
-  .scan-overlay::after, .draw-svg {
+  html { scroll-behavior: auto; }
+  html.js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .scroll-cue,
+  .float-orb, .float-orb-delay, .float-orb-slow, .float-orb-soft,
+  .cta-glow, .journey-card, .pillar-card, .platform,
+  .glow-pulse, .shimmer, .hero-word,
+  .platforms-progress, .platforms-counter {
     animation: none !important;
     transition: none !important;
     transform: none !important;
+    filter: none !important;
   }
-  [data-3d-reveal], [data-3d-reveal-child] {
-    opacity: 1 !important;
-    transform: none !important;
+  .platforms-ring {
+    animation: none !important;
+    transform: translate(-50%, -50%) !important;
   }
   #scroll-progress { display: none; }
-  .draw-svg { stroke-dashoffset: 0 !important; }
 }
