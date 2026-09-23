@@ -139,6 +139,7 @@ html[dir="rtl"] .hero-wordmark-label {
 .hero-word {
   position: absolute;
   inset-inline: 0;
+  text-align: start;
   opacity: 0;
   transform: translateY(0.5em);
   filter: blur(12px);
@@ -193,19 +194,18 @@ html[dir="rtl"] .hero-wordmark-label {
 
 .platform {
   position: relative;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)) padding-box,
+    linear-gradient(155deg, rgba(var(--brand-rgb), 0.55), rgba(255, 255, 255, 0.08) 42%, rgba(var(--brand-rgb), 0.30)) border-box;
   box-shadow: 0 30px 60px -45px rgba(0, 0, 0, 0.7);
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.5s ease,
-              border-color 0.5s ease;
+              box-shadow 0.5s ease;
   will-change: transform;
 }
 .platform:hover {
   transform: translateY(-4px);
-  box-shadow: 0 40px 80px -45px rgba(0, 0, 0, 0.75),
-              0 0 60px -35px rgba(140, 145, 157, 0.14);
-  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 40px 80px -45px rgba(0, 0, 0, 0.75);
 }
 
 /* ---- Per-brand accent colors ---- */
@@ -215,13 +215,81 @@ html[dir="rtl"] .hero-wordmark-label {
 
 .platform-tagline {
   color: rgb(var(--brand-rgb));
+  font-weight: 600;
+  margin-top: 0.45rem;
+  font-size: 0.95rem;
 }
 
-/* ---- Platform lockup ----
-   A tall brand mark that spans the whole name + tagline block: the lockup
-   stretches to match the heading column, and the logo (or monogram) fills it.
-   The monogram sits underneath the image, so if a remote logo ever fails it
-   simply fades and the monogram shows through — no broken-image gap. */
+/* ---- Platform card shell ----
+   Each card is a brand header band stacked over a two-column body:
+   • a full-bleed header tinted with the platform color (logo/label/name/…);
+   • a body made of feature chips + CTA on one side and an "idea" panel +
+     numbered how-it-works timeline on the other.
+   The suffix number (01/02/03) sits at the end of the header. */
+.platform-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
+  border-radius: 1.5rem 1.5rem 0 0;
+  background:
+    radial-gradient(140% 170% at 0% 0%, rgba(var(--brand-rgb), 0.22), transparent 58%),
+    linear-gradient(180deg, rgba(var(--brand-rgb), 0.07), rgba(255, 255, 255, 0.02));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.platform-head-text { min-width: 0; }
+.platform-head-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+html[dir="rtl"] .platform-head-meta { letter-spacing: 0; }
+.platform-head-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.25);
+}
+.platform-domain {
+  color: rgba(var(--brand-rgb), 0.95);
+  letter-spacing: 0.06em;
+  text-transform: none;
+}
+.platform-head h3 {
+  margin-top: 0.55rem;
+  font-size: clamp(1.6rem, 3.2vw, 2.15rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+.platform-index {
+  margin-inline-start: auto;
+  flex-shrink: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(var(--brand-rgb), 0.35);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Lockup — squarer inside the new header band, still logo-over-monogram */
+.platform-head .platform-lockup {
+  align-self: center;
+  min-width: clamp(3.5rem, 6.5vw, 4.75rem);
+  min-height: clamp(3.5rem, 6.5vw, 4.75rem);
+  width: clamp(3.5rem, 6.5vw, 4.75rem);
+  height: clamp(3.5rem, 6.5vw, 4.75rem);
+}
 .platform-lockup {
   position: relative;
   flex-shrink: 0;
@@ -268,6 +336,196 @@ html[dir="rtl"] .hero-wordmark-label {
     transform: none;
     filter: none;
   }
+}
+
+/* ---- Card body ---- */
+.platforms-body {
+  padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
+}
+.platform-grid {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .platform-grid { grid-template-columns: 1.05fr 0.95fr; }
+}
+
+.platform-desc { margin-top: 0; max-width: 46ch; }
+
+.platform-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
+.platform-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #34d399;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+}
+
+.platform-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+.platform-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.8rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.72);
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+.platform-chip svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  color: rgb(var(--brand-rgb));
+}
+.platform:hover .platform-chip {
+  border-color: rgba(var(--brand-rgb), 0.32);
+  background: rgba(var(--brand-rgb), 0.05);
+}
+
+.platform-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+.platform-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.72rem 1.2rem;
+  border-radius: 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(var(--brand-rgb), 0.95), rgba(var(--brand-rgb), 0.62));
+  box-shadow: 0 12px 32px -14px rgba(var(--brand-rgb), 0.65);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+.platform-cta svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.platform-cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 18px 40px -14px rgba(var(--brand-rgb), 0.8);
+}
+.platform-cta:hover svg { transform: translate(2px, -2px); }
+.platform-icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 0.85rem;
+  background: rgba(var(--brand-rgb), 0.1);
+  border: 1px solid rgba(var(--brand-rgb), 0.25);
+  color: rgb(var(--brand-rgb));
+}
+.platform-icon-chip svg { width: 1.1rem; height: 1.1rem; }
+
+/* ---- "The idea" panel + how-it-works timeline ---- */
+.platforms-box {
+  position: relative;
+  border-radius: 1.1rem;
+  padding: 1.1rem 1.15rem;
+  background: linear-gradient(160deg, rgba(var(--brand-rgb), 0.12), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(var(--brand-rgb), 0.22);
+}
+.platform-box-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(var(--brand-rgb));
+}
+html[dir="rtl"] .platform-box-label { letter-spacing: 0; }
+.platform-box-label svg { width: 0.95rem; height: 0.95rem; }
+.platforms-box p {
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.platform-steps-label {
+  display: block;
+  margin-top: 1.25rem;
+  font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+html[dir="rtl"] .platform-steps-label { letter-spacing: 0; }
+.platform-steps {
+  position: relative;
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+.platform-steps li {
+  position: relative;
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.platform-steps li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(0.95rem - 0.5px);
+  top: 1.95rem;
+  bottom: -0.9rem;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(var(--brand-rgb), 0.5), rgba(255, 255, 255, 0.05));
+}
+.platform-steps li:last-child::before { display: none; }
+.platform-step-num {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgb(var(--brand-rgb));
+  background: rgba(var(--brand-rgb), 0.12);
+  border: 1px solid rgba(var(--brand-rgb), 0.3);
+}
+.platform-steps li p {
+  padding-top: 0.15rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.62);
 }
 
 /* Ambiguous ambient glow in the brand color, reaching out past every edge
@@ -342,6 +600,7 @@ html[dir="rtl"] .hero-wordmark-label {
   max-width: 64rem;
   margin-inline: auto;
   padding-inline: clamp(1rem, 4vw, 2rem);
+  padding-top: clamp(2rem, 5vw, 3.5rem);
   padding-bottom: clamp(4rem, 10vh, 7rem);
   display: flex;
   flex-direction: column;
@@ -492,7 +751,7 @@ html[dir="rtl"] .platforms-progress { transform-origin: 100% 50%; }
   width: 100%;
   opacity: 0; /* painted per frame by JS: fades in/out with scroll distance */
 }
-[data-platform-scroll].is-pinned .platform.is-current .platform-glow {
+[data-platform-scroll].is-pinned .platforms-slide.is-current .platform-glow {
   opacity: 1;
   animation: platform-glow-pulse 3.2s ease-in-out infinite;
 }
@@ -503,18 +762,20 @@ html[dir="rtl"] .platforms-progress { transform-origin: 100% 50%; }
    slide. (Short viewports, where the deck cannot reliably fit, are handled
    in JS by falling back to the plain stack instead of pinning.) */
 [data-platform-scroll].is-pinned .platforms-head .max-w-7xl {
-  padding-top: 2.5rem;
+  padding-top: clamp(2.5rem, 5.5vh, 4.25rem);
 }
 [data-platform-scroll].is-pinned .platforms-body {
   padding: clamp(1.25rem, 3vw, 2rem);
+}
+[data-platform-scroll].is-pinned .platform-grid {
   gap: clamp(1.25rem, 4vw, 2.5rem);
 }
-[data-platform-scroll].is-pinned .platforms-body h3 {
+[data-platform-scroll].is-pinned .platform-head {
+  padding: clamp(1rem, 2.4vw, 1.4rem) clamp(1.25rem, 3vw, 2rem);
+}
+[data-platform-scroll].is-pinned .platform-head h3 {
   font-size: 1.5rem;
   line-height: 2rem;
-}
-[data-platform-scroll].is-pinned .platforms-body .space-y-4 > :not([hidden]) ~ :not([hidden]) {
-  margin-top: 0.625rem;
 }
 [data-platform-scroll].is-pinned .platforms-box {
   padding: 1.25rem;

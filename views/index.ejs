@@ -105,20 +105,17 @@
         </div>
 
         <!-- Rotating platform wordmark -->
-        <div id="hero-wordmark" class="relative flex flex-col text-left lg:text-right justify-center py-10 lg:py-0" data-reveal>
-          <div class="absolute -inset-10 pointer-events-none" style="background: radial-gradient(420px circle at 50% 50%, rgba(140,145,157,0.06), transparent 70%);"></div>
-          <div class="relative glass rounded-3xl p-8 sm:p-10">
-            <span class="hero-wordmark-label" data-i18n="hero-word-label"><%= t('hero-word-label') %></span>
-            <div class="hero-word-rotator" aria-hidden="true">
-              <span class="hero-word is-active" data-word-color="sabaah"><%= t('sabaah-name') %></span>
-              <span class="hero-word" data-word-color="wfrlee"><%= t('wfrlee-name') %></span>
-              <span class="hero-word" data-word-color="onegate"><%= t('oneegate-name') %></span>
-            </div>
-            <p class="mt-8 flex items-center gap-3 text-sm text-white/40 font-medium justify-start lg:justify-end">
-              <span data-i18n="hero-word-caption"><%= t('hero-word-caption') %></span>
-              <span class="h-px w-10 bg-gradient-to-r from-transparent to-white/15"></span>
-            </p>
+        <div id="hero-wordmark" class="relative flex flex-col text-start justify-center py-10 lg:py-0" data-reveal>
+          <span class="hero-wordmark-label" data-i18n="hero-word-label"><%= t('hero-word-label') %></span>
+          <div class="hero-word-rotator" aria-hidden="true">
+            <span class="hero-word is-active" data-word-color="sabaah"><%= t('sabaah-name') %></span>
+            <span class="hero-word" data-word-color="wfrlee"><%= t('wfrlee-name') %></span>
+            <span class="hero-word" data-word-color="onegate"><%= t('oneegate-name') %></span>
           </div>
+          <p class="mt-8 flex items-center gap-3 text-sm text-white/40 font-medium">
+            <span data-i18n="hero-word-caption"><%= t('hero-word-caption') %></span>
+            <span class="h-px w-10 bg-gradient-to-r from-transparent to-white/15"></span>
+          </p>
         </div>
       </div>
     </div>
@@ -235,67 +232,90 @@
 
       <!-- The track: one full-height slide per platform -->
       <% const platforms = [
-        { id: 'wfrlee', monogram: 'W', icon: 'calendar-clock', target: 'https://wfrlee.com', logo: '/img/wfrlee.png' },
+        { id: 'wfrlee', monogram: 'W', icon: 'calendar-clock', target: 'https://wfrlee.com', logo: 'https://www.wfrlee.com/logo192.png' },
         { id: 'sabaah', monogram: 'S', icon: 'coffee', target: 'https://sabaah.net', logo: 'https://www.sabaah.net/favicon.svg' },
         { id: 'oneegate', monogram: '1E', icon: 'shield-check', target: 'https://oneegate.com' },
       ]; %>
       <div class="platforms-track" data-platform-track>
-        <% platforms.forEach((p) => { %>
+        <% platforms.forEach((p, pi) => { %>
         <div class="platforms-slide">
           <article class="platform platform-<%= p.id %> glass rounded-3xl" id="platform-<%= p.id %>">
             <span class="platform-glow" aria-hidden="true"></span>
-            <div class="platforms-body p-6 sm:p-8 grid lg:grid-cols-2 gap-8 lg:gap-12 items-start relative">
-              <div>
-                <div class="flex items-center gap-5 sm:gap-6">
-                  <span class="platform-lockup" aria-hidden="true">
-                    <% if (p.id !== 'wfrlee') { %>
-                    <span class="platform-monogram"><%= p.monogram %></span>
-                    <% } %>
-                    <% if (p.logo) { %>
-                    <img class="platform-logo" src="<%= p.logo %>" alt="" loading="lazy" width="256" height="256" onerror="this.onerror=null;this.classList.add('platform-logo--missing');">
-                    <% } %>
-                  </span>
-                  <div class="min-w-0">
-                    <span class="text-xs font-semibold uppercase tracking-widest text-white/45" data-i18n="<%= p.id %>-label"><%= t(p.id + '-label') %></span>
-                    <h3 class="mt-1.5 font-display font-bold text-3xl text-white leading-tight" data-i18n="<%= p.id %>-name"><%= t(p.id + '-name') %></h3>
-                    <p class="platform-tagline mt-1.5 font-medium" data-i18n="<%= p.id %>-tagline"><%= t(p.id + '-tagline') %></p>
+
+            <!-- Brand header band: full-bleed, tinted with the platform color -->
+            <header class="platform-head">
+              <span class="platform-lockup" aria-hidden="true">
+                <% if (p.id !== 'wfrlee') { %>
+                <span class="platform-monogram"><%= p.monogram %></span>
+                <% } %>
+                <% if (p.logo) { %>
+                <img class="platform-logo" src="<%= p.logo %>" alt="" loading="lazy" width="256" height="256" onerror="this.onerror=null;this.classList.add('platform-logo--missing');">
+                <% } %>
+              </span>
+
+              <div class="platform-head-text">
+                <p class="platform-head-meta">
+                  <span data-i18n="<%= p.id %>-label"><%= t(p.id + '-label') %></span>
+                  <span class="platform-head-dot" aria-hidden="true"></span>
+                  <span class="platform-domain font-mono" data-i18n="<%= p.id %>-domain"><%= t(p.id + '-domain') %></span>
+                </p>
+                <h3 class="font-display" data-i18n="<%= p.id %>-name"><%= t(p.id + '-name') %></h3>
+                <p class="platform-tagline" data-i18n="<%= p.id %>-tagline"><%= t(p.id + '-tagline') %></p>
+              </div>
+
+              <span class="platform-index font-mono" aria-hidden="true"><%= String(pi + 1).padStart(2, '0') %></span>
+            </header>
+
+            <div class="platforms-body">
+              <div class="platform-grid">
+                <!-- Left: what it is + highlights + CTA -->
+                <div class="platform-main">
+                  <p class="platform-desc text-white/55 leading-relaxed" data-i18n="<%= p.id %>-desc"><%= t(p.id + '-desc') %></p>
+
+                  <% if (p.id === 'wfrlee') { %>
+                  <span class="platform-badge" data-i18n="wfrlee-badge"><%= t('wfrlee-badge') %></span>
+                  <% } %>
+
+                  <ul class="platform-chips">
+                    <% [1,2,3].forEach(i => { %>
+                    <li class="platform-chip">
+                      <i data-lucide="check" aria-hidden="true"></i>
+                      <span data-i18n="<%= p.id %>-c<%= i %>"><%= t(p.id + '-c' + i) %></span>
+                    </li>
+                    <% }); %>
+                  </ul>
+
+                  <div class="platform-actions">
+                    <a href="<%= p.target %>" target="_blank" rel="noopener" class="platform-cta">
+                      <span data-i18n="<%= p.id %>-visit"><%= t(p.id + '-visit') %></span>
+                      <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+                    </a>
+                    <span class="platform-icon-chip" aria-hidden="true">
+                      <i data-lucide="<%= p.icon %>"></i>
+                    </span>
                   </div>
                 </div>
 
-                <p class="mt-4 text-white/55 leading-relaxed" data-i18n="<%= p.id %>-desc"><%= t(p.id + '-desc') %></p>
+                <!-- Right: the idea + how it works timeline -->
+                <aside class="platform-side">
+                  <div class="platforms-box">
+                    <span class="platform-box-label">
+                      <i data-lucide="lightbulb" aria-hidden="true"></i>
+                      <span data-i18n="platform-idea-label"><%= t('platform-idea-label') %></span>
+                    </span>
+                    <p data-i18n="<%= p.id %>-idea"><%= t(p.id + '-idea') %></p>
+                  </div>
 
-                <% if (p.id === 'wfrlee') { %>
-                <span class="mt-4 inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium text-emerald-300/90" data-i18n="wfrlee-badge"><%= t('wfrlee-badge') %></span>
-                <% } %>
-
-                <ul class="mt-4 space-y-2">
-                  <% [1,2,3].forEach(i => { %>
-                  <li class="flex items-start gap-2.5 text-sm text-white/60">
-                    <i data-lucide="check" class="w-4 h-4 mt-0.5 text-emerald-400 shrink-0"></i>
-                    <span data-i18n="<%= p.id %>-c<%= i %>"><%= t(p.id + '-c' + i) %></span>
-                  </li>
-                  <% }); %>
-                </ul>
-
-                <a href="<%= p.target %>" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 rounded-xl glass px-5 py-2.5 text-sm font-semibold text-white/80 hover:bg-white/10 hover:text-white transition-all">
-                  <span data-i18n="<%= p.id %>-visit"><%= t(p.id + '-visit') %></span>
-                  <i data-lucide="external-link" class="w-4 h-4"></i>
-                </a>
-              </div>
-
-              <div class="space-y-4">
-                <div class="platforms-box glass rounded-2xl p-5">
-                  <span class="text-xs font-semibold uppercase tracking-widest text-white/40"><%= t('pillars-1-title') %></span>
-                  <p class="mt-3 text-white/60 leading-relaxed text-sm" data-i18n="<%= p.id %>-idea"><%= t(p.id + '-idea') %></p>
-                </div>
-                <ol class="space-y-3">
-                  <% [1,2,3].forEach(i => { %>
-                  <li class="flex gap-4">
-                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/5 font-mono text-sm text-white/60 ring-1 ring-white/10"><%= i %></span>
-                    <p class="pt-1 text-sm text-white/60 leading-relaxed" data-i18n-html="<%= p.id %>-step<%= i %>"><%- t(p.id + '-step' + i) %></p>
-                  </li>
-                  <% }); %>
-                </ol>
+                  <span class="platform-steps-label" data-i18n="platform-how"><%= t('platform-how') %></span>
+                  <ol class="platform-steps">
+                    <% [1,2,3].forEach(i => { %>
+                    <li>
+                      <span class="platform-step-num font-mono"><%= i %></span>
+                      <p data-i18n-html="<%= p.id %>-step<%= i %>"><%- t(p.id + '-step' + i) %></p>
+                    </li>
+                    <% }); %>
+                  </ol>
+                </aside>
               </div>
             </div>
           </article>
