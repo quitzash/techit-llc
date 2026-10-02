@@ -95,11 +95,11 @@
           <div data-reveal class="mt-10 flex flex-wrap items-center gap-5">
             <a href="#platforms" class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-slate-900 transition-all shadow-lg shadow-white/10 hover:shadow-white/20">
               <span data-i18n="hero-cta"><%= t('hero-cta') %></span>
-              <i data-lucide="arrow-down" class="w-4 h-4"></i>
+              <i data-lucide="arrowDown" class="w-4 h-4"></i>
             </a>
             <a href="#about" class="group inline-flex items-center gap-2.5 rounded-2xl glass px-7 py-3.5 font-semibold text-base text-white/70 hover:bg-white/10 hover:text-white transition-all">
               <span data-i18n="hero-why"><%= t('hero-why') %></span>
-              <i data-lucide="arrow-up-right" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+              <i data-lucide="arrowUpRight" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
             </a>
           </div>
         </div>
@@ -121,7 +121,7 @@
     </div>
 
     <a href="#about" class="scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/30 hover:text-white transition-colors" aria-label="Scroll down">
-      <i data-lucide="chevrons-down" class="w-6 h-6"></i>
+      <i data-lucide="chevronsDown" class="w-6 h-6"></i>
     </a>
   </section>
 
@@ -172,7 +172,7 @@
 
       <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
         <% const journeySteps = ['conceive', 'back', 'support', 'operate']; %>
-        <% const journeyIcons = ['lightbulb', 'rocket', 'shield-check', 'globe']; %>
+        <% const journeyIcons = ['lightbulb', 'rocket', 'shieldCheck', 'globe']; %>
         <% const journeyNums = ['1', '2', '3', '4']; %>
         <% journeySteps.forEach((step, i) => { %>
         <article class="journey-card glass rounded-3xl p-7 relative overflow-hidden group">
@@ -232,9 +232,9 @@
 
       <!-- The track: one full-height slide per platform -->
       <% const platforms = [
-        { id: 'wfrlee', monogram: 'W', icon: 'calendar-clock', target: 'https://wfrlee.com', logo: 'https://www.wfrlee.com/logo192.png' },
+        { id: 'wfrlee', monogram: 'W', icon: 'calendarClock', target: 'https://wfrlee.com', logo: 'https://www.wfrlee.com/logo192.png' },
         { id: 'sabaah', monogram: 'S', icon: 'coffee', target: 'https://sabaah.net', logo: 'https://www.sabaah.net/favicon.svg' },
-        { id: 'oneegate', monogram: '1E', icon: 'shield-check', target: 'https://oneegate.com' },
+        { id: 'oneegate', monogram: '1E', icon: 'shieldCheck', target: 'https://oneegate.com' },
       ]; %>
       <div class="platforms-track" data-platform-track>
         <% platforms.forEach((p, pi) => { %>
@@ -288,7 +288,7 @@
                   <div class="platform-actions">
                     <a href="<%= p.target %>" target="_blank" rel="noopener" class="platform-cta">
                       <span data-i18n="<%= p.id %>-visit"><%= t(p.id + '-visit') %></span>
-                      <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+                      <i data-lucide="arrowUpRight" aria-hidden="true"></i>
                     </a>
                     <span class="platform-icon-chip" aria-hidden="true">
                       <i data-lucide="<%= p.icon %>"></i>
@@ -340,7 +340,7 @@
         <% const pillars = [
           { icon: 'rocket' },
           { icon: 'network' },
-          { icon: 'shield-check' },
+          { icon: 'shieldCheck' },
         ]; %>
         <% pillars.forEach((p, i) => { %>
         <article class="pillar-card glass rounded-3xl p-8 relative overflow-hidden group">
@@ -410,7 +410,7 @@
   <!-- Form toast (shown after a no-JS redirect from /api/contact) -->
   <% if (sent) { %>
   <div id="form-toast" role="status" aria-live="polite" class="toast-<%= sent %>">
-    <i data-lucide="<%= sent === 'success' ? 'circle-check' : 'circle-alert' %>" class="w-5 h-5 shrink-0"></i>
+    <i data-lucide="<%= sent === 'success' ? 'circleCheck' : 'circleAlert' %>" class="w-5 h-5 shrink-0"></i>
     <span><%= sent === 'success' ? dict['form-toast-success'] : dict['form-toast-error'] %></span>
   </div>
   <% } %>

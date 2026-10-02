@@ -302,7 +302,7 @@
     if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
 
     var dict = getDict();
-    var icon = mode === 'success' ? ICONS['circle-check'] : ICONS['circle-alert'];
+    var icon = mode === 'success' ? ICONS['circleCheck'] : ICONS['circleAlert'];
     var toast = document.createElement('div');
     toast.id = 'form-toast';
     toast.setAttribute('role', 'status');
