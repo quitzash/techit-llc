@@ -5,16 +5,10 @@ const compression = require('compression');
 require('dotenv').config();
 
 const I18N = require('./src/i18n');
+const SITE = require('./src/site');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-
-const SITE = {
-  title: 'Techit LLC — Powering Next-Generation Digital Ecosystems',
-  description:
-    'Techit LLC is the holding enterprise backing leading regional platforms in e-commerce, business optimization, and enterprise gateways.',
-  email: 'info@techit-llc.com',
-};
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

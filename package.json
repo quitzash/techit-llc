@@ -15,7 +15,8 @@
     "build:icons": "node scripts/generate-icons.js",
     "build:css": "tailwindcss -i ./src/input.css -o ./public/css/tailwind.css --minify",
     "watch:css": "tailwindcss -i ./src/input.css -o ./public/css/tailwind.css --minify --watch",
-    "release": "node scripts/release.js"
+    "release": "node scripts/release.js",
+    "export:static": "npm run build && node scripts/export-static.js"
   },
   "dependencies": {
     "compression": "^1.7.4",
