@@ -951,6 +951,29 @@ html.js [data-reveal].is-in {
   opacity: 1;
   transform: none;
 }
+/* ============================================================
+   Scroll-scrubbed text reveal (progressive enhancement)
+   — JS splits the text into .scrub-word spans and drives
+     opacity / translateY / blur from each leaf's scroll progress,
+     so the further down you scroll the more has resolved.
+   — Hidden only under `html.js` (added synchronously in <head>), so
+     without JS the text is simply present and readable.
+   — `transition: none` is deliberate: every value is set per-frame
+     from the scroll position, so a transition would only lag behind.
+   — The rotator words (.hero-word) are filled with a gradient and
+     keep their own .is-active opacity; JS scrubs them atomically
+     rather than wrapping their text, so the clip isn't broken.
+   ============================================================ */
+html.js [data-scrub] .scrub-word {
+  opacity: 0;
+  transform: translateY(0.42em);
+  filter: blur(7px);
+  transition: none;
+  will-change: opacity, transform, filter;
+}
+.scrub-word {
+  display: inline-block;
+}
 
 /* ---- Reduced motion overrides ---- */
 @media (prefers-reduced-motion: reduce) {
@@ -959,6 +982,11 @@ html.js [data-reveal].is-in {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+  html.js [data-scrub] .scrub-word {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
   .scroll-cue,
   .float-orb, .float-orb-delay, .float-orb-slow, .float-orb-soft,

@@ -78,6 +78,10 @@
 
     var toggle = $('#lang-toggle');
     if (toggle) toggle.textContent = LANG === 'ar' ? 'EN' : 'عربي';
+
+    // Language switching rewrites textContent, which destroys the per-word
+    // spans the scroll-scrub reveal depends on. Rebuild them.
+    if (typeof rewrapScrub === 'function') rewrapScrub();
   }
 
   function setLang(next) {
@@ -130,6 +134,158 @@
     els.forEach(function (el) {
       io.observe(el);
     });
+  }
+
+  /* ---------------- Scroll-scrubbed text reveal ----------------
+     Unlike [data-reveal] (binary, fires once), this ties the reveal to
+     scroll position: the further down the page you are, the more of the
+     text has resolved. Words are wrapped in .scrub-word and each gets a
+     staggered slice of the element's 0..1 progress. */
+  var SCRUB_WORDS = [];   // { el, words }
+  var scrubTicking = false;
+
+  function scrubEase(t) {
+    return t * t * (3 - 2 * t); // smoothstep
+  }
+
+  function clamp01(v) {
+    return v < 0 ? 0 : v > 1 ? 1 : v;
+  }
+
+  // Wrap each text-bearing leaf under root in per-word spans.
+  // Returns [{ el, words }] for the leaves it touched.
+  //
+  // Elements whose text is filled by a gradient (background-clip:text, e.g.
+  // the rotating .hero-word) are deliberately left atomic: a child span
+  // carrying filter:blur() would break the parent's text clip, and inline
+  // transform/opacity would fight the rotator's own .is-active transition.
+  function isGradientText(el) {
+    if (el.hasAttribute('data-word-color')) return true;
+    var bg = window.getComputedStyle(el).backgroundClip ||
+             window.getComputedStyle(el).webkitBackgroundClip;
+    return bg === 'text';
+  }
+
+  function wrapWords(root) {
+    var out = [];
+    var leaves = [root].concat(Array.prototype.slice.call(root.querySelectorAll('*')));
+    leaves.forEach(function (el) {
+      if (el.closest('.scrub-word')) return;      // already wrapped
+      if (isGradientText(el)) {
+        out.push({ el: el, atomic: true });
+        return;
+      }
+      // Already-wrapped leaf (rewrapScrub can run more than once, e.g. after a
+      // language switch). Re-derive the entry from the existing spans instead
+      // of re-wrapping — otherwise the leaf drops out of SCRUB_WORDS and its
+      // words stay frozen at whatever the previous paint left behind.
+      var existing = Array.prototype.slice.call(el.children).filter(function (c) {
+        return c.classList && c.classList.contains('scrub-word');
+      });
+      if (existing.length) {
+        out.push({ el: el, words: existing });
+        return;
+      }
+      var text = '';
+      Array.prototype.slice.call(el.childNodes).forEach(function (n) {
+        if (n.nodeType === 3) text += n.nodeValue;
+      });
+      if (!text.trim()) return;                    // no direct text to split
+      el.textContent = '';
+      var frag = document.createDocumentFragment();
+      text.split(/(\s+)/).forEach(function (chunk) {
+        if (!chunk) return;
+        if (/^\s+$/.test(chunk)) {
+          frag.appendChild(document.createTextNode(chunk));
+          return;
+        }
+        var span = document.createElement('span');
+        span.className = 'scrub-word';
+        span.textContent = chunk;
+        frag.appendChild(span);
+      });
+      el.appendChild(frag);
+      out.push({ el: el, words: Array.prototype.slice.call(el.querySelectorAll('.scrub-word')) });
+    });
+    return out;
+  }
+
+  // Progress 0 once the leaf's top is near the bottom of the viewport,
+  // 1 once it has travelled up to ~35% of viewport height.
+  function scrubProgress(el) {
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    var startY = vh * 0.92;
+    var endY = vh * 0.35;
+    var top = el.getBoundingClientRect().top;
+    if (startY === endY) return 1;
+    return clamp01((startY - top) / (startY - endY));
+  }
+
+  function paintScrub() {
+    scrubTicking = false;
+    SCRUB_WORDS.forEach(function (entry) {
+      var el = entry.el;
+      var p = scrubProgress(el);
+
+      // Gradient-filled text (the rotator words): opacity only. Transform and
+      // blur are left to the .is-active CSS transition so the two animations
+      // don't fight, and inactive words stay hidden by their own stylesheet.
+      if (entry.atomic) {
+        if (el.classList.contains('hero-word') && !el.classList.contains('is-active')) {
+          el.style.opacity = '';
+          return;
+        }
+        el.style.opacity = scrubEase(p).toFixed(3);
+        return;
+      }
+
+      var n = entry.words.length;
+      entry.words.forEach(function (w, i) {
+        var span = n > 1 ? n * 0.55 : 1;          // stagger across the leaf
+        var local = clamp01((p * (n + span) - i) / span);
+        var e = scrubEase(local);
+        if (e >= 1) {
+          w.style.cssText = '';
+        } else {
+          w.style.opacity = e.toFixed(3);
+          w.style.transform = 'translateY(' + ((1 - e) * 0.42).toFixed(3) + 'em)';
+          w.style.filter = 'blur(' + ((1 - e) * 7).toFixed(2) + 'px)';
+        }
+      });
+    });
+  }
+
+  function onScrubScroll() {
+    if (scrubTicking) return;
+    scrubTicking = true;
+    requestAnimationFrame(paintScrub);
+  }
+
+  // Rewrap from scratch — needed after a language switch, because applyLang()
+  // replaces textContent on [data-i18n] and would wipe the word spans.
+  //
+  // Also the single gate for reduced-motion users: they get the roots marked
+  // ready but no spans and no inline styles at all, rather than relying on the
+  // stylesheet's !important override to undo what JS just wrote.
+  function rewrapScrub() {
+    SCRUB_WORDS = [];
+    var roots = $$('[data-scrub]');
+    roots.forEach(function (root) {
+      root.setAttribute('data-scrub-ready', '');
+    });
+    if (REDUCED.matches) return;
+    roots.forEach(function (root) {
+      SCRUB_WORDS = SCRUB_WORDS.concat(wrapWords(root));
+    });
+    paintScrub();
+  }
+
+  function initScrubReveal() {
+    if (!$$('[data-scrub]').length) return;
+    rewrapScrub();
+    if (REDUCED.matches) return; // nothing scroll-driven to listen for
+    window.addEventListener('scroll', onScrubScroll, { passive: true });
+    window.addEventListener('resize', onScrubScroll);
   }
 
   /* ---------------- Counters ---------------- */
@@ -622,6 +778,7 @@
     initPlatformScroller();
     initCounters();
     initWordmark();
+    initScrubReveal();
     initMobileMenu();
     initScrollProgress();
     initToast();
