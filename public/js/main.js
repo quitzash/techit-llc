@@ -671,7 +671,10 @@
     var ticking = false;
     var EARLY = 0.15; // share of the pin each card holds before stepping out
     var SNAP = 0.03;  // share of the pin spent stepping between cards
-    var MIN_SLIDE = 600; // px of card window below which pinning is not worth it
+    // A card scaled below this would read as too small to be comfortable, so
+    // we give up on pinning and use the plain vertical stack instead.
+    var FIT_FLOOR = 0.72;
+    var fallbackBound = false;
     var TRACK = 8;    // scroll budget of the pin, in viewport-heights. The
     // section becomes TRACK+1 = 9 screens tall and the pin walks its cards
     // over TRACK = 8 screens of scroll — the SkillLoop system, where each
@@ -713,21 +716,66 @@
     }
 
     if (useLiteMotion() || !('IntersectionObserver' in window)) {
-      fallbackReveal();
+      enterFallback();
       return;
     }
 
     /* --- Pinned mode --- */
+
+    /* Fit every card to its slide window. A card is laid out once at natural
+       height; if the tallest card is taller than the space a slide offers,
+       the whole deck is scaled down (via the --deck-scale custom property on
+       the stage) until it fits. transform never affects layout, so measuring
+       naturally is cheap and stable. This is what keeps laptop screens — where
+       the viewport is wide but short — from clipping the card. */
     function measure() {
       var headH = head ? head.offsetHeight : 0;
       var stageH = stage.offsetHeight || window.innerHeight;
-      slideH = Math.max(stageH - headH, window.innerHeight * 0.5);
+
+      // Space a single slide has for a card, once the pinned header is gone.
+      slideH = Math.max(240, stageH - headH);
       slides.forEach(function (s) { s.style.height = slideH + 'px'; });
-      section.style.height = stageH + TRACK * stageH + 'px';
+
+      section.style.height = (stageH + TRACK * stageH) + 'px';
       if (stage.style) stage.style.setProperty('--head-h', headH + 'px');
       startY = section.getBoundingClientRect().top + window.scrollY;
       range = section.offsetHeight - stageH;
       if (range < 1) range = 1;
+
+      // The tallest card at natural height, plus the slide's own padding.
+      var slidePad = 0;
+      if (slides[0]) {
+        var ps = window.getComputedStyle(slides[0]);
+        slidePad = (parseFloat(ps.paddingTop) || 0) + (parseFloat(ps.paddingBottom) || 0);
+      }
+      var tallest = 0;
+      cards.forEach(function (c) {
+        var h = c.offsetHeight;
+        if (h > tallest) tallest = h;
+      });
+
+      var avail = Math.max(slideH - slidePad, 120);
+      var scale = 1;
+      if (tallest > avail && tallest > 0) scale = avail / tallest;
+      if (scale > 1) scale = 1;
+      if (stage.style) stage.style.setProperty('--deck-scale', scale.toFixed(4));
+      stage.__fitScale = scale;
+    }
+
+    /* Leave the pinned stage and fall to the plain, always-visible stack.
+       Cleans up every inline style the scrubbed frame wrote so the stack is
+       not left with a stale translate or a per-card opacity of 0. */
+    function exitPinned() {
+      pinned = false;
+      section.classList.remove('is-pinned');
+      section.style.height = '';
+      if (stage.style) stage.style.removeProperty('--deck-scale');
+      slides.forEach(function (s) {
+        s.style.height = '';
+        s.classList.remove('is-current');
+      });
+      track.style.transform = '';
+      cards.forEach(function (c) { c.style.opacity = ''; });
     }
 
     function readP() {
@@ -799,26 +847,37 @@
     }
 
     function onResize() {
+      if (!pinned) return;
       measure();
+      // A resize that shrinks the window can push the fit-scale under the
+      // floor (e.g. dragging a laptop window short). Fall back cleanly.
+      if (stage.__fitScale < FIT_FLOOR) {
+        exitPinned();
+        enterFallback();
+        return;
+      }
       onScroll();
+    }
+
+    function enterFallback() {
+      if (fallbackBound) return;
+      fallbackBound = true;
+      fallbackReveal();
     }
 
     /* The pinned deck must always show a full card at natural height — a
        card that needs its own scrollbar would swallow the mouse wheel and
-       trap the section on its first slide. If the viewport cannot give each
-       card a tall-enough window, drop straight to the plain stack instead.
+       trap the section on its first slide. We scale the deck to fit; only if
+       that scale drops below FIT_FLOOR do we fall back to the plain stack.
        The decision waits for the webfonts: fonts change the heading height,
        which is exactly what the window size is computed from. */
     function decide() {
       pinned = true;
       section.classList.add('is-pinned');
       measure();
-      if (slideH < MIN_SLIDE) {
-        pinned = false;
-        section.classList.remove('is-pinned');
-        section.style.height = '';
-        slides.forEach(function (s) { s.style.height = ''; });
-        fallbackReveal();
+      if (!stage.__fitScale || stage.__fitScale < FIT_FLOOR) {
+        exitPinned();
+        enterFallback();
         return;
       }
       window.addEventListener('scroll', onScroll, { passive: true });
@@ -833,7 +892,7 @@
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(function () {
           if (!decided) { decided = true; decide(); }
-          else { measure(); onScroll(); }
+          else if (pinned) { measure(); onScroll(); }
         });
         /* Safety: if the webfont promise stalls, decide after a beat anyway
            (the deck simply re-measures once fonts finally settle). */

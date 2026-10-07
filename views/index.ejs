@@ -344,20 +344,23 @@
         <p class="mt-5 text-white/50 text-lg leading-relaxed" data-reveal data-i18n="about-p1"><%= t('about-p1') %></p>
       </div>
 
-      <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal>
+      <div class="mt-14 pillars-grid" data-reveal>
         <% const pillars = [
           { icon: 'rocket' },
           { icon: 'network' },
           { icon: 'shieldCheck' },
         ]; %>
         <% pillars.forEach((p, i) => { %>
-        <article class="pillar-card glass rounded-3xl p-8 relative overflow-hidden group">
-          <span class="pillar-glow absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"></span>
-          <span class="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10 text-white/70">
-            <i data-lucide="<%= p.icon %>" class="w-6 h-6"></i>
-          </span>
-          <h3 class="mt-6 font-display font-bold text-2xl text-white" data-i18n="pillars-<%= i+1 %>-title"><%= t('pillars-' + (i+1) + '-title') %></h3>
-          <p class="mt-3 text-sm leading-relaxed text-white/50" data-i18n="pillars-<%= i+1 %>-desc"><%= t('pillars-' + (i+1) + '-desc') %></p>
+        <article class="pillar-card glass rounded-3xl relative overflow-hidden group">
+          <span class="pillar-glow" aria-hidden="true"></span>
+          <div class="pillar-card-inner">
+            <span class="pillar-card-icon">
+              <i data-lucide="<%= p.icon %>" class="w-6 h-6"></i>
+            </span>
+            <h3 class="pillar-card-title" data-i18n="pillars-<%= i+1 %>-title"><%= t('pillars-' + (i+1) + '-title') %></h3>
+            <p class="pillar-card-body" data-i18n="pillars-<%= i+1 %>-desc"><%= t('pillars-' + (i+1) + '-desc') %></p>
+            <span class="pillar-card-num" aria-hidden="true">0<%= i+1 %></span>
+          </div>
         </article>
         <% }); %>
       </div>
