@@ -11,7 +11,15 @@
   <!-- JS-only visual enhancements. Without this class nothing is hidden:
        the whole page is visible by default. data-reveal elements only
        animate when this 'js' class is present. -->
-  <script>document.documentElement.classList.add('js');</script>
+  <script>
+    document.documentElement.classList.add('js');
+    // Failsafe: if the enhancement script never boots (slow network, old
+    // browser, blocked JS), drop the 'js' gate after a moment so reveal
+    // elements can never stay hidden.
+    window.__techitFailsafe = setTimeout(function () {
+      if (!window.__techitReady) document.documentElement.classList.remove('js');
+    }, 2500);
+  </script>
   <!-- Full i18n dictionary for the client-side language toggle. -->
   <script>window.I18N = <%- i18nJson %>; window.LANG = '<%= lang %>';</script>
 

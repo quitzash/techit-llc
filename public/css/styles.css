@@ -76,6 +76,11 @@ html[dir="rtl"] .hero-wordmark-label {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
+/* Opaque fallback where backdrop blur is unsupported (older browsers). */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  #navbar .nav-shell { background: rgba(13, 15, 20, 0.94); }
+  #mobile-menu .nav-menu { background: rgba(13, 15, 20, 0.97); }
+}
 
 /* ---- Hero ---- */
 #hero { min-height: 100svh; }
@@ -103,9 +108,11 @@ html[dir="rtl"] .hero-wordmark-label {
   transform-origin: right;
   transition: transform 0.3s ease;
 }
-.anchor:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
+@media (hover: hover) and (pointer: fine) {
+  .anchor:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 
 /* ---- Arrow bounce on CTA ---- */
@@ -140,6 +147,7 @@ html[dir="rtl"] .hero-wordmark-label {
   position: absolute;
   inset-inline: 0;
   text-align: start;
+  white-space: nowrap;
   opacity: 0;
   transform: translateY(0.5em);
   filter: blur(12px);
@@ -172,14 +180,17 @@ html[dir="rtl"] .hero-wordmark-label {
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.45s ease,
               border-color 0.45s ease;
-  will-change: transform;
 }
-.journey-card:hover,
-.pillar-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.45),
-              0 0 60px -30px rgba(140, 145, 157, 0.14);
-  border-color: rgba(255, 255, 255, 0.13);
+/* Hover lift only where hovering is real — avoids stuck/touch-triggered
+   hover states on phones and tablets. */
+@media (hover: hover) and (pointer: fine) {
+  .journey-card:hover,
+  .pillar-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.45),
+                0 0 60px -30px rgba(140, 145, 157, 0.14);
+    border-color: rgba(255, 255, 255, 0.13);
+  }
 }
 
 .journey-num {
@@ -194,6 +205,9 @@ html[dir="rtl"] .hero-wordmark-label {
 
 .platform {
   position: relative;
+  /* Own stacking context so the negative z-index brand glow stays attached
+     to this card (and does not fall behind the page background). */
+  z-index: 0;
   border: 1px solid transparent;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)) padding-box,
@@ -201,11 +215,12 @@ html[dir="rtl"] .hero-wordmark-label {
   box-shadow: 0 30px 60px -45px rgba(0, 0, 0, 0.7);
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.5s ease;
-  will-change: transform;
 }
-.platform:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 40px 80px -45px rgba(0, 0, 0, 0.75);
+@media (hover: hover) and (pointer: fine) {
+  .platform:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 40px 80px -45px rgba(0, 0, 0, 0.75);
+  }
 }
 
 /* ---- Per-brand accent colors ---- */
@@ -324,17 +339,13 @@ html[dir="rtl"] .platform-head-meta { letter-spacing: 0; }
   pointer-events: none;
 }
 .platform-logo--missing { opacity: 0; }
-.platform:hover .platform-logo {
-  transform: scale(1.04);
-  filter: drop-shadow(0 6px 18px rgba(var(--brand-rgb), 0.35));
-}
 .platform-logo {
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
 }
-@media (prefers-reduced-motion: reduce) {
+@media (hover: hover) and (pointer: fine) {
   .platform:hover .platform-logo {
-    transform: none;
-    filter: none;
+    transform: scale(1.04);
+    filter: drop-shadow(0 6px 18px rgba(var(--brand-rgb), 0.35));
   }
 }
 
@@ -398,9 +409,11 @@ html[dir="rtl"] .platform-head-meta { letter-spacing: 0; }
   height: 0.85rem;
   color: rgb(var(--brand-rgb));
 }
-.platform:hover .platform-chip {
-  border-color: rgba(var(--brand-rgb), 0.32);
-  background: rgba(var(--brand-rgb), 0.05);
+@media (hover: hover) and (pointer: fine) {
+  .platform:hover .platform-chip {
+    border-color: rgba(var(--brand-rgb), 0.32);
+    background: rgba(var(--brand-rgb), 0.05);
+  }
 }
 
 .platform-actions {
@@ -427,12 +440,14 @@ html[dir="rtl"] .platform-head-meta { letter-spacing: 0; }
   height: 1rem;
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.platform-cta:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.08);
-  box-shadow: 0 18px 40px -14px rgba(var(--brand-rgb), 0.8);
+@media (hover: hover) and (pointer: fine) {
+  .platform-cta:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+    box-shadow: 0 18px 40px -14px rgba(var(--brand-rgb), 0.8);
+  }
+  .platform-cta:hover svg { transform: translate(2px, -2px); }
 }
-.platform-cta:hover svg { transform: translate(2px, -2px); }
 .platform-icon-chip {
   display: inline-flex;
   align-items: center;
@@ -608,12 +623,16 @@ html[dir="rtl"] .platform-steps-label { letter-spacing: 0; }
   }
 .platforms-track .platform {
   transform-style: preserve-3d;
+  transform-origin: 50% 20%;
+  /* Hidden only when JS is available to reveal it again — without JS the
+     cards are simply visible in the plain stack. */
+}
+html.js .platforms-track .platform {
   opacity: 0;
   transform: perspective(1200px) rotateX(16deg) translateY(3rem) scale(0.96);
-  transform-origin: 50% 20%;
   transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.platforms-track .platform.is-inview {
+html.js .platforms-track .platform.is-inview {
   opacity: 1;
   transform: perspective(1200px) rotateX(0deg) translateY(0) scale(1);
 }
@@ -796,10 +815,12 @@ html[dir="rtl"] .platforms-progress { transform-origin: 100% 50%; }
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
-.cta-glow:hover::after { opacity: 1; }
-.cta-glow:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 10px 40px -10px rgba(255, 255, 255, 0.12);
+@media (hover: hover) and (pointer: fine) {
+  .cta-glow:hover::after { opacity: 1; }
+  .cta-glow:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 40px -10px rgba(255, 255, 255, 0.12);
+  }
 }
 
 /* ---- Contact card / form fields ---- */
@@ -975,6 +996,24 @@ html.js [data-scrub] .scrub-word {
   display: inline-block;
 }
 
+/* ============================================================
+   Lightweight motion (touch / coarse pointer devices)
+   Stops the endlessly-running decorative animations and releases
+   GPU layer hints that are expensive on mobile GPUs. Content and
+   reveal fades still work — only the constant motion is dropped.
+   ============================================================ */
+@media (hover: none), (pointer: coarse) {
+  .float-orb { animation: none; will-change: auto; }
+  .platform.is-inview .platform-glow { animation: none; }
+  .platforms-ring-dashed { animation: none; }
+  .shimmer { animation: none; background-position: 0 0; }
+  .platforms-badge,
+  .platforms-track,
+  .platform,
+  .journey-card,
+  .pillar-card { will-change: auto; }
+}
+
 /* ---- Reduced motion overrides ---- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -991,6 +1030,7 @@ html.js [data-scrub] .scrub-word {
   .scroll-cue,
   .float-orb, .float-orb-delay, .float-orb-slow, .float-orb-soft,
   .cta-glow, .journey-card, .pillar-card, .platform,
+  .platform:hover .platform-logo,
   .glow-pulse, .shimmer, .hero-word,
   .platforms-progress, .platforms-counter {
     animation: none !important;

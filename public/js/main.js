@@ -12,8 +12,18 @@
   var OTHER_LANG = LANG === 'ar' ? 'en' : 'ar';
   var YEAR = String(new Date().getFullYear());
   var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // Touch / coarse-pointer devices and narrow viewports get the lighter,
+  // fully-visible fallbacks instead of the GPU-heavy pinned scroller.
+  var COARSE = window.matchMedia('(hover: none), (pointer: coarse)').matches;
   var transitionMs = 260;
   var toastTimer = null;
+
+  function isSmallViewport() {
+    return window.innerWidth < 900 || window.innerHeight < 640;
+  }
+  function useLiteMotion() {
+    return REDUCED.matches || COARSE || isSmallViewport();
+  }
 
   function $(sel, ctx) {
     return (ctx || document).querySelector(sel);
@@ -113,27 +123,78 @@
     });
   }
 
+  function inViewport(el) {
+    var r = el.getBoundingClientRect();
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    return r.top < vh * 0.92 && r.bottom > 0;
+  }
+
   function initReveal() {
     var els = $$('[data-reveal]');
     if (!els.length) return;
-    if (REDUCED.matches || !('IntersectionObserver' in window)) {
+    if (REDUCED.matches) {
       revealAll();
       return;
     }
-    var io = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-in');
-            io.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
-    );
-    els.forEach(function (el) {
-      io.observe(el);
-    });
+
+    // Scroll-driven reveal that works everywhere — no IntersectionObserver
+    // required. IntersectionObserver, when present, makes it more efficient,
+    // but the rAF scroll pass is the always-on safety net so the fade-in
+    // plays on every device (including webviews and older mobile browsers).
+    var remaining = els.slice();
+    function check() {
+      if (!remaining.length) return;
+      remaining = remaining.filter(function (el) {
+        if (inViewport(el)) {
+          el.classList.add('is-in');
+          return false;
+        }
+        return true;
+      });
+    }
+
+    var io = null;
+    if ('IntersectionObserver' in window) {
+      io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-in');
+              io.unobserve(entry.target);
+              var i = remaining.indexOf(entry.target);
+              if (i > -1) remaining.splice(i, 1);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+      );
+      els.forEach(function (el) {
+        io.observe(el);
+      });
+    }
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        check();
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    window.addEventListener('orientationchange', onScroll, { passive: true });
+
+    // First paint + guarantee anything already on screen reveals immediately.
+    requestAnimationFrame(check);
+    setTimeout(check, 120);
+
+    // Last-resort net: if for any reason nothing revealed, show everything so
+    // content is never invisible.
+    setTimeout(function () {
+      if (remaining.length === els.length) revealAll();
+    }, 3500);
   }
 
   /* ---------------- Scroll-scrubbed text reveal ----------------
@@ -619,19 +680,39 @@
 
     /* Fallback for anyone who cannot pin: gentle tilt-in + brand glow. */
     function fallbackReveal() {
-      if (!('IntersectionObserver' in window)) {
-        cards.forEach(function (c) { c.classList.add('is-inview'); });
-        return;
+      function show(c) { c.classList.add('is-inview'); }
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              show(entry.target);
+              io.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+        cards.forEach(function (c) { io.observe(c); });
       }
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) entry.target.classList.add('is-inview');
+      // Always-on safety net (also covers devices without IntersectionObserver)
+      // so the tilt-in plays and the cards can never stay hidden.
+      var ticking = false;
+      function check() {
+        cards.forEach(function (c) {
+          if (c.classList.contains('is-inview')) return;
+          if (inViewport(c)) show(c);
         });
-      }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
-      cards.forEach(function (c) { io.observe(c); });
+      }
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () { ticking = false; check(); });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      requestAnimationFrame(check);
+      setTimeout(function () { cards.forEach(show); }, 3500);
     }
 
-    if (REDUCED.matches || !('IntersectionObserver' in window)) {
+    if (useLiteMotion() || !('IntersectionObserver' in window)) {
       fallbackReveal();
       return;
     }
@@ -669,17 +750,16 @@
     }
 
     /* Per-frame card states: each card fades out as the next is scrolled
-       in, and fades back in when you scroll the other way — opacity and
-       saturation are purely a function of distance from the current slide. */
+       in, and fades back in when you scroll the other way. Opacity only —
+       a per-frame saturate() filter forces a repaint of the whole card and
+       is the main source of jank on mobile GPUs. */
     function paint() {
       var o = current;
       for (var i = 0; i < cards.length; i++) {
         var a = 1 - Math.abs(i - o) * 1.4;
         if (a < 0) a = 0;
         if (a > 1) a = 1;
-        var card = cards[i];
-        card.style.opacity = a.toFixed(3);
-        card.style.filter = 'saturate(' + (0.45 + 0.55 * a).toFixed(2) + ')';
+        cards[i].style.opacity = a.toFixed(3);
       }
     }
 
@@ -771,6 +851,10 @@
 
   /* ---------------- Boot ---------------- */
   function boot() {
+    // Tell the <head> failsafe that the enhancement script made it in, so it
+    // leaves the 'js' gate in place for the animations.
+    window.__techitReady = true;
+    if (window.__techitFailsafe) clearTimeout(window.__techitFailsafe);
     initIcons();
     applyLang();
     initLangToggle();
