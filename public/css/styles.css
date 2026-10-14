@@ -1,5 +1,5 @@
 /* ============================================================
-   Techit LLC — core styles
+   Techit LLC ??? core styles
    Content is visible by default. JavaScript only adds the
    `html.js` class (opt-in gate) to enable reveal animations.
    ============================================================ */
@@ -181,7 +181,7 @@ html[dir="rtl"] .hero-wordmark-label {
               box-shadow 0.45s ease,
               border-color 0.45s ease;
 }
-/* Hover lift only where hovering is real — avoids stuck/touch-triggered
+/* Hover lift only where hovering is real ??? avoids stuck/touch-triggered
    hover states on phones and tablets. */
 @media (hover: hover) and (pointer: fine) {
   .journey-card:hover,
@@ -321,8 +321,8 @@ html[dir="rtl"] .pillar-card-num { letter-spacing: 0; }
 
 /* ---- Platform card shell ----
    Each card is a brand header band stacked over a two-column body:
-   • a full-bleed header tinted with the platform color (logo/label/name/…);
-   • a body made of feature chips + CTA on one side and an "idea" panel +
+   ??? a full-bleed header tinted with the platform color (logo/label/name/???);
+   ??? a body made of feature chips + CTA on one side and an "idea" panel +
      numbered how-it-works timeline on the other.
    The suffix number (01/02/03) sits at the end of the header. */
 .platform-head {
@@ -381,7 +381,7 @@ html[dir="rtl"] .platform-head-meta { letter-spacing: 0; }
   -webkit-user-select: none;
 }
 
-/* Lockup — squarer inside the new header band, still logo-over-monogram */
+/* Lockup ??? squarer inside the new header band, still logo-over-monogram */
 .platform-head .platform-lockup {
   align-self: center;
   min-width: clamp(3.5rem, 6.5vw, 4.75rem);
@@ -710,7 +710,7 @@ html[dir="rtl"] .platform-steps-label { letter-spacing: 0; }
 .platforms-track .platform {
   transform-style: preserve-3d;
   transform-origin: 50% 20%;
-  /* Hidden only when JS is available to reveal it again — without JS the
+  /* Hidden only when JS is available to reveal it again ??? without JS the
      cards are simply visible in the plain stack. */
 }
 html.js .platforms-track .platform {
@@ -865,7 +865,7 @@ html[dir="rtl"] .platforms-progress { transform-origin: 100% 50%; }
 }
 
 /* Inside the pinned stage the deck is tightened so each card fits its slide
-   window at natural height — never internally scrollable. A scrollable card
+   window at natural height ??? never internally scrollable. A scrollable card
    would swallow the mouse wheel and leave the section stuck on its first
    slide. (Short viewports, where the deck cannot reliably fit, are handled
    in JS by falling back to the plain stack instead of pinning.) */
@@ -1079,9 +1079,9 @@ html[dir="rtl"] .platforms-progress { transform-origin: 100% 50%; }
 
 /* ============================================================
    Reveal-on-scroll (progressive enhancement)
-   — `html.js` is added synchronously in <head>. Without it,
-     data-reveal elements are fully visible — nothing is hidden.
-   — When JS is on, elements animate in once via .is-in.
+   ??? `html.js` is added synchronously in <head>. Without it,
+     data-reveal elements are fully visible ??? nothing is hidden.
+   ??? When JS is on, elements animate in once via .is-in.
    ============================================================ */
   html.js [data-reveal] {
     opacity: 0;
@@ -1095,14 +1095,14 @@ html.js [data-reveal].is-in {
 }
 /* ============================================================
    Scroll-scrubbed text reveal (progressive enhancement)
-   — JS splits the text into .scrub-word spans and drives
+   ??? JS splits the text into .scrub-word spans and drives
      opacity / translateY / blur from each leaf's scroll progress,
      so the further down you scroll the more has resolved.
-   — Hidden only under `html.js` (added synchronously in <head>), so
+   ??? Hidden only under `html.js` (added synchronously in <head>), so
      without JS the text is simply present and readable.
-   — `transition: none` is deliberate: every value is set per-frame
+   ??? `transition: none` is deliberate: every value is set per-frame
      from the scroll position, so a transition would only lag behind.
-   — The rotator words (.hero-word) are filled with a gradient and
+   ??? The rotator words (.hero-word) are filled with a gradient and
      keep their own .is-active opacity; JS scrubs them atomically
      rather than wrapping their text, so the clip isn't broken.
    ============================================================ */
@@ -1121,7 +1121,7 @@ html.js [data-scrub] .scrub-word {
    Lightweight motion (touch / coarse pointer devices)
    Stops the endlessly-running decorative animations and releases
    GPU layer hints that are expensive on mobile GPUs. Content and
-   reveal fades still work — only the constant motion is dropped.
+   reveal fades still work ??? only the constant motion is dropped.
    ============================================================ */
 @media (hover: none), (pointer: coarse) {
   .float-orb { animation: none; will-change: auto; }
