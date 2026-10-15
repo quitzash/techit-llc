@@ -5,7 +5,7 @@ const { URL } = require('url');
 
 const sites = [
   { id: 'wfrlee',   start: 'https://www.wfrlee.com/' },
-  { id: 'sabaah',   start: 'https://sabaah.net/' },
+  { id: 'sab3h',   start: 'https://sab3h.net/' },
   { id: 'oneegate', start: 'https://oneegate.com/' },
 ];
 

@@ -37,7 +37,7 @@ const LOGO_IMG =
   if (aOk !== 1) { failures.push('[ejs] platforms array needle x1, got ' + aOk); return; }
 
   s = s.split("id: 'wfrlee', monogram: 'W'").join("id: 'wfrlee', monogram: 'W', logo: 'https://www.wfrlee.com/logo192.png'");
-  s = s.split("id: 'sabaah', monogram: 'S'").join("id: 'sabaah', monogram: 'S', logo: 'https://sabaah.net/favicon.svg'");
+  s = s.split("id: 'sab3h', monogram: 'S'").join("id: 'sab3h', monogram: 'S', logo: 'https://sab3h.net/favicon.svg'");
   s = s.split("id: 'oneegate', monogram: '1E'").join("id: 'oneegate', monogram: '1E', logo: 'https://oneegate.com/logo192.png'");
 
   // verify array now carries exactly 3 `logo:` entries

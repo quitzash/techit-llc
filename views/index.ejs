@@ -116,7 +116,7 @@
         <div id="hero-wordmark" class="relative flex flex-col text-start justify-center py-10 lg:py-0" data-scrub>
           <span class="hero-wordmark-label" data-i18n="hero-word-label"><%= t('hero-word-label') %></span>
           <div class="hero-word-rotator" aria-hidden="true">
-            <span class="hero-word is-active" data-word-color="sabaah"><%= t('sabaah-name') %></span>
+            <span class="hero-word is-active" data-word-color="sab3h"><%= t('sab3h-name') %></span>
             <span class="hero-word" data-word-color="wfrlee"><%= t('wfrlee-name') %></span>
             <span class="hero-word" data-word-color="onegate"><%= t('oneegate-name') %></span>
           </div>
@@ -241,7 +241,7 @@
       <!-- The track: one full-height slide per platform -->
       <% const platforms = [
         { id: 'wfrlee', monogram: 'W', icon: 'calendarClock', target: 'https://wfrlee.com', logo: 'https://www.wfrlee.com/favicon.ico' },
-        { id: 'sabaah', monogram: 'S', icon: 'coffee', target: 'https://sabaah.net', logo: 'https://www.sabaah.net/favicon.svg' },
+        { id: 'sab3h', monogram: 'S', icon: 'coffee', target: 'https://sab3h.net', logo: 'https://www.sab3h.net/favicon.svg' },
         { id: 'oneegate', monogram: '1E', icon: 'shieldCheck', target: 'https://oneegate.com' },
       ]; %>
       <div class="platforms-track" data-platform-track>
@@ -354,12 +354,14 @@
         <article class="pillar-card glass rounded-3xl relative overflow-hidden group">
           <span class="pillar-glow" aria-hidden="true"></span>
           <div class="pillar-card-inner">
+            <span class="pillar-card-num" aria-hidden="true">0<%= i+1 %></span>
             <span class="pillar-card-icon">
               <i data-lucide="<%= p.icon %>" class="w-6 h-6"></i>
             </span>
-            <h3 class="pillar-card-title" data-i18n="pillars-<%= i+1 %>-title"><%= t('pillars-' + (i+1) + '-title') %></h3>
-            <p class="pillar-card-body" data-i18n="pillars-<%= i+1 %>-desc"><%= t('pillars-' + (i+1) + '-desc') %></p>
-            <span class="pillar-card-num" aria-hidden="true">0<%= i+1 %></span>
+            <div class="pillar-card-copy">
+              <h3 class="pillar-card-title" data-i18n="pillars-<%= i+1 %>-title"><%= t('pillars-' + (i+1) + '-title') %></h3>
+              <p class="pillar-card-body" data-i18n="pillars-<%= i+1 %>-desc"><%= t('pillars-' + (i+1) + '-desc') %></p>
+            </div>
           </div>
         </article>
         <% }); %>
@@ -452,7 +454,7 @@
         <ul class="mt-4 space-y-2.5 text-sm text-white/60">
           <li><a href="https://wfrlee.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="wfrlee-name"><%= t('wfrlee-name') %></a></li>
           <li><a href="https://oneegate.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="oneegate-name"><%= t('oneegate-name') %></a></li>
-          <li><a href="https://sabaah.net" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="sabaah-name"><%= t('sabaah-name') %></a></li>
+          <li><a href="https://sab3h.net" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="sab3h-name"><%= t('sab3h-name') %></a></li>
         </ul>
       </div>
 

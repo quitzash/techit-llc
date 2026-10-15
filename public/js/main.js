@@ -411,7 +411,7 @@
       rotator.setAttribute('data-active', color);
     }
 
-    activate(0); // every (re)entry into view starts on Sabaah,
+    activate(0); // every (re)entry into view starts on Sab3h,
     if (REDUCED.matches) return; // never rotates for reduced-motion users.
 
     function tick() {
@@ -420,7 +420,7 @@
       activate(idx);
     }
 
-    // Pause while the card is off-screen; on re-entry always begin on Sabaah.
+    // Pause while the card is off-screen; on re-entry always begin on Sab3h.
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(
         function (entries) {

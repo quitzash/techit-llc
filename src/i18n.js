@@ -100,21 +100,21 @@ const en = {
   'oneegate-step2': `<span class="text-white font-semibold">Control access</span> — define who reaches what, policy-driven.`,
   'oneegate-step3': `<span class="text-white font-semibold">Operate securely</span> — infrastructure protected at the core.`,
 
-  'sabaah-name': 'Sabaah',
-  'sabaah-domain': 'sabaah.net',
-  'sabaah-tagline': 'Coffee, ordered on the go.',
-  'sabaah-desc':
+  'sab3h-name': 'Sab3h',
+  'sab3h-domain': 'sab3h.net',
+  'sab3h-tagline': 'Coffee, ordered on the go.',
+  'sab3h-desc':
     'Order your coffee from anywhere — browse nearby cafés, skip the queue, and have your brew ready the moment you arrive.',
-  'sabaah-c1': 'Order ahead from nearby cafés',
-  'sabaah-c2': 'Skip the queue with fast pickup',
-  'sabaah-c3': 'Streamlined mobile ordering pipeline',
-  'sabaah-visit': 'Visit sabaah.net',
-  'sabaah-label': 'On-the-Go Coffee',
-  'sabaah-idea':
-    'The idea: instead of queuing at a café, order before you\'re even there. Sabaah connects you to nearby cafés and has your drink ready on arrival.',
-  'sabaah-step1': `<span class="text-white font-semibold">Discover</span> — browse cafés near you and pick a drink.`,
-  'sabaah-step2': `<span class="text-white font-semibold">Order ahead</span> — pay in app and the café starts your brew.`,
-  'sabaah-step3': `<span class="text-white font-semibold">Skip the queue</span> — walk in and grab your ready cup.`,
+  'sab3h-c1': 'Order ahead from nearby cafés',
+  'sab3h-c2': 'Skip the queue with fast pickup',
+  'sab3h-c3': 'Streamlined mobile ordering pipeline',
+  'sab3h-visit': 'Visit sab3h.net',
+  'sab3h-label': 'On-the-Go Coffee',
+  'sab3h-idea':
+    'The idea: instead of queuing at a café, order before you\'re even there. Sab3h connects you to nearby cafés and has your drink ready on arrival.',
+  'sab3h-step1': `<span class="text-white font-semibold">Discover</span> — browse cafés near you and pick a drink.`,
+  'sab3h-step2': `<span class="text-white font-semibold">Order ahead</span> — pay in app and the café starts your brew.`,
+  'sab3h-step3': `<span class="text-white font-semibold">Skip the queue</span> — walk in and grab your ready cup.`,
 
   'pillars-kicker': 'Core Pillars',
   'pillars-title': 'What we stand on.',
@@ -251,21 +251,21 @@ const ar = {
   'oneegate-step2': `<span class="text-white font-semibold">تحكّم في الوصول</span> — حدّد من يصل إلى ماذا وفق السياسات.`,
   'oneegate-step3': `<span class="text-white font-semibold">شغّل بأمان</span> — بنية تحتية محمية من الجوهر.`,
 
-  'sabaah-name': 'صباح',
-  'sabaah-domain': 'sabaah.net',
-  'sabaah-tagline': 'قهوة تُطلب أثناء التنقّل.',
-  'sabaah-desc':
+  'sab3h-name': 'صباح',
+  'sab3h-domain': 'sab3h.net',
+  'sab3h-tagline': 'قهوة تُطلب أثناء التنقّل.',
+  'sab3h-desc':
     'اطلب قهوتك من أي مكان — تصفّح المقاهي القريبة، وتجاوز الطوابير، واجد مشروبك جاهزًا فور وصولك.',
-  'sabaah-c1': 'اطلب مسبقًا من المقاهي القريبة',
-  'sabaah-c2': 'تجاوز الطابور مع استلام سريع',
-  'sabaah-c3': 'مسار طلب جوال مبسّط',
-  'sabaah-visit': 'زيارة sabaah.net',
-  'sabaah-label': 'قهوة أثناء التنقّل',
-  'sabaah-idea':
+  'sab3h-c1': 'اطلب مسبقًا من المقاهي القريبة',
+  'sab3h-c2': 'تجاوز الطابور مع استلام سريع',
+  'sab3h-c3': 'مسار طلب جوال مبسّط',
+  'sab3h-visit': 'زيارة sab3h.net',
+  'sab3h-label': 'قهوة أثناء التنقّل',
+  'sab3h-idea':
     'الفكرة: بدلًا من الانتظار في المقهى، اطلب قبل وصولك. يوصلك صباح بالمقاهي القريبة ويجهّز مشروبك عند وصولك.',
-  'sabaah-step1': `<span class="text-white font-semibold">اكتشف</span> — تصفّح المقاهي القريبة واختر مشروبك.`,
-  'sabaah-step2': `<span class="text-white font-semibold">اطلب مسبقًا</span> — ادفع من التطبيق ليبدأ المقهى بتحضير مشروبك.`,
-  'sabaah-step3': `<span class="text-white font-semibold">تجاوز الطابور</span> — ادخل وخذ كوبك الجاهز.`,
+  'sab3h-step1': `<span class="text-white font-semibold">اكتشف</span> — تصفّح المقاهي القريبة واختر مشروبك.`,
+  'sab3h-step2': `<span class="text-white font-semibold">اطلب مسبقًا</span> — ادفع من التطبيق ليبدأ المقهى بتحضير مشروبك.`,
+  'sab3h-step3': `<span class="text-white font-semibold">تجاوز الطابور</span> — ادخل وخذ كوبك الجاهز.`,
 
   'pillars-kicker': 'الركائز الأساسية',
   'pillars-title': 'ما الذي نرتكز عليه.',

@@ -10,7 +10,7 @@ function show(label, re) {
 any('cards region wrapper present', /id="platforms-stack"/);
 any('three article cards', /<article class="platform/g);
 show('brand 1 title', /platform-wfrlee-name"/);
-show('brand 2 title', /platform-sabaah-name"/);
+show('brand 2 title', /platform-sab3h-name"/);
 show('brand 3 title', /platform-oneegate-name"/);
 show('subtitle line', /platform-sub"/);
 show('subtitle text (en)', /data-i18n="platform-sub"/g && /\bThree platforms, one intent\./);
