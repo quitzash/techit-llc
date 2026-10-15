@@ -144,18 +144,18 @@
           <%- t('about-title') %>
         </h2>
 
-        <div class="mt-10 grid grid-cols-3 gap-4 max-w-md" data-reveal>
-          <div class="glass rounded-2xl p-4 text-center">
-            <span class="font-display font-extrabold text-3xl text-white" data-count-to="3">3</span>
-            <p class="mt-1 text-xs text-white/40 uppercase tracking-wide" data-i18n="stat-platforms"><%= t('stat-platforms') %></p>
+        <div class="mt-10 grid grid-cols-3 gap-4 max-w-md">
+          <div class="stat-tile" data-reveal>
+            <span class="stat-tile-value text-gradient" data-count-to="3">3</span>
+            <p class="stat-tile-label" data-i18n="stat-platforms"><%= t('stat-platforms') %></p>
           </div>
-          <div class="glass rounded-2xl p-4 text-center">
-            <span class="font-display font-extrabold text-3xl text-white" data-count-to="1">1</span>
-            <p class="mt-1 text-xs text-white/40 uppercase tracking-wide" data-i18n="stat-holding"><%= t('stat-holding') %></p>
+          <div class="stat-tile" data-reveal>
+            <span class="stat-tile-value text-gradient" data-count-to="1">1</span>
+            <p class="stat-tile-label" data-i18n="stat-holding"><%= t('stat-holding') %></p>
           </div>
-          <div class="glass rounded-2xl p-4 text-center">
-            <span class="font-display font-extrabold text-3xl"><span data-count-to="100">100</span>%</span>
-            <p class="mt-1 text-xs text-white/40 uppercase tracking-wide" data-i18n="stat-inhouse"><%= t('stat-inhouse') %></p>
+          <div class="stat-tile" data-reveal>
+            <span class="stat-tile-value text-gradient"><span data-count-to="100">100</span>%</span>
+            <p class="stat-tile-label" data-i18n="stat-inhouse"><%= t('stat-inhouse') %></p>
           </div>
         </div>
       </div>
@@ -178,12 +178,12 @@
         <p class="mt-5 text-white/50 text-lg leading-relaxed" data-reveal data-i18n="journey-desc"><%= t('journey-desc') %></p>
       </div>
 
-      <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
+      <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <% const journeySteps = ['conceive', 'back', 'support', 'operate']; %>
         <% const journeyIcons = ['lightbulb', 'rocket', 'shieldCheck', 'globe']; %>
         <% const journeyNums = ['1', '2', '3', '4']; %>
         <% journeySteps.forEach((step, i) => { %>
-        <article class="journey-card glass rounded-3xl p-7 relative overflow-hidden group">
+        <article class="journey-card glass-card scan-overlay rounded-3xl p-7 relative overflow-hidden group" data-reveal>
           <div class="flex items-center justify-between">
             <span class="journey-num" aria-hidden="true"><%= t('journey-' + journeyNums[i] + '-num') %></span>
             <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 text-white/50 ring-1 ring-white/10"><i data-lucide="<%= journeyIcons[i] %>" class="w-5 h-5"></i></span>
@@ -344,14 +344,14 @@
         <p class="mt-5 text-white/50 text-lg leading-relaxed" data-reveal data-i18n="about-p1"><%= t('about-p1') %></p>
       </div>
 
-      <div class="mt-14 pillars-grid" data-reveal>
+      <div class="mt-14 pillars-grid">
         <% const pillars = [
           { icon: 'rocket' },
           { icon: 'network' },
           { icon: 'shieldCheck' },
         ]; %>
         <% pillars.forEach((p, i) => { %>
-        <article class="pillar-card glass rounded-3xl relative overflow-hidden group">
+        <article class="pillar-card glass-card scan-overlay rounded-3xl relative overflow-hidden group" data-reveal>
           <span class="pillar-glow" aria-hidden="true"></span>
           <div class="pillar-card-inner">
             <span class="pillar-card-num" aria-hidden="true">0<%= i+1 %></span>
@@ -389,7 +389,7 @@
         </div>
       </div>
 
-      <form id="contact-form" action="/api/contact" method="POST" class="glass rounded-3xl p-8 sm:p-10 space-y-6" data-reveal novalidate>
+      <form id="contact-form" action="/api/contact" method="POST" class="glass-card rounded-3xl p-8 sm:p-10 space-y-6" data-reveal novalidate>
         <p class="text-xs uppercase tracking-widest text-white/40"><%= t('contact-kicker') %></p>
 
         <div class="space-y-5">

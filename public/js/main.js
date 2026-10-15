@@ -123,6 +123,24 @@
     });
   }
 
+  // Elements sharing a parent cascade in one after another, echoing the
+  // staggered entrances of the reference dashboard. The delay is a pure
+  // enhancement: without JS nothing is delayed, and under reduced motion
+  // it is skipped (CSS also zeroes the transition there).
+  var STAGGER_STEP = 90;   // ms between siblings
+  var STAGGER_MAX = 6;     // cap so long lists never trail for seconds
+
+  function revealOne(el) {
+    if (!REDUCED.matches) {
+      var parent = el.parentNode;
+      var sibs = parent ? $$('[data-reveal]', parent) : [el];
+      var i = sibs.indexOf(el);
+      if (i > STAGGER_MAX) i = STAGGER_MAX;
+      if (i > 0) el.style.transitionDelay = (i * STAGGER_STEP) + 'ms';
+    }
+    el.classList.add('is-in');
+  }
+
   function inViewport(el) {
     var r = el.getBoundingClientRect();
     var vh = window.innerHeight || document.documentElement.clientHeight;
@@ -146,7 +164,7 @@
       if (!remaining.length) return;
       remaining = remaining.filter(function (el) {
         if (inViewport(el)) {
-          el.classList.add('is-in');
+          revealOne(el);
           return false;
         }
         return true;
@@ -159,7 +177,7 @@
         function (entries) {
           entries.forEach(function (entry) {
             if (entry.isIntersecting) {
-              entry.target.classList.add('is-in');
+              revealOne(entry.target);
               io.unobserve(entry.target);
               var i = remaining.indexOf(entry.target);
               if (i > -1) remaining.splice(i, 1);
