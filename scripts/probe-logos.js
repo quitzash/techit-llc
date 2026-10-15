@@ -4,7 +4,7 @@ const http = require('http');
 
 const brands = [
   { id: 'wfrlee',  domain: 'wfrlee.com',      www: 'www.wfrlee.com' },
-  { id: 'sab3h',  domain: 'www.sab3h.net',  www: 'sab3h.net' },
+  { id: 'sab3h',  domain: 'www.sab3h.com',  www: 'sab3h.com' },
   { id: 'oneegate', domain: 'oneegate.com',   www: 'www.oneegate.com' },
 ];
 
