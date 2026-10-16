@@ -267,9 +267,33 @@ html[dir="rtl"] .hero-wordmark-label {
   gap: clamp(1.5rem, 4vw, 2.5rem);
 }
 .pillar-card {
+  --pillar-rgb: 255, 255, 255;
   position: relative;
   display: flex;
   overflow: hidden;
+}
+/* Brand-tinted ambient wash, strongest in the leading corner. */
+.pillar-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 170% at 0% 0%, rgba(var(--pillar-rgb), 0.13), transparent 58%);
+  pointer-events: none;
+}
+/* Full-height brand accent bar on the leading edge. */
+.pillar-accent-bar {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  background: linear-gradient(180deg, rgba(var(--pillar-rgb), 0.95), rgba(var(--pillar-rgb), 0.3));
+  box-shadow: 0 0 22px rgba(var(--pillar-rgb), 0.45);
+  z-index: 1;
+}
+/* Mirrored rows put their content on the opposite side, so the bar follows. */
+.pillar-card:nth-child(even) .pillar-accent-bar {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
 }
 .pillar-card-inner {
   position: relative;
@@ -294,9 +318,9 @@ html[dir="rtl"] .hero-wordmark-label {
   width: clamp(3.5rem, 6vw, 4.5rem);
   height: clamp(3.5rem, 6vw, 4.5rem);
   border-radius: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+  background: rgba(var(--pillar-rgb), 0.12);
+  box-shadow: inset 0 0 0 1px rgba(var(--pillar-rgb), 0.3);
+  color: rgb(var(--pillar-rgb));
 }
 .pillar-card-icon svg {
   width: 1.75rem;
@@ -319,10 +343,12 @@ html[dir="rtl"] .hero-wordmark-label {
 .pillar-card-num {
   flex-shrink: 0;
   font-family: 'JetBrains Mono', 'Tajawal', ui-monospace, monospace;
-  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-size: clamp(3.5rem, 8vw, 6.5rem);
   font-weight: 800;
   line-height: 1;
-  color: rgba(255, 255, 255, 0.12);
+  color: rgba(var(--pillar-rgb), 0.34);
+  text-shadow: 0 0 48px rgba(var(--pillar-rgb), 0.3);
+  transition: color 0.45s ease;
 }
 html[dir="rtl"] .pillar-card-num { letter-spacing: 0; }
 .pillar-glow {
@@ -334,12 +360,26 @@ html[dir="rtl"] .pillar-card-num { letter-spacing: 0; }
   z-index: 0;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .pillar-card:hover {
+    border-color: rgba(var(--pillar-rgb), 0.4);
+    box-shadow: 0 22px 55px -20px rgba(0, 0, 0, 0.5),
+                0 0 80px -28px rgba(var(--pillar-rgb), 0.6);
+  }
+  .pillar-card:hover .pillar-card-num { color: rgba(var(--pillar-rgb), 0.55); }
+  .pillar-card:hover .pillar-accent-bar { box-shadow: 0 0 34px rgba(var(--pillar-rgb), 0.85); }
+}
+
 @media (max-width: 639px) {
   .pillar-card-inner,
   .pillar-card:nth-child(even) .pillar-card-inner {
     flex-direction: column;
     align-items: flex-start;
     gap: 1.25rem;
+  }
+  .pillar-card:nth-child(even) .pillar-accent-bar {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
   }
 }
 

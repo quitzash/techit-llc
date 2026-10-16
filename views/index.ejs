@@ -346,12 +346,13 @@
 
       <div class="mt-14 pillars-grid">
         <% const pillars = [
-          { icon: 'rocket' },
-          { icon: 'network' },
-          { icon: 'shieldCheck' },
+          { icon: 'rocket',      rgb: '77, 166, 255' },  /* wfrlee   — blue   */
+          { icon: 'network',     rgb: '249, 115, 22' },  /* sab3h    — orange */
+          { icon: 'shieldCheck', rgb: '79, 110, 242' },  /* oneegate — indigo */
         ]; %>
         <% pillars.forEach((p, i) => { %>
-        <article class="pillar-card glass-card scan-overlay rounded-3xl relative overflow-hidden group" data-reveal>
+        <article class="pillar-card glass-card scan-overlay rounded-3xl relative overflow-hidden group" style="--pillar-rgb: <%= p.rgb %>;" data-reveal>
+          <span class="pillar-accent-bar" aria-hidden="true"></span>
           <span class="pillar-glow" aria-hidden="true"></span>
           <div class="pillar-card-inner">
             <span class="pillar-card-num" aria-hidden="true">0<%= i+1 %></span>
