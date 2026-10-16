@@ -9,6 +9,14 @@ const t = (key) => (dict[key] != null ? dict[key] : key);
 const email = site.email;
 const year = new Date().getFullYear();
 
+// Absolute URLs for canonical / social metadata.
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/img/techit-logo.png', Astro.site).href;
+const altEn = new URL('/', Astro.site).href;
+const altAr = new URL('/ar/', Astro.site).href;
+const ogLocale = lang === 'ar' ? 'ar_AR' : 'en_US';
+const ogLocaleAlt = lang === 'ar' ? 'en_US' : 'ar_AR';
+
 // Full dictionary (both languages) for the client-side language toggle.
 const i18nJson = JSON.stringify({ en, ar }).replace(/</g, '\\u003c');
 
@@ -34,6 +42,27 @@ const pillars = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{dict['meta-title']}</title>
   <meta name="description" content={dict['meta-desc']} />
+  <link rel="canonical" href={canonical} />
+  <link rel="alternate" hreflang="en" href={altEn} />
+  <link rel="alternate" hreflang="ar" href={altAr} />
+  <link rel="alternate" hreflang="x-default" href={altEn} />
+  <meta name="theme-color" content="#0d0f14" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Techit LLC" />
+  <meta property="og:title" content={dict['meta-title']} />
+  <meta property="og:description" content={dict['meta-desc']} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:locale" content={ogLocale} />
+  <meta property="og:locale:alternate" content={ogLocaleAlt} />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content={dict['meta-title']} />
+  <meta name="twitter:description" content={dict['meta-desc']} />
+  <meta name="twitter:image" content={ogImage} />
+  <meta property="og:image:alt" content="Techit LLC" />
+  <meta name="twitter:image:alt" content="Techit LLC" />
+
   <link rel="icon" type="image/png" href="/img/favicon.png" />
 
   <!-- JS-only visual enhancements. Without this class nothing is hidden:

@@ -1,17 +1,17 @@
 {
   "name": "techit-llc",
   "version": "1.0.0",
-  "description": "Techit LLC — holding company website for regional digital platforms (Astro)",
+  "description": "Techit LLC \u2014 holding company website for regional digital platforms (Astro)",
   "type": "commonjs",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev": "concurrently -k \"npm:watch:css\" \"astro dev\"",
-    "start": "astro dev",
-    "build": "npm run build:icons && npm run build:css && astro build",
-    "build:icons": "node scripts/generate-icons.js",
-    "build:css": "tailwindcss -i ./src/input.css -o ./public/css/tailwind.css --minify",
+    "dev": "node init && concurrently -k \"npm:watch:css\" \"astro dev\"",
+    "start": "node init && astro dev",
+    "build": "node init && npm run build:icons && npm run build:css && astro build",
+    "build:icons": "node init && node scripts/generate-icons.js",
+    "build:css": "node init && tailwindcss -i ./src/input.css -o ./public/css/tailwind.css --minify",
     "watch:css": "tailwindcss -i ./src/input.css -o ./public/css/tailwind.css --minify --watch",
     "preview": "astro preview",
     "release": "node scripts/release.js"
