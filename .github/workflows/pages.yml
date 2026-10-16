@@ -1,8 +1,8 @@
 name: Deploy to GitHub Pages
 
-# Publishes the static export in dist/ to GitHub Pages.
-# The Node server cannot run on Pages, so this builds the site ahead of time
-# and uploads the plain files. Pushing to main is enough to redeploy.
+# Optional static mirror. Production deploys happen on Vercel; this workflow
+# keeps a static copy of the Astro build available on GitHub Pages too.
+# Pushing to main is enough to redeploy.
 
 on:
   push:
@@ -32,22 +32,22 @@ jobs:
 
       - run: npm ci
 
-      # Compiles icons + Tailwind into public/, then pre-renders the pages.
-      - run: npm run export:static
+      # Compiles icons + Tailwind, then builds the static Astro site.
+      - run: npm run build
 
       # Guards against publishing a half-built site.
       - name: Verify output
         run: |
-          test -f dist/index.html
-          test -f dist/404.html
-          test -f dist/js/main.js
-          test -f dist/css/tailwind.css
+          test -f dist/client/index.html
+          test -f dist/client/404.html
+          test -f dist/client/js/main.js
+          test -f dist/client/css/tailwind.css
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist/client
 
   deploy:
     needs: build

@@ -1,0 +1,514 @@
+---
+import { en, ar } from '../i18n.js';
+import site from '../site.js';
+
+const { lang = 'en' } = Astro.props;
+const dict = lang === 'ar' ? ar : en;
+const t = (key) => (dict[key] != null ? dict[key] : key);
+
+const email = site.email;
+const year = new Date().getFullYear();
+
+// Full dictionary (both languages) for the client-side language toggle.
+const i18nJson = JSON.stringify({ en, ar }).replace(/</g, '\\u003c');
+
+const journeyNums = ['1', '2', '3', '4'];
+const journeyIcons = ['lightbulb', 'rocket', 'shieldCheck', 'globe'];
+
+const platforms = [
+  { id: 'wfrlee', monogram: 'W', icon: 'calendarClock', target: 'https://wfrlee.com', logo: 'https://www.wfrlee.com/favicon.ico' },
+  { id: 'sab3h', monogram: 'S', icon: 'coffee', target: 'https://sab3h.com', logo: 'https://www.sab3h.com/favicon.svg' },
+  { id: 'oneegate', monogram: '1E', icon: 'shieldCheck', target: 'https://oneegate.com' },
+];
+
+const pillars = [
+  { icon: 'rocket', rgb: '77, 166, 255' },
+  { icon: 'network', rgb: '249, 115, 22' },
+  { icon: 'shieldCheck', rgb: '79, 110, 242' },
+];
+---
+<!DOCTYPE html>
+<html lang={lang} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{dict['meta-title']}</title>
+  <meta name="description" content={dict['meta-desc']} />
+  <link rel="icon" type="image/png" href="/img/favicon.png" />
+
+  <!-- JS-only visual enhancements. Without this class nothing is hidden:
+       the whole page is visible by default. data-reveal elements only
+       animate when this 'js' class is present. -->
+  <script is:inline>
+    document.documentElement.classList.add('js');
+    // Failsafe: if the enhancement script never boots (slow network, old
+    // browser, blocked JS), drop the 'js' gate after a moment so reveal
+    // elements can never stay hidden.
+    window.__techitFailsafe = setTimeout(function () {
+      if (!window.__techitReady) document.documentElement.classList.remove('js');
+    }, 2500);
+  </script>
+  <!-- Full i18n dictionary for the client-side language toggle. -->
+  <script is:inline set:html={`window.I18N = ${i18nJson}; window.LANG = ${JSON.stringify(lang)};`}></script>
+  <!-- Honour a deep-linked ?lang=... before the enhancement script boots. -->
+  <script is:inline>
+    (function () {
+      try {
+        var q = new URLSearchParams(window.location.search).get('lang');
+        if (q === 'ar' || q === 'en') window.LANG = q;
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Tajawal:wght@400;500;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/tailwind.css" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body class="antialiased noise-bg">
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- ================= NAVIGATION ================= -->
+  <header id="navbar" class="fixed inset-x-0 top-0 z-50">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="nav-shell glass mt-4 rounded-2xl px-4 sm:px-5 py-3 flex items-center justify-between">
+        <a href="#top" class="flex items-center gap-2.5">
+          <img src="/img/techit-logo.png" alt="Techit LLC" width="48" height="48" class="h-9 w-9 shrink-0 rounded-xl object-contain bg-white/5 ring-1 ring-white/10" />
+          <span class="font-display font-bold text-lg tracking-tight text-white">Techit<span class="text-white/40 font-medium"> LLC</span></span>
+        </a>
+
+        <div class="hidden md:flex items-center gap-7 lg:gap-9 text-sm text-white/60">
+          <a href="#about" class="anchor hover:text-white transition-colors" data-i18n="nav-about">{t('nav-about')}</a>
+          <a href="#journey" class="anchor hover:text-white transition-colors" data-i18n="nav-journey">{t('nav-journey')}</a>
+          <a href="#platforms" class="anchor hover:text-white transition-colors" data-i18n="nav-platforms">{t('nav-platforms')}</a>
+          <a href="#pillars" class="anchor hover:text-white transition-colors" data-i18n="nav-pillars">{t('nav-pillars')}</a>
+          <a href="#contact" class="anchor hover:text-white transition-colors" data-i18n="nav-contact">{t('nav-contact')}</a>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="lang-toggle" type="button" aria-label="Switch language" class="glass rounded-xl px-3.5 py-2 text-sm font-bold text-white/80 hover:bg-white/10 hover:text-white transition-colors cursor-pointer select-none">
+            {lang === 'ar' ? 'EN' : 'عربي'}
+          </button>
+          <button id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden glass rounded-xl px-3 py-2.5 text-white/80 hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
+            <i data-lucide="menu" class="w-5 h-5" id="menu-icon"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Mobile navigation panel -->
+    <div id="mobile-menu" class="md:hidden fixed top-20 inset-x-4 z-40 hidden">
+      <nav class="nav-menu glass rounded-2xl p-3 text-white/75 text-sm flex flex-col gap-1 shadow-2xl shadow-black/40">
+        <a href="#about" data-i18n="nav-about" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors">{t('nav-about')}</a>
+        <a href="#journey" data-i18n="nav-journey" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors">{t('nav-journey')}</a>
+        <a href="#platforms" data-i18n="nav-platforms" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors">{t('nav-platforms')}</a>
+        <a href="#pillars" data-i18n="nav-pillars" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors">{t('nav-pillars')}</a>
+        <a href="#contact" data-i18n="nav-contact" class="mobile-link rounded-xl px-4 py-3 hover:bg-white/10 hover:text-white transition-colors">{t('nav-contact')}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+
+  <!-- ================= HERO ================= -->
+  <section id="hero" class="relative min-h-screen flex items-center overflow-hidden grid-bg">
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+      <div class="float-orb absolute top-[12%] left-[6%] h-72 w-72 rounded-full bg-white/[0.03] blur-3xl"></div>
+      <div class="float-orb float-orb-delay absolute top-[38%] right-[6%] h-80 w-80 rounded-full bg-white/[0.025] blur-3xl"></div>
+      <div class="float-orb float-orb-slow absolute bottom-[8%] left-[28%] h-72 w-72 rounded-full bg-white/[0.02] blur-3xl"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 w-full">
+      <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-16 lg:gap-10 items-center">
+        <div class="max-w-xl">
+          <span data-reveal class="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium tracking-wide text-white/60 mb-8 glow-pulse" style="--glow-color: rgba(140,145,157,0.12);">
+            <span class="h-1.5 w-1.5 rounded-full bg-white/40 animate-pulse"></span>
+            <span data-i18n="hero-badge">{t('hero-badge')}</span>
+          </span>
+
+          <h1 data-reveal data-i18n-html="hero-title" class="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white">
+            <Fragment set:html={t('hero-title')} />
+          </h1>
+
+          <p data-reveal data-i18n="hero-paragraph" class="mt-7 max-w-xl text-lg sm:text-xl text-white/50 leading-relaxed">
+            {t('hero-paragraph')}
+          </p>
+
+          <div data-reveal class="mt-10 flex flex-wrap items-center gap-5">
+            <a href="#platforms" class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-slate-900 transition-all shadow-lg shadow-white/10 hover:shadow-white/20">
+              <span data-i18n="hero-cta">{t('hero-cta')}</span>
+              <i data-lucide="arrowDown" class="w-4 h-4"></i>
+            </a>
+            <a href="#about" class="group inline-flex items-center gap-2.5 rounded-2xl glass px-7 py-3.5 font-semibold text-base text-white/70 hover:bg-white/10 hover:text-white transition-all">
+              <span data-i18n="hero-why">{t('hero-why')}</span>
+              <i data-lucide="arrowUpRight" class="w-4 h-4 inline-flex transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Rotating platform wordmark -->
+        <div id="hero-wordmark" class="relative flex flex-col text-start justify-center py-10 lg:py-0" data-scrub>
+          <span class="hero-wordmark-label" data-i18n="hero-word-label">{t('hero-word-label')}</span>
+          <div class="hero-word-rotator" aria-hidden="true">
+            <span class="hero-word is-active" data-word-color="sab3h">{t('sab3h-name')}</span>
+            <span class="hero-word" data-word-color="wfrlee">{t('wfrlee-name')}</span>
+            <span class="hero-word" data-word-color="onegate">{t('oneegate-name')}</span>
+          </div>
+          <p class="mt-8 flex items-center gap-3 text-sm text-white/40 font-medium">
+            <span data-i18n="hero-word-caption">{t('hero-word-caption')}</span>
+            <span class="h-px w-10 bg-gradient-to-r from-transparent to-white/15"></span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <a href="#about" class="scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/30 hover:text-white transition-colors" aria-label="Scroll down">
+      <i data-lucide="chevronsDown" class="w-6 h-6"></i>
+    </a>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section id="about" class="relative py-24 lg:py-32 overflow-hidden grid-bg">
+    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(560px circle at 85% 18%, rgba(140,145,157,0.05), transparent 65%);"></div>
+    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(500px circle at 8% 82%, rgba(140,145,157,0.035), transparent 65%);"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+      <div>
+        <span class="kicker" data-reveal data-i18n="about-kicker">{t('about-kicker')}</span>
+        <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-reveal data-i18n-html="about-title">
+          <Fragment set:html={t('about-title')} />
+        </h2>
+
+        <div class="mt-10 grid grid-cols-3 gap-4 max-w-md">
+          <div class="stat-tile" data-reveal>
+            <span class="stat-tile-value text-gradient" data-count-to="3">3</span>
+            <p class="stat-tile-label" data-i18n="stat-platforms">{t('stat-platforms')}</p>
+          </div>
+          <div class="stat-tile" data-reveal>
+            <span class="stat-tile-value text-gradient" data-count-to="1">1</span>
+            <p class="stat-tile-label" data-i18n="stat-holding">{t('stat-holding')}</p>
+          </div>
+          <div class="stat-tile" data-reveal>
+            <span class="stat-tile-value text-gradient"><span data-count-to="100">100</span>%</span>
+            <p class="stat-tile-label" data-i18n="stat-inhouse">{t('stat-inhouse')}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6 text-white/55 leading-relaxed text-lg">
+        <p data-reveal data-i18n="about-p1">{t('about-p1')}</p>
+        <p data-reveal data-i18n="about-p2">{t('about-p2')}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= JOURNEY (How we work — always visible) ================= -->
+  <section id="journey" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-2xl">
+        <span class="kicker" data-reveal data-i18n="journey-kicker">{t('journey-kicker')}</span>
+        <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-reveal data-i18n-html="journey-title">
+          <Fragment set:html={t('journey-title')} />
+        </h2>
+        <p class="mt-5 text-white/50 text-lg leading-relaxed" data-reveal data-i18n="journey-desc">{t('journey-desc')}</p>
+      </div>
+
+      <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {journeyNums.map((num, i) => (
+          <article class="journey-card glass-card scan-overlay rounded-3xl p-7 relative overflow-hidden group" data-reveal>
+            <div class="flex items-center justify-between">
+              <span class="journey-num" aria-hidden="true">{t('journey-' + num + '-num')}</span>
+              <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 text-white/50 ring-1 ring-white/10"><i data-lucide={journeyIcons[i]} class="w-5 h-5"></i></span>
+            </div>
+            <span class="mt-6 block text-xs font-semibold uppercase tracking-widest text-white/40" data-i18n={'journey-' + num + '-kicker'}>{t('journey-' + num + '-kicker')}</span>
+            <h3 class="mt-3 font-display font-bold text-xl text-white" data-i18n-html={'journey-' + num + '-title'}><Fragment set:html={t('journey-' + num + '-title')} /></h3>
+            <p class="mt-3 text-sm leading-relaxed text-white/50" data-i18n-html={'journey-' + num + '-body'}><Fragment set:html={t('journey-' + num + '-body')} /></p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PLATFORMS — pinned scroller ================= -->
+  <!-- SkillLoop-style pinned section: a tall scroll track with a sticky,
+       full-screen stage. Each platform card holds in place, then steps out
+       to reveal the next (JS enhancement). Without JS — or for reduced-motion
+       visitors — the cards simply stack one below the next with a soft 3D
+       tilt-in; all content is visible by default. -->
+  <section id="platforms" class="relative overflow-clip grid-bg" data-platform-scroll>
+    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(700px circle at 12% 28%, rgba(140,145,157,0.05), transparent 62%);"></div>
+
+    <div class="platforms-stage">
+      <!-- Ambient backdrop (CSS-only motion) -->
+      <div class="platforms-ambient" aria-hidden="true">
+        <div class="float-orb platforms-orb platforms-orb-l"></div>
+        <div class="float-orb float-orb-delay platforms-orb platforms-orb-r"></div>
+        <div class="float-orb float-orb-soft platforms-orb platforms-orb-t"></div>
+        <div class="platforms-ring platforms-ring-solid"></div>
+        <div class="platforms-ring platforms-ring-dashed"></div>
+      </div>
+
+      <!-- Scroller chrome: progress bar + rotating loop badge + step counter -->
+      <div class="platforms-chrome" aria-hidden="true">
+        <div class="platforms-progress" data-platform-progress></div>
+        <svg class="platforms-badge" data-platform-badge viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="10 8"></circle>
+        </svg>
+        <div class="platforms-counter">
+          <span class="platforms-counter-num" data-platform-num>1</span>
+          <span class="platforms-counter-total">/ 03</span>
+        </div>
+      </div>
+
+      <!-- Section heading (stays put while the track steps underneath) -->
+      <header class="platforms-head">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 lg:pt-28">
+          <span class="kicker" data-reveal data-i18n="nav-platforms">{t('nav-platforms')}</span>
+          <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white" data-reveal data-i18n-html="platforms-title">
+            <Fragment set:html={t('platforms-title')} />
+          </h2>
+        </div>
+      </header>
+
+      <!-- The track: one full-height slide per platform -->
+      <div class="platforms-track" data-platform-track>
+        {platforms.map((p, pi) => (
+          <div class="platforms-slide">
+            <article class={`platform platform-${p.id} glass rounded-3xl`} id={`platform-${p.id}`}>
+              <span class="platform-glow" aria-hidden="true"></span>
+
+              <!-- Brand header band: full-bleed, tinted with the platform color -->
+              <header class="platform-head">
+                <span class="platform-lockup" aria-hidden="true">
+                  {p.id !== 'wfrlee' && <span class="platform-monogram">{p.monogram}</span>}
+                  {p.logo && <img class="platform-logo" src={p.logo} alt="" loading="lazy" width="256" height="256" onerror="this.onerror=null;this.classList.add('platform-logo--missing');" />}
+                </span>
+
+                <div class="platform-head-text">
+                  <p class="platform-head-meta">
+                    <span data-i18n={`${p.id}-label`}>{t(p.id + '-label')}</span>
+                    <span class="platform-head-dot" aria-hidden="true"></span>
+                    <span class="platform-domain font-mono" data-i18n={`${p.id}-domain`}>{t(p.id + '-domain')}</span>
+                  </p>
+                  <h3 class="font-display" data-i18n={`${p.id}-name`}>{t(p.id + '-name')}</h3>
+                  <p class="platform-tagline" data-i18n={`${p.id}-tagline`}>{t(p.id + '-tagline')}</p>
+                </div>
+
+                <span class="platform-index font-mono" aria-hidden="true">{String(pi + 1).padStart(2, '0')}</span>
+              </header>
+
+              <div class="platforms-body">
+                <div class="platform-grid">
+                  <!-- Left: what it is + highlights + CTA -->
+                  <div class="platform-main">
+                    <p class="platform-desc text-white/55 leading-relaxed" data-i18n={`${p.id}-desc`}>{t(p.id + '-desc')}</p>
+
+                    {p.id === 'wfrlee' && <span class="platform-badge" data-i18n="wfrlee-badge">{t('wfrlee-badge')}</span>}
+
+                    <ul class="platform-chips">
+                      {[1, 2, 3].map((i) => (
+                        <li class="platform-chip">
+                          <i data-lucide="check" aria-hidden="true"></i>
+                          <span data-i18n={`${p.id}-c${i}`}>{t(p.id + '-c' + i)}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div class="platform-actions">
+                      <a href={p.target} target="_blank" rel="noopener" class="platform-cta">
+                        <span data-i18n={`${p.id}-visit`}>{t(p.id + '-visit')}</span>
+                        <i data-lucide="arrowUpRight" aria-hidden="true"></i>
+                      </a>
+                      <span class="platform-icon-chip" aria-hidden="true">
+                        <i data-lucide={p.icon}></i>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Right: the idea + how it works timeline -->
+                  <aside class="platform-side">
+                    <div class="platforms-box">
+                      <span class="platform-box-label">
+                        <i data-lucide="lightbulb" aria-hidden="true"></i>
+                        <span data-i18n="platform-idea-label">{t('platform-idea-label')}</span>
+                      </span>
+                      <p data-i18n={`${p.id}-idea`}>{t(p.id + '-idea')}</p>
+                    </div>
+
+                    <span class="platform-steps-label" data-i18n="platform-how">{t('platform-how')}</span>
+                    <ol class="platform-steps">
+                      {[1, 2, 3].map((i) => (
+                        <li>
+                          <span class="platform-step-num font-mono">{i}</span>
+                          <p data-i18n-html={`${p.id}-step${i}`}><Fragment set:html={t(p.id + '-step' + i)} /></p>
+                        </li>
+                      ))}
+                    </ol>
+                  </aside>
+                </div>
+              </div>
+            </article>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PILLARS ================= -->
+  <section id="pillars" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-2xl">
+        <span class="kicker" data-reveal>{t('pillars-kicker')}</span>
+        <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-reveal data-i18n-html="pillars-title">
+          <Fragment set:html={t('pillars-title')} />
+        </h2>
+        <p class="mt-5 text-white/50 text-lg leading-relaxed" data-reveal data-i18n="about-p1">{t('about-p1')}</p>
+      </div>
+
+      <div class="mt-14 pillars-grid">
+        {pillars.map((p, i) => (
+          <article class="pillar-card glass-card scan-overlay rounded-3xl relative overflow-hidden group" data-variant={i + 1} style={`--pillar-rgb: ${p.rgb};`} data-reveal>
+            <span class="pillar-accent-bar" aria-hidden="true"></span>
+            <span class="pillar-glow" aria-hidden="true"></span>
+            <span class="pillar-card-num" aria-hidden="true">0{i + 1}</span>
+            <div class="pillar-card-inner">
+              <span class="pillar-card-icon">
+                <i data-lucide={p.icon} class="w-6 h-6"></i>
+              </span>
+              <div class="pillar-card-copy">
+                <h3 class="pillar-card-title" data-i18n={`pillars-${i + 1}-title`}>{t('pillars-' + (i + 1) + '-title')}</h3>
+                <p class="pillar-card-body" data-i18n={`pillars-${i + 1}-desc`}>{t('pillars-' + (i + 1) + '-desc')}</p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact" class="relative py-24 lg:py-32 overflow-hidden glow-hero">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid lg:grid-cols-[0.9fr_1.1fr] gap-14 lg:gap-20 items-start">
+      <div class="lg:sticky lg:top-32">
+        <span class="kicker" data-reveal data-i18n="contact-kicker">{t('contact-kicker')}</span>
+        <h2 class="mt-4 font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white" data-reveal data-i18n-html="contact-title">
+          <Fragment set:html={t('contact-title')} />
+        </h2>
+        <p class="mt-5 text-white/50 text-lg leading-relaxed" data-reveal data-i18n="contact-desc">{t('contact-desc')}</p>
+
+        <div data-reveal class="mt-8 space-y-3">
+          <a href={`mailto:${email}`} class="flex items-center gap-3 text-white/70 hover:text-white transition-colors group">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 ring-1 ring-white/10">
+              <i data-lucide="mail" class="w-4 h-4"></i>
+            </span>
+            <span class="font-mono text-sm">{email}</span>
+          </a>
+        </div>
+      </div>
+
+      <form id="contact-form" action="/api/contact" method="POST" class="glass-card rounded-3xl p-8 sm:p-10 space-y-6" data-reveal novalidate>
+        <p class="text-xs uppercase tracking-widest text-white/40">{t('contact-kicker')}</p>
+
+        <div class="space-y-5">
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="cf-name" class="block text-sm font-medium text-white/70 mb-2" data-i18n="form-name">{t('form-name')}</label>
+              <input id="cf-name" name="name" type="text" required autocomplete="name" placeholder={t('form-name-ph')} data-i18n-ph="form-name-ph"
+                     class="field" />
+            </div>
+            <div>
+              <label for="cf-email" class="block text-sm font-medium text-white/70 mb-2" data-i18n="form-email">{t('form-email')}</label>
+              <input id="cf-email" name="email" type="email" required autocomplete="email" placeholder={t('form-email-ph')} data-i18n-ph="form-email-ph"
+                     class="field" />
+            </div>
+          </div>
+          <div>
+            <label for="cf-message" class="block text-sm font-medium text-white/70 mb-2" data-i18n="form-message">{t('form-message')}</label>
+            <textarea id="cf-message" name="message" rows="5" required placeholder={t('form-message-ph')} data-i18n-ph="form-message-ph" class="field resize-y"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" id="cf-submit"
+                class="cta-glow inline-flex items-center gap-2.5 rounded-2xl bg-white px-7 py-3.5 font-semibold text-base text-slate-900 transition-all shadow-lg shadow-white/10 hover:shadow-white/20 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+          <span id="cf-submit-label" data-i18n="form-submit">{t('form-submit')}</span>
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </form>
+    </div>
+  </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="relative border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr] gap-10">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <img src="/img/techit-logo.png" alt="Techit LLC" width="48" height="48" class="h-9 w-9 shrink-0 rounded-xl object-contain bg-white/5 ring-1 ring-white/10" />
+          <span class="font-display font-bold text-lg tracking-tight text-white">Techit<span class="text-white/40 font-medium"> LLC</span></span>
+        </div>
+        <p class="mt-4 text-sm text-white/45 max-w-xs leading-relaxed" data-i18n="footer-tagline">{t('footer-tagline')}</p>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold uppercase tracking-widest text-white/40" data-i18n="footer-company">{t('footer-company')}</h4>
+        <ul class="mt-4 space-y-2.5 text-sm text-white/60">
+          <li><a href="#about" class="hover:text-white transition-colors" data-i18n="nav-about">{t('nav-about')}</a></li>
+          <li><a href="#journey" class="hover:text-white transition-colors" data-i18n="nav-journey">{t('nav-journey')}</a></li>
+          <li><a href="#pillars" class="hover:text-white transition-colors" data-i18n="nav-pillars">{t('nav-pillars')}</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold uppercase tracking-widest text-white/40" data-i18n="footer-platforms">{t('footer-platforms')}</h4>
+        <ul class="mt-4 space-y-2.5 text-sm text-white/60">
+          <li><a href="https://wfrlee.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="wfrlee-name">{t('wfrlee-name')}</a></li>
+          <li><a href="https://oneegate.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="oneegate-name">{t('oneegate-name')}</a></li>
+          <li><a href="https://sab3h.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" data-i18n="sab3h-name">{t('sab3h-name')}</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold uppercase tracking-widest text-white/40" data-i18n="footer-contact">{t('footer-contact')}</h4>
+        <ul class="mt-4 space-y-2.5 text-sm text-white/60">
+          <li><a href={`mailto:${email}`} class="hover:text-white transition-colors font-mono text-xs">{email}</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/35">
+        <span data-i18n-html="footer-rights" data-i18n-var-year={year}><Fragment set:html={t('footer-rights').replace('{year}', String(year))} /></span>
+        <span class="font-mono">Riyadh · Jeddah · Dammam — KSA</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Form toast (shown after a no-JS redirect from /api/contact). Built
+       client-side so the static page can still relay the outcome. -->
+  <script is:inline>
+    (function () {
+      var mode = new URLSearchParams(window.location.search).get('sent');
+      if (mode !== 'success' && mode !== 'error') return;
+      var langs = window.I18N || {};
+      var dict = langs[window.LANG] || langs.en || {};
+      var div = document.createElement('div');
+      div.id = 'form-toast';
+      div.setAttribute('role', 'status');
+      div.setAttribute('aria-live', 'polite');
+      div.className = 'toast-' + mode;
+      var icon = document.createElement('i');
+      icon.setAttribute('data-lucide', mode === 'success' ? 'circleCheck' : 'circleAlert');
+      icon.className = 'w-5 h-5 shrink-0';
+      var span = document.createElement('span');
+      span.textContent = dict[mode === 'success' ? 'form-toast-success' : 'form-toast-error'] || '';
+      div.appendChild(icon);
+      div.appendChild(span);
+      document.body.appendChild(div);
+    })();
+  </script>
+
+  <script is:inline src="/js/icons.js" defer></script>
+  <script is:inline src="/js/main.js" defer></script>
+</body>
+</html>

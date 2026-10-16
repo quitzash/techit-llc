@@ -1,6 +1,6 @@
 // ============================================================
 //  Techit LLC — shared i18n dictionary (EN / AR)
-//  Single source of truth, used by both the server (EJS render)
+//  Single source of truth, used by both the Astro render
 //  and the client (lang toggle). Keys may contain HTML for the
 //  `*-title` / `*-html` variants.
 // ============================================================
@@ -307,4 +307,5 @@ const ar = {
   'footer-rights': '© {year} تيكيت. جميع الحقوق محفوظة.',
 };
 
-module.exports = { en, ar };
+export { en, ar };
+export default { en, ar };
